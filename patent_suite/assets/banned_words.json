@@ -1,0 +1,7 @@
+{
+    "approximately": "This risks a §112 rejection. Suggest replacing with a specific tolerance range (e.g., +/- 10%).",
+    "substantially": "Vague term. Provide technical parameters or functional limits instead.",
+    "about": "Indefinite. Define the precise numerical bound or variance allowed.",
+    "similar to": "Lacks technical specificity. Describe the shared characteristics or structural requirements.",
+    "user-friendly": "Subjective term. Define the specific interface performance or usability metrics."
+}

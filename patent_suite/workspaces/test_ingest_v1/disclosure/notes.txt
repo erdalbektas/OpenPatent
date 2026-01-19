@@ -1,0 +1,1 @@
+A toaster that uses high-power infrared lasers to toast patterns on bread without physical contact. The laser array is controlled by a micro-rasterizer.

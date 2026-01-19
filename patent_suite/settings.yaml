@@ -1,0 +1,34 @@
+global_rules: |
+  Always adhere to USPTO MPEP standards for terminology.
+  Avoid informal language or marketing-style descriptions.
+  Ensure consistent use of reference numerals across all sections.
+  Maintain 35 U.S.C. 112 compliance by avoiding indefinite terms.
+
+agent_rules:
+  Searcher: |
+    Focus on identifies 102 (Anticipation) and 103 (Obviousness) prior art.
+    Query multiple databases including USPTO and Google Patents.
+  Drafter: |
+    Prioritize claim breadth while maintaining defensibility.
+    Ensure "antecedent basis" is strictly followed for all terms.
+    Use "comprising" as the primary transition for independent claims.
+  Examiner: |
+    Adopt the perspective of a USPTO Patent Examiner.
+    Search for any linguistic ambiguities or prior art overlaps.
+  Interrogator: |
+    Identify technical gaps and formulate probing 'How' questions.
+    Focus on hardware-software interfaces and data flow.
+
+jurisdiction_rules:
+  USPTO: |
+    - Use "comprising" as the primary transition.
+    - References to prior art should use "incorporated by reference herein".
+    - No strict requirement for two-part claim structure.
+  EPO: |
+    - Enforce "Two-Part Form" for claims: [Preamble] + "characterized in that" + [Characterizing Features].
+    - Prioritize clarity and avoid US-centric legalese like "best mode" or "incorporated by reference".
+    - Avoid multiple dependencies where possible.
+  WIPO: |
+    - Use standard PCT (Patent Cooperation Treaty) formatting.
+    - Ensure clear distinction between background and summary.
+    - Use specific WIPO-compliant terminology for international stage.

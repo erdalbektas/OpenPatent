@@ -1,0 +1,36 @@
+{
+    "query": "laser toaster",
+    "timestamp": "2026-01-19T10:52:28Z",
+    "prior_art_aspects": [
+        {
+            "type": "Academic Paper",
+            "title": "Optimizing Infrared Emitters for Culinary Applications",
+            "authors": "Dr. Aris T. et al.",
+            "relevance": "High",
+            "summary": "This paper discusses the grid arrangement of infrared emitters to achieve uniform heat distribution on dough surfaces.",
+            "url": "https://scholar.google.com/mock/infrared-emitters"
+        },
+        {
+            "type": "Commercial product",
+            "title": "SmartCook Pro v2",
+            "company": "KitchenTech Solutions",
+            "relevance": "Medium",
+            "summary": "A high-end toaster that uses optical sensors and a micro-controller to adjust heating profiles dynamically.",
+            "url": "https://kitchentech.mock/smartcook-pro"
+        },
+        {
+            "type": "Open Source Project",
+            "title": "OpenLaserToast",
+            "platform": "GitHub",
+            "relevance": "Low",
+            "summary": "A DIY project for creating patterns on bread using low-power laser diodes and a Raspberry Pi.",
+            "url": "https://github.com/mock/openlasertoast"
+        }
+    ],
+    "key_findings": [
+        "Infrared grid heating is well-documented in academic literature.",
+        "Optical sensor feedback is a common feature in current smart kitchen appliances.",
+        "Laser-based surface toasting is primarily found in hobbyist and high-end industrial experimental setups."
+    ],
+    "novelty_risk_assessment": "Moderate. Several individual components (infrared grid, sensors) exist, but the specific combination for 'Rasterized Laser Bread Browning' has fewer direct non-patent hits."
+}

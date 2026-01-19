@@ -1,0 +1,32 @@
+[
+    {
+        "section": "2103",
+        "title": "Patent Eligibility",
+        "content": "Laws of nature, natural phenomena, and abstract ideas are not patentable."
+    },
+    {
+        "section": "2106",
+        "title": "Subject Matter Eligibility",
+        "content": "Specific guidance on software and abstract ideas (Alice check)."
+    },
+    {
+        "section": "2111",
+        "title": "Claim Interpretation",
+        "content": "Claims must be given their broadest reasonable interpretation (BRI)."
+    },
+    {
+        "section": "706",
+        "title": "Rejection of Claims",
+        "content": "Basis for rejecting claims under 35 U.S.C. 102 and 103."
+    },
+    {
+        "section": "701",
+        "title": "Order of Examination",
+        "content": "Instructions on the order in which patent applications are examined."
+    },
+    {
+        "section": "707",
+        "title": "Examiner's Letter or Action",
+        "content": "Guidance on writing rejections and responses."
+    }
+]
