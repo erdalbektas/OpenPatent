@@ -1,9 +1,9 @@
-import solidPlugin from "./packages/openpatent/node_modules/@opentui/solid/scripts/solid-plugin"
+import solidPlugin from "./packages/opencode/node_modules/@opentui/solid/scripts/solid-plugin"
 import path from "path"
 import fs from "fs"
 
 const version = "@VERSION@"
-const pkg = path.join(process.cwd(), "packages/openpatent")
+const pkg = path.join(process.cwd(), "packages/opencode")
 const parser = fs.realpathSync(path.join(pkg, "./node_modules/@opentui/core/parser.worker.js"))
 const worker = "./src/cli/cmd/tui/worker.ts"
 const target = process.env["BUN_COMPILE_TARGET"]
