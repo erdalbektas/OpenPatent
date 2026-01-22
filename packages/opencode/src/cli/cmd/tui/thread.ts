@@ -9,17 +9,17 @@ import { Log } from "@/util/log"
 import { withNetworkOptions, resolveNetworkOptions } from "@/cli/network"
 
 declare global {
-  const OPENCODE_WORKER_PATH: string
+  const openpatent_WORKER_PATH: string
 }
 
 export const TuiThreadCommand = cmd({
   command: "$0 [project]",
-  describe: "start opencode tui",
+  describe: "start openpatent tui",
   builder: (yargs) =>
     withNetworkOptions(yargs)
       .positional("project", {
         type: "string",
-        describe: "path to start opencode in",
+        describe: "path to start openpatent in",
       })
       .option("model", {
         type: "string",
@@ -51,7 +51,7 @@ export const TuiThreadCommand = cmd({
     const localWorker = new URL("./worker.ts", import.meta.url)
     const distWorker = new URL("./cli/cmd/tui/worker.js", import.meta.url)
     const workerPath = await iife(async () => {
-      if (typeof OPENCODE_WORKER_PATH !== "undefined") return OPENCODE_WORKER_PATH
+      if (typeof openpatent_WORKER_PATH !== "undefined") return openpatent_WORKER_PATH
       if (await Bun.file(distWorker).exists()) return distWorker
       return localWorker
     })
@@ -100,7 +100,7 @@ export const TuiThreadCommand = cmd({
     })
 
     setTimeout(() => {
-      client.call("checkUpgrade", { directory: cwd }).catch(() => {})
+      client.call("checkUpgrade", { directory: cwd }).catch(() => { })
     }, 1000)
 
     await tuiPromise

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/package",
-  "name": "@opencode-ai/script",
+  "name": "@openpatent-ai/script",
   "devDependencies": {
     "@types/bun": "catalog:"
   },

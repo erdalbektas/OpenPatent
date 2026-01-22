@@ -77,14 +77,14 @@ export namespace ModelsDev {
   export async function get() {
     refresh()
     const file = Bun.file(filepath)
-    const result = await file.json().catch(() => {})
+    const result = await file.json().catch(() => { })
     if (result) return result as Record<string, Provider>
     const json = await data()
     return JSON.parse(json) as Record<string, Provider>
   }
 
   export async function refresh() {
-    if (Flag.OPENCODE_DISABLE_MODELS_FETCH) return
+    if (Flag.openpatent_DISABLE_MODELS_FETCH) return
     const file = Bun.file(filepath)
     log.info("refreshing", {
       file,

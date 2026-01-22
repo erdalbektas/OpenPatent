@@ -3,7 +3,7 @@ import { xdgData, xdgCache, xdgConfig, xdgState } from "xdg-basedir"
 import path from "path"
 import os from "os"
 
-const app = "opencode"
+const app = "openpatent"
 
 const data = path.join(xdgData!, app)
 const cache = path.join(xdgCache!, app)
@@ -12,9 +12,9 @@ const state = path.join(xdgState!, app)
 
 export namespace Global {
   export const Path = {
-    // Allow override via OPENCODE_TEST_HOME for test isolation
+    // Allow override via openpatent_TEST_HOME for test isolation
     get home() {
-      return process.env.OPENCODE_TEST_HOME || os.homedir()
+      return process.env.openpatent_TEST_HOME || os.homedir()
     },
     data,
     bin: path.join(data, "bin"),
@@ -50,6 +50,6 @@ if (version !== CACHE_VERSION) {
         }),
       ),
     )
-  } catch (e) {}
+  } catch (e) { }
   await Bun.file(path.join(Global.Path.cache, "version")).write(CACHE_VERSION)
 }

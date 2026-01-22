@@ -1,5 +1,6 @@
 import { Menu, MenuItem, PredefinedMenuItem, Submenu } from "@tauri-apps/api/menu"
 import { type as ostype } from "@tauri-apps/plugin-os"
+import { getCurrentWindow } from "@tauri-apps/api/window"
 
 import { runUpdater, UPDATER_ENABLED } from "./updater"
 
@@ -9,7 +10,7 @@ export async function createMenu() {
   const menu = await Menu.new({
     items: [
       await Submenu.new({
-        text: "OpenCode",
+        text: "OpenPatent",
         items: [
           await PredefinedMenuItem.new({
             item: { About: null },
@@ -18,6 +19,15 @@ export async function createMenu() {
             enabled: UPDATER_ENABLED,
             action: () => runUpdater({ alertOnFail: true }),
             text: "Check For Updates...",
+          }),
+          await PredefinedMenuItem.new({
+            item: "Separator",
+          }),
+          await MenuItem.new({
+            action: async () => {
+              await getCurrentWindow().emit("open-patent-hub")
+            },
+            text: "Patent Hub...",
           }),
           await PredefinedMenuItem.new({
             item: "Separator",
@@ -39,29 +49,6 @@ export async function createMenu() {
           }),
         ].filter(Boolean),
       }),
-      // await Submenu.new({
-      //   text: "File",
-      //   items: [
-      //     await MenuItem.new({
-      //       enabled: false,
-      //       text: "Open Project...",
-      //     }),
-      //     await PredefinedMenuItem.new({
-      //       item: "Separator"
-      //     }),
-      //     await MenuItem.new({
-      //       enabled: false,
-      //       text: "New Session",
-      //     }),
-      //     await PredefinedMenuItem.new({
-      //       item: "Separator"
-      //     }),
-      //     await MenuItem.new({
-      //       enabled: false,
-      //       text: "Close Project",
-      //     })
-      //   ]
-      // }),
       await Submenu.new({
         text: "Edit",
         items: [
@@ -85,6 +72,29 @@ export async function createMenu() {
           }),
           await PredefinedMenuItem.new({
             item: "SelectAll",
+          }),
+        ],
+      }),
+      await Submenu.new({
+        text: "Settings",
+        items: [
+          await MenuItem.new({
+            action: async () => {
+              await getCurrentWindow().emit("open-settings")
+            },
+            text: "Open Settings...",
+          }),
+          await MenuItem.new({
+            action: async () => {
+              await getCurrentWindow().emit("open-agents")
+            },
+            text: "Agents...",
+          }),
+          await MenuItem.new({
+            action: async () => {
+              await getCurrentWindow().emit("open-premium")
+            },
+            text: "Premium...",
           }),
         ],
       }),

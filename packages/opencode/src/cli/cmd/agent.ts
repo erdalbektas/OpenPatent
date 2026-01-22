@@ -98,7 +98,7 @@ const AgentCreateCommand = cmd({
             scope = scopeResult
           }
           targetPath = path.join(
-            scope === "global" ? Global.Path.config : path.join(Instance.worktree, ".opencode"),
+            scope === "global" ? Global.Path.config : path.join(Instance.worktree, ".openpatent"),
             "agent",
           )
         }
@@ -252,5 +252,5 @@ export const AgentCommand = cmd({
   command: "agent",
   describe: "manage agents",
   builder: (yargs) => yargs.command(AgentCreateCommand).command(AgentListCommand).demandCommand(),
-  async handler() {},
+  async handler() { },
 })

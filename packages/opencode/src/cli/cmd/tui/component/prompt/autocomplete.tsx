@@ -363,7 +363,7 @@ export function Autocomplete(props: {
       {
         display: "/status",
         description: "show status",
-        onSelect: () => command.trigger("opencode.status"),
+        onSelect: () => command.trigger("openpatent.status"),
       },
       {
         display: "/mcp",

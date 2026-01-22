@@ -21,9 +21,9 @@ test("loads JSON config file", async () => {
   await using tmp = await tmpdir({
     init: async (dir) => {
       await Bun.write(
-        path.join(dir, "opencode.json"),
+        path.join(dir, "openpatent.json"),
         JSON.stringify({
-          $schema: "https://opencode.ai/config.json",
+          $schema: "https://openpatent.ai/config.json",
           model: "test/model",
           username: "testuser",
         }),
@@ -44,10 +44,10 @@ test("loads JSONC config file", async () => {
   await using tmp = await tmpdir({
     init: async (dir) => {
       await Bun.write(
-        path.join(dir, "opencode.jsonc"),
+        path.join(dir, "openpatent.jsonc"),
         `{
         // This is a comment
-        "$schema": "https://opencode.ai/config.json",
+        "$schema": "https://openpatent.ai/config.json",
         "model": "test/model",
         "username": "testuser"
       }`,
@@ -68,17 +68,17 @@ test("merges multiple config files with correct precedence", async () => {
   await using tmp = await tmpdir({
     init: async (dir) => {
       await Bun.write(
-        path.join(dir, "opencode.jsonc"),
+        path.join(dir, "openpatent.jsonc"),
         JSON.stringify({
-          $schema: "https://opencode.ai/config.json",
+          $schema: "https://openpatent.ai/config.json",
           model: "base",
           username: "base",
         }),
       )
       await Bun.write(
-        path.join(dir, "opencode.json"),
+        path.join(dir, "openpatent.json"),
         JSON.stringify({
-          $schema: "https://opencode.ai/config.json",
+          $schema: "https://openpatent.ai/config.json",
           model: "override",
         }),
       )
@@ -102,9 +102,9 @@ test("handles environment variable substitution", async () => {
     await using tmp = await tmpdir({
       init: async (dir) => {
         await Bun.write(
-          path.join(dir, "opencode.json"),
+          path.join(dir, "openpatent.json"),
           JSON.stringify({
-            $schema: "https://opencode.ai/config.json",
+            $schema: "https://openpatent.ai/config.json",
             theme: "{env:TEST_VAR}",
           }),
         )
@@ -131,9 +131,9 @@ test("handles file inclusion substitution", async () => {
     init: async (dir) => {
       await Bun.write(path.join(dir, "included.txt"), "test_theme")
       await Bun.write(
-        path.join(dir, "opencode.json"),
+        path.join(dir, "openpatent.json"),
         JSON.stringify({
-          $schema: "https://opencode.ai/config.json",
+          $schema: "https://openpatent.ai/config.json",
           theme: "{file:included.txt}",
         }),
       )
@@ -152,9 +152,9 @@ test("validates config schema and throws on invalid fields", async () => {
   await using tmp = await tmpdir({
     init: async (dir) => {
       await Bun.write(
-        path.join(dir, "opencode.json"),
+        path.join(dir, "openpatent.json"),
         JSON.stringify({
-          $schema: "https://opencode.ai/config.json",
+          $schema: "https://openpatent.ai/config.json",
           invalid_field: "should cause error",
         }),
       )
@@ -172,7 +172,7 @@ test("validates config schema and throws on invalid fields", async () => {
 test("throws error for invalid JSON", async () => {
   await using tmp = await tmpdir({
     init: async (dir) => {
-      await Bun.write(path.join(dir, "opencode.json"), "{ invalid json }")
+      await Bun.write(path.join(dir, "openpatent.json"), "{ invalid json }")
     },
   })
   await Instance.provide({
@@ -187,9 +187,9 @@ test("handles agent configuration", async () => {
   await using tmp = await tmpdir({
     init: async (dir) => {
       await Bun.write(
-        path.join(dir, "opencode.json"),
+        path.join(dir, "openpatent.json"),
         JSON.stringify({
-          $schema: "https://opencode.ai/config.json",
+          $schema: "https://openpatent.ai/config.json",
           agent: {
             test_agent: {
               model: "test/model",
@@ -218,9 +218,9 @@ test("handles command configuration", async () => {
   await using tmp = await tmpdir({
     init: async (dir) => {
       await Bun.write(
-        path.join(dir, "opencode.json"),
+        path.join(dir, "openpatent.json"),
         JSON.stringify({
-          $schema: "https://opencode.ai/config.json",
+          $schema: "https://openpatent.ai/config.json",
           command: {
             test_command: {
               template: "test template",
@@ -249,9 +249,9 @@ test("migrates autoshare to share field", async () => {
   await using tmp = await tmpdir({
     init: async (dir) => {
       await Bun.write(
-        path.join(dir, "opencode.json"),
+        path.join(dir, "openpatent.json"),
         JSON.stringify({
-          $schema: "https://opencode.ai/config.json",
+          $schema: "https://openpatent.ai/config.json",
           autoshare: true,
         }),
       )
@@ -271,9 +271,9 @@ test("migrates mode field to agent field", async () => {
   await using tmp = await tmpdir({
     init: async (dir) => {
       await Bun.write(
-        path.join(dir, "opencode.json"),
+        path.join(dir, "openpatent.json"),
         JSON.stringify({
-          $schema: "https://opencode.ai/config.json",
+          $schema: "https://openpatent.ai/config.json",
           mode: {
             test_mode: {
               model: "test/model",
@@ -297,12 +297,12 @@ test("migrates mode field to agent field", async () => {
   })
 })
 
-test("loads config from .opencode directory", async () => {
+test("loads config from .openpatent directory", async () => {
   await using tmp = await tmpdir({
     init: async (dir) => {
-      const opencodeDir = path.join(dir, ".opencode")
-      await fs.mkdir(opencodeDir, { recursive: true })
-      const agentDir = path.join(opencodeDir, "agent")
+      const openpatentDir = path.join(dir, ".openpatent")
+      await fs.mkdir(openpatentDir, { recursive: true })
+      const agentDir = path.join(openpatentDir, "agent")
       await fs.mkdir(agentDir, { recursive: true })
 
       await Bun.write(
@@ -380,8 +380,8 @@ test("resolves scoped npm plugins in config", async () => {
       await Bun.write(path.join(pluginDir, "index.js"), "export default {}\n")
 
       await Bun.write(
-        path.join(dir, "opencode.json"),
-        JSON.stringify({ $schema: "https://opencode.ai/config.json", plugin: ["@scope/plugin"] }, null, 2),
+        path.join(dir, "openpatent.json"),
+        JSON.stringify({ $schema: "https://openpatent.ai/config.json", plugin: ["@scope/plugin"] }, null, 2),
       )
     },
   })
@@ -392,7 +392,7 @@ test("resolves scoped npm plugins in config", async () => {
       const config = await Config.get()
       const pluginEntries = config.plugin ?? []
 
-      const baseUrl = pathToFileURL(path.join(tmp.path, "opencode.json")).href
+      const baseUrl = pathToFileURL(path.join(tmp.path, "openpatent.json")).href
       const expected = import.meta.resolve("@scope/plugin", baseUrl)
 
       expect(pluginEntries.includes(expected)).toBe(true)
@@ -407,25 +407,25 @@ test("resolves scoped npm plugins in config", async () => {
 test("merges plugin arrays from global and local configs", async () => {
   await using tmp = await tmpdir({
     init: async (dir) => {
-      // Create a nested project structure with local .opencode config
+      // Create a nested project structure with local .openpatent config
       const projectDir = path.join(dir, "project")
-      const opencodeDir = path.join(projectDir, ".opencode")
-      await fs.mkdir(opencodeDir, { recursive: true })
+      const openpatentDir = path.join(projectDir, ".openpatent")
+      await fs.mkdir(openpatentDir, { recursive: true })
 
       // Global config with plugins
       await Bun.write(
-        path.join(dir, "opencode.json"),
+        path.join(dir, "openpatent.json"),
         JSON.stringify({
-          $schema: "https://opencode.ai/config.json",
+          $schema: "https://openpatent.ai/config.json",
           plugin: ["global-plugin-1", "global-plugin-2"],
         }),
       )
 
-      // Local .opencode config with different plugins
+      // Local .openpatent config with different plugins
       await Bun.write(
-        path.join(opencodeDir, "opencode.json"),
+        path.join(openpatentDir, "openpatent.json"),
         JSON.stringify({
-          $schema: "https://opencode.ai/config.json",
+          $schema: "https://openpatent.ai/config.json",
           plugin: ["local-plugin-1"],
         }),
       )
@@ -453,9 +453,9 @@ test("merges plugin arrays from global and local configs", async () => {
 test("does not error when only custom agent is a subagent", async () => {
   await using tmp = await tmpdir({
     init: async (dir) => {
-      const opencodeDir = path.join(dir, ".opencode")
-      await fs.mkdir(opencodeDir, { recursive: true })
-      const agentDir = path.join(opencodeDir, "agent")
+      const openpatentDir = path.join(dir, ".openpatent")
+      await fs.mkdir(openpatentDir, { recursive: true })
+      const agentDir = path.join(openpatentDir, "agent")
       await fs.mkdir(agentDir, { recursive: true })
 
       await Bun.write(
@@ -485,25 +485,25 @@ Helper subagent prompt`,
 test("deduplicates duplicate plugins from global and local configs", async () => {
   await using tmp = await tmpdir({
     init: async (dir) => {
-      // Create a nested project structure with local .opencode config
+      // Create a nested project structure with local .openpatent config
       const projectDir = path.join(dir, "project")
-      const opencodeDir = path.join(projectDir, ".opencode")
-      await fs.mkdir(opencodeDir, { recursive: true })
+      const openpatentDir = path.join(projectDir, ".openpatent")
+      await fs.mkdir(openpatentDir, { recursive: true })
 
       // Global config with plugins
       await Bun.write(
-        path.join(dir, "opencode.json"),
+        path.join(dir, "openpatent.json"),
         JSON.stringify({
-          $schema: "https://opencode.ai/config.json",
+          $schema: "https://openpatent.ai/config.json",
           plugin: ["duplicate-plugin", "global-plugin-1"],
         }),
       )
 
-      // Local .opencode config with some overlapping plugins
+      // Local .openpatent config with some overlapping plugins
       await Bun.write(
-        path.join(opencodeDir, "opencode.json"),
+        path.join(openpatentDir, "openpatent.json"),
         JSON.stringify({
-          $schema: "https://opencode.ai/config.json",
+          $schema: "https://openpatent.ai/config.json",
           plugin: ["duplicate-plugin", "local-plugin-1"],
         }),
       )
@@ -538,9 +538,9 @@ test("compaction config defaults to true when not specified", async () => {
   await using tmp = await tmpdir({
     init: async (dir) => {
       await Bun.write(
-        path.join(dir, "opencode.json"),
+        path.join(dir, "openpatent.json"),
         JSON.stringify({
-          $schema: "https://opencode.ai/config.json",
+          $schema: "https://openpatent.ai/config.json",
         }),
       )
     },
@@ -559,9 +559,9 @@ test("compaction config can disable auto compaction", async () => {
   await using tmp = await tmpdir({
     init: async (dir) => {
       await Bun.write(
-        path.join(dir, "opencode.json"),
+        path.join(dir, "openpatent.json"),
         JSON.stringify({
-          $schema: "https://opencode.ai/config.json",
+          $schema: "https://openpatent.ai/config.json",
           compaction: {
             auto: false,
           },
@@ -583,9 +583,9 @@ test("compaction config can disable prune", async () => {
   await using tmp = await tmpdir({
     init: async (dir) => {
       await Bun.write(
-        path.join(dir, "opencode.json"),
+        path.join(dir, "openpatent.json"),
         JSON.stringify({
-          $schema: "https://opencode.ai/config.json",
+          $schema: "https://openpatent.ai/config.json",
           compaction: {
             prune: false,
           },
@@ -607,9 +607,9 @@ test("compaction config can disable both auto and prune", async () => {
   await using tmp = await tmpdir({
     init: async (dir) => {
       await Bun.write(
-        path.join(dir, "opencode.json"),
+        path.join(dir, "openpatent.json"),
         JSON.stringify({
-          $schema: "https://opencode.ai/config.json",
+          $schema: "https://openpatent.ai/config.json",
           compaction: {
             auto: false,
             prune: false,

@@ -1,7 +1,7 @@
 import { createEffect, createRoot, onCleanup } from "solid-js"
 import { createStore } from "solid-js/store"
-import { createSimpleContext } from "@opencode-ai/ui/context"
-import type { Permission } from "@opencode-ai/sdk/v2/client"
+import { createSimpleContext } from "@openpatent-ai/ui/context"
+import type { Permission } from "@openpatent-ai/sdk/v2/client"
 import { persisted } from "@/utils/persist"
 
 type PermissionsBySession = {

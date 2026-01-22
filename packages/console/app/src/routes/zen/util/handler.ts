@@ -1,16 +1,16 @@
 import type { APIEvent } from "@solidjs/start/server"
-import { and, Database, eq, isNull, lt, or, sql } from "@opencode-ai/console-core/drizzle/index.js"
-import { KeyTable } from "@opencode-ai/console-core/schema/key.sql.js"
-import { BillingTable, UsageTable } from "@opencode-ai/console-core/schema/billing.sql.js"
-import { centsToMicroCents } from "@opencode-ai/console-core/util/price.js"
-import { Identifier } from "@opencode-ai/console-core/identifier.js"
-import { Billing } from "@opencode-ai/console-core/billing.js"
-import { Actor } from "@opencode-ai/console-core/actor.js"
-import { WorkspaceTable } from "@opencode-ai/console-core/schema/workspace.sql.js"
-import { ZenData } from "@opencode-ai/console-core/model.js"
-import { UserTable } from "@opencode-ai/console-core/schema/user.sql.js"
-import { ModelTable } from "@opencode-ai/console-core/schema/model.sql.js"
-import { ProviderTable } from "@opencode-ai/console-core/schema/provider.sql.js"
+import { and, Database, eq, isNull, lt, or, sql } from "@openpatent-ai/console-core/drizzle/index.js"
+import { KeyTable } from "@openpatent-ai/console-core/schema/key.sql.js"
+import { BillingTable, UsageTable } from "@openpatent-ai/console-core/schema/billing.sql.js"
+import { centsToMicroCents } from "@openpatent-ai/console-core/util/price.js"
+import { Identifier } from "@openpatent-ai/console-core/identifier.js"
+import { Billing } from "@openpatent-ai/console-core/billing.js"
+import { Actor } from "@openpatent-ai/console-core/actor.js"
+import { WorkspaceTable } from "@openpatent-ai/console-core/schema/workspace.sql.js"
+import { ZenData } from "@openpatent-ai/console-core/model.js"
+import { UserTable } from "@openpatent-ai/console-core/schema/user.sql.js"
+import { ModelTable } from "@openpatent-ai/console-core/schema/model.sql.js"
+import { ProviderTable } from "@openpatent-ai/console-core/schema/provider.sql.js"
 import { logger } from "./logger"
 import { AuthError, CreditsError, MonthlyLimitError, UserLimitError, ModelError, RateLimitError } from "./error"
 import { createBodyConverter, createStreamPartConverter, createResponseConverter, UsageInfo } from "./provider/provider"
@@ -45,7 +45,7 @@ export async function handler(
   const MAX_RETRIES = 3
   const FREE_WORKSPACES = [
     "wrk_01K46JDFR0E75SG2Q8K172KF3Y", // frank
-    "wrk_01K6W1A3VE0KMNVSCQT43BG2SX", // opencode bench
+    "wrk_01K6W1A3VE0KMNVSCQT43BG2SX", // openpatent bench
   ]
 
   try {
@@ -54,10 +54,10 @@ export async function handler(
     const model = opts.parseModel(url, body)
     const isStream = opts.parseIsStream(url, body)
     const ip = input.request.headers.get("x-real-ip") ?? ""
-    const sessionId = input.request.headers.get("x-opencode-session") ?? ""
-    const requestId = input.request.headers.get("x-opencode-request") ?? ""
-    const projectId = input.request.headers.get("x-opencode-project") ?? ""
-    const ocClient = input.request.headers.get("x-opencode-client") ?? ""
+    const sessionId = input.request.headers.get("x-openpatent-session") ?? ""
+    const requestId = input.request.headers.get("x-openpatent-request") ?? ""
+    const projectId = input.request.headers.get("x-openpatent-project") ?? ""
+    const ocClient = input.request.headers.get("x-openpatent-client") ?? ""
     logger.metric({
       is_tream: isStream,
       session: sessionId,
@@ -110,10 +110,10 @@ export async function handler(
           })
           headers.delete("host")
           headers.delete("content-length")
-          headers.delete("x-opencode-request")
-          headers.delete("x-opencode-session")
-          headers.delete("x-opencode-project")
-          headers.delete("x-opencode-client")
+          headers.delete("x-openpatent-request")
+          headers.delete("x-openpatent-session")
+          headers.delete("x-openpatent-project")
+          headers.delete("x-openpatent-client")
           return headers
         })(),
         body: reqBody,
@@ -413,9 +413,9 @@ export async function handler(
           ProviderTable,
           modelInfo.byokProvider
             ? and(
-                eq(ProviderTable.workspaceID, KeyTable.workspaceID),
-                eq(ProviderTable.provider, modelInfo.byokProvider),
-              )
+              eq(ProviderTable.workspaceID, KeyTable.workspaceID),
+              eq(ProviderTable.provider, modelInfo.byokProvider),
+            )
             : sql`false`,
         )
         .where(and(eq(KeyTable.key, apiKey), isNull(KeyTable.timeDeleted)))
@@ -448,11 +448,11 @@ export async function handler(
     const billing = authInfo.billing
     if (!billing.paymentMethodID)
       throw new CreditsError(
-        `No payment method. Add a payment method here: https://opencode.ai/workspace/${authInfo.workspaceID}/billing`,
+        `No payment method. Add a payment method here: https://openpatent.ai/workspace/${authInfo.workspaceID}/billing`,
       )
     if (billing.balance <= 0)
       throw new CreditsError(
-        `Insufficient balance. Manage your billing here: https://opencode.ai/workspace/${authInfo.workspaceID}/billing`,
+        `Insufficient balance. Manage your billing here: https://openpatent.ai/workspace/${authInfo.workspaceID}/billing`,
       )
 
     const now = new Date()
@@ -468,7 +468,7 @@ export async function handler(
       const dateMonth = billing.timeMonthlyUsageUpdated.getUTCMonth()
       if (currentYear === dateYear && currentMonth === dateMonth)
         throw new MonthlyLimitError(
-          `Your workspace has reached its monthly spending limit of $${billing.monthlyLimit}. Manage your limits here: https://opencode.ai/workspace/${authInfo.workspaceID}/billing`,
+          `Your workspace has reached its monthly spending limit of $${billing.monthlyLimit}. Manage your limits here: https://openpatent.ai/workspace/${authInfo.workspaceID}/billing`,
         )
     }
 
@@ -482,7 +482,7 @@ export async function handler(
       const dateMonth = authInfo.user.timeMonthlyUsageUpdated.getUTCMonth()
       if (currentYear === dateYear && currentMonth === dateMonth)
         throw new UserLimitError(
-          `You have reached your monthly spending limit of $${authInfo.user.monthlyLimit}. Manage your limits here: https://opencode.ai/workspace/${authInfo.workspaceID}/members`,
+          `You have reached your monthly spending limit of $${authInfo.user.monthlyLimit}. Manage your limits here: https://openpatent.ai/workspace/${authInfo.workspaceID}/members`,
         )
     }
   }
@@ -508,7 +508,7 @@ export async function handler(
 
     const modelCost =
       modelInfo.cost200K &&
-      inputTokens + (cacheReadTokens ?? 0) + (cacheWrite5mTokens ?? 0) + (cacheWrite1hTokens ?? 0) > 200_000
+        inputTokens + (cacheReadTokens ?? 0) + (cacheWrite5mTokens ?? 0) + (cacheWrite1hTokens ?? 0) > 200_000
         ? modelInfo.cost200K
         : modelInfo.cost
 

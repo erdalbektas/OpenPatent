@@ -6,7 +6,7 @@ import * as core from "@actions/core"
 import * as github from "@actions/github"
 import type { Context as GitHubContext } from "@actions/github/lib/context"
 import type { IssueCommentEvent, PullRequestReviewCommentEvent } from "@octokit/webhooks-types"
-import { createOpencodeClient } from "@opencode-ai/sdk"
+import { createopenpatentClient } from "@openpatent-ai/sdk"
 import { spawn } from "node:child_process"
 
 type GitHubAuthor = {
@@ -112,7 +112,7 @@ type IssueQueryResponse = {
   }
 }
 
-const { client, server } = createOpencode()
+const { client, server } = createopenpatent()
 let accessToken: string
 let octoRest: Octokit
 let octoGraph: typeof graphql
@@ -126,7 +126,7 @@ type PromptFiles = Awaited<ReturnType<typeof getUserPrompt>>["promptFiles"]
 try {
   assertContextEvent("issue_comment", "pull_request_review_comment")
   assertPayloadKeyword()
-  await assertOpencodeConnected()
+  await assertopenpatentConnected()
 
   accessToken = await getAccessToken()
   octoRest = new Octokit({ auth: accessToken })
@@ -141,7 +141,7 @@ try {
   const comment = await createComment()
   commentId = comment.data.id
 
-  // Setup opencode session
+  // Setup openpatent session
   const repoData = await fetchRepo()
   session = await client.session.create<true>().then((r) => r.data)
   await subscribeSessionEvents()
@@ -151,7 +151,7 @@ try {
     await client.session.share<true>({ path: session })
     return session.id.slice(-8)
   })()
-  console.log("opencode session", session.id)
+  console.log("openpatent session", session.id)
   if (shareId) {
     console.log("Share link:", `${useShareUrl()}/s/${shareId}`)
   }
@@ -227,12 +227,12 @@ try {
 }
 process.exit(exitCode)
 
-function createOpencode() {
+function createopenpatent() {
   const host = "127.0.0.1"
   const port = 4096
   const url = `http://${host}:${port}`
-  const proc = spawn(`opencode`, [`serve`, `--hostname=${host}`, `--port=${port}`])
-  const client = createOpencodeClient({ baseUrl: url })
+  const proc = spawn(`openpatent`, [`serve`, `--hostname=${host}`, `--port=${port}`])
+  const client = createopenpatentClient({ baseUrl: url })
 
   return {
     server: { url, close: () => proc.kill() },
@@ -243,8 +243,8 @@ function createOpencode() {
 function assertPayloadKeyword() {
   const payload = useContext().payload as IssueCommentEvent | PullRequestReviewCommentEvent
   const body = payload.comment.body.trim()
-  if (!body.match(/(?:^|\s)(?:\/opencode|\/oc)(?=$|\s)/)) {
-    throw new Error("Comments must mention `/opencode` or `/oc`")
+  if (!body.match(/(?:^|\s)(?:\/openpatent|\/oc)(?=$|\s)/)) {
+    throw new Error("Comments must mention `/openpatent` or `/oc`")
   }
 }
 
@@ -266,7 +266,7 @@ function getReviewCommentContext() {
   }
 }
 
-async function assertOpencodeConnected() {
+async function assertopenpatentConnected() {
   let retry = 0
   let connected = false
   do {
@@ -280,12 +280,12 @@ async function assertOpencodeConnected() {
       })
       connected = true
       break
-    } catch (e) {}
+    } catch (e) { }
     await new Promise((resolve) => setTimeout(resolve, 300))
   } while (retry++ < 30)
 
   if (!connected) {
-    throw new Error("Failed to connect to opencode server")
+    throw new Error("Failed to connect to openpatent server")
   }
 }
 
@@ -362,7 +362,7 @@ function useIssueId() {
 }
 
 function useShareUrl() {
-  return isMock() ? "https://dev.opencode.ai" : "https://opencode.ai"
+  return isMock() ? "https://dev.openpatent.ai" : "https://openpatent.ai"
 }
 
 async function getAccessToken() {
@@ -373,7 +373,7 @@ async function getAccessToken() {
 
   let response
   if (isMock()) {
-    response = await fetch("https://api.opencode.ai/exchange_github_app_token_with_pat", {
+    response = await fetch("https://api.openpatent.ai/exchange_github_app_token_with_pat", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${useEnvMock().mockToken}`,
@@ -381,8 +381,8 @@ async function getAccessToken() {
       body: JSON.stringify({ owner: repo.owner, repo: repo.repo }),
     })
   } else {
-    const oidcToken = await core.getIDToken("opencode-github-action")
-    response = await fetch("https://api.opencode.ai/exchange_github_app_token", {
+    const oidcToken = await core.getIDToken("openpatent-github-action")
+    response = await fetch("https://api.openpatent.ai/exchange_github_app_token", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${oidcToken}`,
@@ -417,19 +417,19 @@ async function getUserPrompt() {
 
   let prompt = (() => {
     const body = payload.comment.body.trim()
-    if (body === "/opencode" || body === "/oc") {
+    if (body === "/openpatent" || body === "/oc") {
       if (reviewContext) {
         return `Review this code change and suggest improvements for the commented lines:\n\nFile: ${reviewContext.file}\nLines: ${reviewContext.line}\n\n${reviewContext.diffHunk}`
       }
       return "Summarize this thread"
     }
-    if (body.includes("/opencode") || body.includes("/oc")) {
+    if (body.includes("/openpatent") || body.includes("/oc")) {
       if (reviewContext) {
         return `${body}\n\nContext: You are reviewing a comment on file "${reviewContext.file}" at line ${reviewContext.line}.\n\nDiff context:\n${reviewContext.diffHunk}`
       }
       return body
     }
-    throw new Error("Comments must mention `/opencode` or `/oc`")
+    throw new Error("Comments must mention `/openpatent` or `/oc`")
   })()
 
   // Handle images
@@ -513,64 +513,64 @@ async function subscribeSessionEvents() {
   const decoder = new TextDecoder()
 
   let text = ""
-  ;(async () => {
-    while (true) {
-      try {
-        const { done, value } = await reader.read()
-        if (done) break
+    ; (async () => {
+      while (true) {
+        try {
+          const { done, value } = await reader.read()
+          if (done) break
 
-        const chunk = decoder.decode(value, { stream: true })
-        const lines = chunk.split("\n")
+          const chunk = decoder.decode(value, { stream: true })
+          const lines = chunk.split("\n")
 
-        for (const line of lines) {
-          if (!line.startsWith("data: ")) continue
+          for (const line of lines) {
+            if (!line.startsWith("data: ")) continue
 
-          const jsonStr = line.slice(6).trim()
-          if (!jsonStr) continue
+            const jsonStr = line.slice(6).trim()
+            if (!jsonStr) continue
 
-          try {
-            const evt = JSON.parse(jsonStr)
+            try {
+              const evt = JSON.parse(jsonStr)
 
-            if (evt.type === "message.part.updated") {
-              if (evt.properties.part.sessionID !== session.id) continue
-              const part = evt.properties.part
+              if (evt.type === "message.part.updated") {
+                if (evt.properties.part.sessionID !== session.id) continue
+                const part = evt.properties.part
 
-              if (part.type === "tool" && part.state.status === "completed") {
-                const [tool, color] = TOOL[part.tool] ?? [part.tool, "\x1b[34m\x1b[1m"]
-                const title =
-                  part.state.title || Object.keys(part.state.input).length > 0
-                    ? JSON.stringify(part.state.input)
-                    : "Unknown"
-                console.log()
-                console.log(color + `|`, "\x1b[0m\x1b[2m" + ` ${tool.padEnd(7, " ")}`, "", "\x1b[0m" + title)
-              }
-
-              if (part.type === "text") {
-                text = part.text
-
-                if (part.time?.end) {
+                if (part.type === "tool" && part.state.status === "completed") {
+                  const [tool, color] = TOOL[part.tool] ?? [part.tool, "\x1b[34m\x1b[1m"]
+                  const title =
+                    part.state.title || Object.keys(part.state.input).length > 0
+                      ? JSON.stringify(part.state.input)
+                      : "Unknown"
                   console.log()
-                  console.log(text)
-                  console.log()
-                  text = ""
+                  console.log(color + `|`, "\x1b[0m\x1b[2m" + ` ${tool.padEnd(7, " ")}`, "", "\x1b[0m" + title)
+                }
+
+                if (part.type === "text") {
+                  text = part.text
+
+                  if (part.time?.end) {
+                    console.log()
+                    console.log(text)
+                    console.log()
+                    text = ""
+                  }
                 }
               }
-            }
 
-            if (evt.type === "session.updated") {
-              if (evt.properties.info.id !== session.id) continue
-              session = evt.properties.info
+              if (evt.type === "session.updated") {
+                if (evt.properties.info.id !== session.id) continue
+                session = evt.properties.info
+              }
+            } catch (e) {
+              // Ignore parse errors
             }
-          } catch (e) {
-            // Ignore parse errors
           }
+        } catch (e) {
+          console.log("Subscribing to session events done", e)
+          break
         }
-      } catch (e) {
-        console.log("Subscribing to session events done", e)
-        break
       }
-    }
-  })()
+    })()
 }
 
 async function summarize(response: string) {
@@ -607,7 +607,7 @@ async function resolveAgent(): Promise<string | undefined> {
 }
 
 async function chat(text: string, files: PromptFiles = []) {
-  console.log("Sending message to opencode...")
+  console.log("Sending message to openpatent...")
   const { providerID, modelID } = useEnvModel()
   const agent = await resolveAgent()
 
@@ -663,8 +663,8 @@ async function configureGit(appToken: string) {
 
   await $`git config --local --unset-all ${config}`
   await $`git config --local ${config} "AUTHORIZATION: basic ${newCredentials}"`
-  await $`git config --global user.name "opencode-agent[bot]"`
-  await $`git config --global user.email "opencode-agent[bot]@users.noreply.github.com"`
+  await $`git config --global user.name "openpatent-agent[bot]"`
+  await $`git config --global user.email "openpatent-agent[bot]@users.noreply.github.com"`
 }
 
 async function restoreGitConfig() {
@@ -710,7 +710,7 @@ function generateBranchName(type: "issue" | "pr") {
     .replace(/\.\d{3}Z/, "")
     .split("T")
     .join("")
-  return `opencode/${type}${useIssueId()}-${timestamp}`
+  return `openpatent/${type}${useIssueId()}-${timestamp}`
 }
 
 async function pushToNewBranch(summary: string, branch: string) {
@@ -821,9 +821,9 @@ function footer(opts?: { image?: boolean }) {
     const titleAlt = encodeURIComponent(session.title.substring(0, 50))
     const title64 = Buffer.from(session.title.substring(0, 700), "utf8").toString("base64")
 
-    return `<a href="${useShareUrl()}/s/${shareId}"><img width="200" alt="${titleAlt}" src="https://social-cards.sst.dev/opencode-share/${title64}.png?model=${providerID}/${modelID}&version=${session.version}&id=${shareId}" /></a>\n`
+    return `<a href="${useShareUrl()}/s/${shareId}"><img width="200" alt="${titleAlt}" src="https://social-cards.sst.dev/openpatent-share/${title64}.png?model=${providerID}/${modelID}&version=${session.version}&id=${shareId}" /></a>\n`
   })()
-  const shareUrl = shareId ? `[opencode session](${useShareUrl()}/s/${shareId})&nbsp;&nbsp;|&nbsp;&nbsp;` : ""
+  const shareUrl = shareId ? `[openpatent session](${useShareUrl()}/s/${shareId})&nbsp;&nbsp;|&nbsp;&nbsp;` : ""
   return `\n\n${image}${shareUrl}[github run](${useEnvRunUrl()})`
 }
 

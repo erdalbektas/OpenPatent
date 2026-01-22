@@ -30,7 +30,7 @@ function getNetworkIPs() {
 export const WebCommand = cmd({
   command: "web",
   builder: (yargs) => withNetworkOptions(yargs),
-  describe: "starts a headless opencode server",
+  describe: "starts a headless openpatent server",
   handler: async (args) => {
     const opts = await resolveNetworkOptions(args)
     const server = Server.listen(opts)
@@ -56,18 +56,18 @@ export const WebCommand = cmd({
       }
 
       if (opts.mdns) {
-        UI.println(UI.Style.TEXT_INFO_BOLD + "  mDNS:              ", UI.Style.TEXT_NORMAL, "opencode.local")
+        UI.println(UI.Style.TEXT_INFO_BOLD + "  mDNS:              ", UI.Style.TEXT_NORMAL, "openpatent.local")
       }
 
       // Open localhost in browser
-      open(localhostUrl.toString()).catch(() => {})
+      open(localhostUrl.toString()).catch(() => { })
     } else {
       const displayUrl = server.url.toString()
       UI.println(UI.Style.TEXT_INFO_BOLD + "  Web interface:    ", UI.Style.TEXT_NORMAL, displayUrl)
-      open(displayUrl).catch(() => {})
+      open(displayUrl).catch(() => { })
     }
 
-    await new Promise(() => {})
+    await new Promise(() => { })
     await server.stop()
   },
 })

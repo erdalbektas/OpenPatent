@@ -17,7 +17,7 @@ import { readdir } from "fs/promises"
 
 const SUBSCRIBE_TIMEOUT_MS = 10_000
 
-declare const OPENCODE_LIBC: string | undefined
+declare const openpatent_LIBC: string | undefined
 
 export namespace FileWatcher {
   const log = Log.create({ service: "file.watcher" })
@@ -34,7 +34,7 @@ export namespace FileWatcher {
 
   const watcher = lazy(() => {
     const binding = require(
-      `@parcel/watcher-${process.platform}-${process.arch}${process.platform === "linux" ? `-${OPENCODE_LIBC || "glibc"}` : ""}`,
+      `@parcel/watcher-${process.platform}-${process.arch}${process.platform === "linux" ? `-${openpatent_LIBC || "glibc"}` : ""}`,
     )
     return createWrapper(binding) as typeof import("@parcel/watcher")
   })
@@ -66,14 +66,14 @@ export namespace FileWatcher {
       const subs: ParcelWatcher.AsyncSubscription[] = []
       const cfgIgnores = cfg.watcher?.ignore ?? []
 
-      if (Flag.OPENCODE_EXPERIMENTAL_FILEWATCHER) {
+      if (Flag.openpatent_EXPERIMENTAL_FILEWATCHER) {
         const pending = watcher().subscribe(Instance.directory, subscribe, {
           ignore: [...FileIgnore.PATTERNS, ...cfgIgnores],
           backend,
         })
         const sub = await withTimeout(pending, SUBSCRIBE_TIMEOUT_MS).catch((err) => {
           log.error("failed to subscribe to Instance.directory", { error: err })
-          pending.then((s) => s.unsubscribe()).catch(() => {})
+          pending.then((s) => s.unsubscribe()).catch(() => { })
           return undefined
         })
         if (sub) subs.push(sub)
@@ -94,7 +94,7 @@ export namespace FileWatcher {
         })
         const sub = await withTimeout(pending, SUBSCRIBE_TIMEOUT_MS).catch((err) => {
           log.error("failed to subscribe to vcsDir", { error: err })
-          pending.then((s) => s.unsubscribe()).catch(() => {})
+          pending.then((s) => s.unsubscribe()).catch(() => { })
           return undefined
         })
         if (sub) subs.push(sub)
@@ -109,7 +109,7 @@ export namespace FileWatcher {
   )
 
   export function init() {
-    if (Flag.OPENCODE_EXPERIMENTAL_DISABLE_FILEWATCHER) {
+    if (Flag.openpatent_EXPERIMENTAL_DISABLE_FILEWATCHER) {
       return
     }
     state()

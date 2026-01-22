@@ -7,7 +7,7 @@ import { Log } from "../util/log"
 import { Flag } from "@/flag/flag"
 import { Session } from "../session"
 import { work } from "../util/queue"
-import { fn } from "@opencode-ai/util/fn"
+import { fn } from "@openpatent-ai/util/fn"
 import { BusEvent } from "@/bus/bus-event"
 import { iife } from "@/util/iife"
 import { GlobalBus } from "@/bus/global"
@@ -50,10 +50,10 @@ export namespace Project {
       await matches.return()
       if (git) {
         let worktree = path.dirname(git)
-        let id = await Bun.file(path.join(git, "opencode"))
+        let id = await Bun.file(path.join(git, "openpatent"))
           .text()
           .then((x) => x.trim())
-          .catch(() => {})
+          .catch(() => { })
         if (!id) {
           const roots = await $`git rev-list --max-parents=0 --all`
             .quiet()
@@ -68,7 +68,7 @@ export namespace Project {
                 .toSorted(),
             )
           id = roots[0]
-          if (id) Bun.file(path.join(git, "opencode")).write(id)
+          if (id) Bun.file(path.join(git, "openpatent")).write(id)
         }
         if (!id)
           return {
@@ -88,7 +88,7 @@ export namespace Project {
       return {
         id: "global",
         worktree: "/",
-        vcs: Info.shape.vcs.parse(Flag.OPENCODE_FAKE_VCS),
+        vcs: Info.shape.vcs.parse(Flag.openpatent_FAKE_VCS),
       }
     })
 
@@ -107,7 +107,7 @@ export namespace Project {
         await migrateFromGlobal(id, worktree)
       }
     }
-    if (Flag.OPENCODE_EXPERIMENTAL_ICON_DISCOVERY) discover(existing)
+    if (Flag.openpatent_EXPERIMENTAL_ICON_DISCOVERY) discover(existing)
     const result: Info = {
       ...existing,
       worktree,

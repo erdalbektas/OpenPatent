@@ -82,11 +82,11 @@ export namespace User {
             name: "",
             ...(accountID
               ? {
-                  accountID,
-                }
+                accountID,
+              }
               : {
-                  email,
-                }),
+                email,
+              }),
             workspaceID,
             role,
             monthlyLimit,
@@ -138,15 +138,15 @@ export namespace User {
             .then((rows) => rows[0]),
         )
 
-        const { InviteEmail } = await import("@opencode-ai/console-mail/InviteEmail.jsx")
+        const { InviteEmail } = await import("@openpatent-ai/console-mail/InviteEmail.jsx")
         await AWS.sendEmail({
           to: email,
-          subject: `You've been invited to join the ${emailInfo.workspaceName} workspace on OpenCode`,
+          subject: `You've been invited to join the ${emailInfo.workspaceName} workspace on openpatent`,
           body: render(
             // @ts-ignore
             InviteEmail({
               inviter: emailInfo.inviterEmail,
-              assetsUrl: `https://opencode.ai/email`,
+              assetsUrl: `https://openpatent.ai/email`,
               workspaceID: workspaceID,
               workspaceName: emailInfo.workspaceName,
             }),

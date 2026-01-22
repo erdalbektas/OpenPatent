@@ -3,11 +3,11 @@ title: Permissions
 description: Control which actions require approval to run.
 ---
 
-By default, OpenCode allows most operations without approval, except `doom_loop` and `external_directory` which default to `ask`. You can configure this using the `permission` option.
+By default, openpatent allows most operations without approval, except `doom_loop` and `external_directory` which default to `ask`. You can configure this using the `permission` option.
 
-```json title="opencode.json"
+```json title="openpatent.json"
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://openpatent.ai/config.json",
   "permission": {
     "edit": "allow",
     "bash": "ask",
@@ -37,9 +37,9 @@ Currently, the permissions for the `edit`, `bash`, `skill`, `webfetch`, `doom_lo
 
 Use the `permission.edit` key to control whether file editing operations require user approval.
 
-```json title="opencode.json" {4}
+```json title="openpatent.json" {4}
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://openpatent.ai/config.json",
   "permission": {
     "edit": "ask"
   }
@@ -53,9 +53,9 @@ Use the `permission.edit` key to control whether file editing operations require
 You can use the `permission.bash` key to control whether bash commands as a
 whole need user approval.
 
-```json title="opencode.json" {4}
+```json title="openpatent.json" {4}
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://openpatent.ai/config.json",
   "permission": {
     "bash": "ask"
   }
@@ -64,9 +64,9 @@ whole need user approval.
 
 Or, you can target specific commands and set it to `allow`, `ask`, or `deny`.
 
-```json title="opencode.json"
+```json title="openpatent.json"
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://openpatent.ai/config.json",
   "permission": {
     "bash": {
       "git push": "ask",
@@ -92,9 +92,9 @@ You can use wildcards to manage permissions for specific bash commands.
 
 For example, **disable all** Terraform commands.
 
-```json title="opencode.json" {5}
+```json title="openpatent.json" {5}
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://openpatent.ai/config.json",
   "permission": {
     "bash": {
       "terraform *": "deny"
@@ -106,9 +106,9 @@ For example, **disable all** Terraform commands.
 You can also use the `*` wildcard to manage permissions for all commands. For
 example, **deny all commands** except a couple of specific ones.
 
-```json title="opencode.json" {5}
+```json title="openpatent.json" {5}
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://openpatent.ai/config.json",
   "permission": {
     "bash": {
       "*": "deny",
@@ -151,9 +151,9 @@ Use the `permission.skill` key to control whether the model can load skills via 
 
 You can apply a single rule to all skills:
 
-```json title="opencode.json" {4}
+```json title="openpatent.json" {4}
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://openpatent.ai/config.json",
   "permission": {
     "skill": "ask"
   }
@@ -162,9 +162,9 @@ You can apply a single rule to all skills:
 
 Or configure per-skill rules (supports the same wildcard patterns as `permission.bash`):
 
-```json title="opencode.json"
+```json title="openpatent.json"
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://openpatent.ai/config.json",
   "permission": {
     "skill": {
       "*": "deny",
@@ -181,9 +181,9 @@ Or configure per-skill rules (supports the same wildcard patterns as `permission
 
 Use the `permission.webfetch` key to control whether the LLM can fetch web pages.
 
-```json title="opencode.json" {4}
+```json title="openpatent.json" {4}
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://openpatent.ai/config.json",
   "permission": {
     "webfetch": "ask"
   }
@@ -198,9 +198,9 @@ Use the `permission.doom_loop` key to control whether approval is required when 
 
 This helps prevent infinite loops where the LLM repeatedly attempts the same action without making progress.
 
-```json title="opencode.json" {4}
+```json title="openpatent.json" {4}
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://openpatent.ai/config.json",
   "permission": {
     "doom_loop": "ask"
   }
@@ -215,9 +215,9 @@ Use the `permission.external_directory` key to control whether file operations r
 
 This provides an additional safety layer to prevent unintended modifications to files outside your project.
 
-```json title="opencode.json" {4}
+```json title="openpatent.json" {4}
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://openpatent.ai/config.json",
   "permission": {
     "external_directory": "ask"
   }
@@ -231,9 +231,9 @@ This provides an additional safety layer to prevent unintended modifications to 
 You can also configure permissions per agent. Where the agent specific config
 overrides the global config. [Learn more](/docs/agents#permissions) about agent permissions.
 
-```json title="opencode.json" {3-7,10-14}
+```json title="openpatent.json" {3-7,10-14}
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://openpatent.ai/config.json",
   "permission": {
     "bash": {
       "git push": "ask"
@@ -256,7 +256,7 @@ allow `git push` commands.
 
 You can also configure permissions for agents in Markdown.
 
-```markdown title="~/.config/opencode/agent/review.md"
+```markdown title="~/.config/openpatent/agent/review.md"
 ---
 description: Code review without edits
 mode: subagent

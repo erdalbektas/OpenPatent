@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "ai.openpatent.app-mergeDebugResources-58:/values-v16/values-v16.xml",
+            "map": [
+                {
+                    "source": "/Users/erdalbektas/.gradle/caches/transforms-3/3b0fcb85eb2f7897d09d340b22c4f7cb/transformed/core-1.12.0/res/values-v16/values-v16.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "65",
+                        "endOffsets": "116"
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -15,7 +15,7 @@ export namespace Share {
     if (root !== "session") return
     const [sub, sessionID] = splits
     if (sub === "share") return
-    const share = await Session.getShare(sessionID).catch(() => {})
+    const share = await Session.getShare(sessionID).catch(() => { })
     if (!share) return
     const { secret } = share
     pending.set(key, content)
@@ -55,19 +55,19 @@ export namespace Share {
     Bus.subscribe(MessageV2.Event.PartUpdated, async (evt) => {
       await sync(
         "session/part/" +
-          evt.properties.part.sessionID +
-          "/" +
-          evt.properties.part.messageID +
-          "/" +
-          evt.properties.part.id,
+        evt.properties.part.sessionID +
+        "/" +
+        evt.properties.part.messageID +
+        "/" +
+        evt.properties.part.id,
         evt.properties.part,
       )
     })
   }
 
   export const URL =
-    process.env["OPENCODE_API"] ??
-    (Installation.isPreview() || Installation.isLocal() ? "https://api.dev.opencode.ai" : "https://api.opencode.ai")
+    process.env["openpatent_API"] ??
+    (Installation.isPreview() || Installation.isLocal() ? "https://api.dev.openpatent.ai" : "https://api.openpatent.ai")
 
   export async function create(sessionID: string) {
     return fetch(`${URL}/share_create`, {

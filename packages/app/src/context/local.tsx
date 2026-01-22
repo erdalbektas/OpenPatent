@@ -1,15 +1,15 @@
 import { createStore, produce, reconcile } from "solid-js/store"
 import { batch, createMemo } from "solid-js"
 import { filter, firstBy, flat, groupBy, mapValues, pipe, uniqueBy, values } from "remeda"
-import type { FileContent, FileNode, Model, Provider, File as FileStatus } from "@opencode-ai/sdk/v2"
-import { createSimpleContext } from "@opencode-ai/ui/context"
+import type { FileContent, FileNode, Model, Provider, File as FileStatus } from "@openpatent-ai/sdk/v2"
+import { createSimpleContext } from "@openpatent-ai/ui/context"
 import { useSDK } from "./sdk"
 import { useSync } from "./sync"
-import { base64Encode } from "@opencode-ai/util/encode"
+import { base64Encode } from "@openpatent-ai/util/encode"
 import { useProviders } from "@/hooks/use-providers"
 import { DateTime } from "luxon"
 import { persisted } from "@/utils/persist"
-import { showToast } from "@opencode-ai/ui/toast"
+import { showToast } from "@openpatent-ai/ui/toast"
 
 export type LocalFile = FileNode &
   Partial<{
@@ -390,7 +390,7 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
               }),
             )
           })
-          .catch(() => {})
+          .catch(() => { })
       }
 
       const searchFiles = (query: string) => sdk.client.find.files({ query, dirs: "false" }).then((x) => x.data!)

@@ -1,8 +1,8 @@
 import { Title } from "@solidjs/meta"
 import { A, createAsync, query } from "@solidjs/router"
 import { createMemo, For, Show } from "solid-js"
-import { Database, desc } from "@opencode-ai/console-core/drizzle/index.js"
-import { BenchmarkTable } from "@opencode-ai/console-core/schema/benchmark.sql.js"
+import { Database, desc } from "@openpatent-ai/console-core/drizzle/index.js"
+import { BenchmarkTable } from "@openpatent-ai/console-core/schema/benchmark.sql.js"
 
 interface BenchmarkResult {
   averageScore: number

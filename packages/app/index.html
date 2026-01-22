@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>OpenCode</title>
+    <title>openpatent</title>
     <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="shortcut icon" href="/favicon.ico" />
@@ -16,10 +16,10 @@
     <!-- Theme preload script - applies cached theme to avoid FOUC -->
     <script id="oc-theme-preload-script">
       ;(function () {
-        var themeId = localStorage.getItem("opencode-theme-id")
+        var themeId = localStorage.getItem("openpatent-theme-id")
         if (!themeId) return
 
-        var scheme = localStorage.getItem("opencode-color-scheme") || "system"
+        var scheme = localStorage.getItem("openpatent-color-scheme") || "system"
         var isDark = scheme === "dark" || (scheme === "system" && matchMedia("(prefers-color-scheme: dark)").matches)
         var mode = isDark ? "dark" : "light"
 
@@ -28,7 +28,7 @@
 
         if (themeId === "oc-1") return
 
-        var css = localStorage.getItem("opencode-theme-css-" + themeId + "-" + mode)
+        var css = localStorage.getItem("openpatent-theme-css-" + themeId + "-" + mode)
         if (css) {
           var style = document.createElement("style")
           style.id = "oc-theme-preload"

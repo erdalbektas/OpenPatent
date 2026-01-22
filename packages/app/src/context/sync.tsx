@@ -1,11 +1,11 @@
 import { batch, createMemo } from "solid-js"
 import { produce, reconcile } from "solid-js/store"
-import { Binary } from "@opencode-ai/util/binary"
-import { retry } from "@opencode-ai/util/retry"
-import { createSimpleContext } from "@opencode-ai/ui/context"
+import { Binary } from "@openpatent-ai/util/binary"
+import { retry } from "@openpatent-ai/util/retry"
+import { createSimpleContext } from "@openpatent-ai/ui/context"
 import { useGlobalSync } from "./global-sync"
 import { useSDK } from "./sdk"
-import type { Message, Part } from "@opencode-ai/sdk/v2/client"
+import type { Message, Part } from "@openpatent-ai/sdk/v2/client"
 
 export const { use: useSync, provider: SyncProvider } = createSimpleContext({
   name: "Sync",

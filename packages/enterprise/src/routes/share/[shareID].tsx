@@ -1,37 +1,37 @@
-import { FileDiff, Message, Model, Part, Session, SessionStatus, UserMessage } from "@opencode-ai/sdk/v2"
-import { SessionTurn } from "@opencode-ai/ui/session-turn"
-import { SessionReview } from "@opencode-ai/ui/session-review"
-import { DataProvider } from "@opencode-ai/ui/context"
-import { DiffComponentProvider } from "@opencode-ai/ui/context/diff"
-import { CodeComponentProvider } from "@opencode-ai/ui/context/code"
-import { WorkerPoolProvider } from "@opencode-ai/ui/context/worker-pool"
+import { FileDiff, Message, Model, Part, Session, SessionStatus, UserMessage } from "@openpatent-ai/sdk/v2"
+import { SessionTurn } from "@openpatent-ai/ui/session-turn"
+import { SessionReview } from "@openpatent-ai/ui/session-review"
+import { DataProvider } from "@openpatent-ai/ui/context"
+import { DiffComponentProvider } from "@openpatent-ai/ui/context/diff"
+import { CodeComponentProvider } from "@openpatent-ai/ui/context/code"
+import { WorkerPoolProvider } from "@openpatent-ai/ui/context/worker-pool"
 import { createAsync, query, useParams } from "@solidjs/router"
 import { createEffect, createMemo, ErrorBoundary, For, Match, Show, Switch } from "solid-js"
 import { Share } from "~/core/share"
-import { Logo, Mark } from "@opencode-ai/ui/logo"
-import { IconButton } from "@opencode-ai/ui/icon-button"
-import { ProviderIcon } from "@opencode-ai/ui/provider-icon"
-import { createDefaultOptions } from "@opencode-ai/ui/pierre"
-import { iife } from "@opencode-ai/util/iife"
-import { Binary } from "@opencode-ai/util/binary"
-import { NamedError } from "@opencode-ai/util/error"
+import { Logo, Mark } from "@openpatent-ai/ui/logo"
+import { IconButton } from "@openpatent-ai/ui/icon-button"
+import { ProviderIcon } from "@openpatent-ai/ui/provider-icon"
+import { createDefaultOptions } from "@openpatent-ai/ui/pierre"
+import { iife } from "@openpatent-ai/util/iife"
+import { Binary } from "@openpatent-ai/util/binary"
+import { NamedError } from "@openpatent-ai/util/error"
 import { DateTime } from "luxon"
-import { SessionMessageRail } from "@opencode-ai/ui/session-message-rail"
+import { SessionMessageRail } from "@openpatent-ai/ui/session-message-rail"
 import { createStore } from "solid-js/store"
 import z from "zod"
 import NotFound from "../[...404]"
-import { Tabs } from "@opencode-ai/ui/tabs"
+import { Tabs } from "@openpatent-ai/ui/tabs"
 import { preloadMultiFileDiff, PreloadMultiFileDiffResult } from "@pierre/diffs/ssr"
-import { Diff as SSRDiff } from "@opencode-ai/ui/diff-ssr"
+import { Diff as SSRDiff } from "@openpatent-ai/ui/diff-ssr"
 import { clientOnly } from "@solidjs/start"
-import { type IconName } from "@opencode-ai/ui/icons/provider"
+import { type IconName } from "@openpatent-ai/ui/icons/provider"
 import { Meta, Title } from "@solidjs/meta"
 import { Base64 } from "js-base64"
 
-const ClientOnlyDiff = clientOnly(() => import("@opencode-ai/ui/diff").then((m) => ({ default: m.Diff })))
-const ClientOnlyCode = clientOnly(() => import("@opencode-ai/ui/code").then((m) => ({ default: m.Code })))
+const ClientOnlyDiff = clientOnly(() => import("@openpatent-ai/ui/diff").then((m) => ({ default: m.Diff })))
+const ClientOnlyCode = clientOnly(() => import("@openpatent-ai/ui/code").then((m) => ({ default: m.Code })))
 const ClientOnlyWorkerPoolProvider = clientOnly(() =>
-  import("@opencode-ai/ui/pierre/worker").then((m) => ({
+  import("@openpatent-ai/ui/pierre/worker").then((m) => ({
     default: (props: { children: any }) => (
       <WorkerPoolProvider pool={m.workerPool}>{props.children}</WorkerPoolProvider>
     ),
@@ -197,15 +197,15 @@ export default function () {
               modelParam = "unknown"
             }
             const version = `v${info().version}`
-            return `https://social-cards.sst.dev/opencode-share/${encodedTitle}.png?model=${modelParam}&version=${version}&id=${data().shareID}`
+            return `https://social-cards.sst.dev/openpatent-share/${encodedTitle}.png?model=${modelParam}&version=${version}&id=${data().shareID}`
           })
 
           return (
             <>
               <Show when={info().title}>
-                <Title>{info().title} | OpenCode</Title>
+                <Title>{info().title} | openpatent</Title>
               </Show>
-              <Meta name="description" content="opencode - The AI coding agent built for the terminal." />
+              <Meta name="description" content="openpatent - The AI coding agent built for the terminal." />
               <Meta property="og:image" content={ogImage()} />
               <Meta name="twitter:image" content={ogImage()} />
               <ClientOnlyWorkerPoolProvider>
@@ -220,8 +220,8 @@ export default function () {
                         const messages = createMemo(() =>
                           data().sessionID
                             ? (data().message[data().sessionID]?.filter((m) => m.role === "user") ?? []).sort(
-                                (a, b) => a.time.created - b.time.created,
-                              )
+                              (a, b) => a.time.created - b.time.created,
+                            )
                             : [],
                         )
                         const firstUserMessage = createMemo(() => messages().at(0))
@@ -312,21 +312,21 @@ export default function () {
                           <div class="relative bg-background-stronger w-screen h-screen overflow-hidden flex flex-col">
                             <header class="h-12 px-6 py-2 flex items-center justify-between self-stretch bg-background-base border-b border-border-weak-base">
                               <div class="">
-                                <a href="https://opencode.ai">
+                                <a href="https://openpatent.ai">
                                   <Mark />
                                 </a>
                               </div>
                               <div class="flex gap-3 items-center">
                                 <IconButton
                                   as={"a"}
-                                  href="https://github.com/sst/opencode"
+                                  href="https://github.com/sst/openpatent"
                                   target="_blank"
                                   icon="github"
                                   variant="ghost"
                                 />
                                 <IconButton
                                   as={"a"}
-                                  href="https://opencode.ai/discord"
+                                  href="https://openpatent.ai/discord"
                                   target="_blank"
                                   icon="discord"
                                   variant="ghost"

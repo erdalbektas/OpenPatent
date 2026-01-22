@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-APP=opencode
+APP=openpatent
 
 MUTED='\033[0;2m'
 RED='\033[0;31m'
@@ -9,7 +9,7 @@ NC='\033[0m' # No Color
 
 usage() {
     cat <<EOF
-OpenCode Installer
+openpatent Installer
 
 Usage: install.sh [options]
 
@@ -19,8 +19,8 @@ Options:
         --no-modify-path    Don't modify shell config files (.zshrc, .bashrc, etc.)
 
 Examples:
-    curl -fsSL https://opencode.ai/install | bash
-    curl -fsSL https://opencode.ai/install | bash -s -- --version 1.0.180
+    curl -fsSL https://openpatent.ai/install | bash
+    curl -fsSL https://openpatent.ai/install | bash -s -- --version 1.0.180
 EOF
 }
 
@@ -143,12 +143,12 @@ else
     fi
 fi
 
-INSTALL_DIR=$HOME/.opencode/bin
+INSTALL_DIR=$HOME/.openpatent/bin
 mkdir -p "$INSTALL_DIR"
 
 if [ -z "$requested_version" ]; then
-    url="https://github.com/sst/opencode/releases/latest/download/$filename"
-    specific_version=$(curl -s https://api.github.com/repos/sst/opencode/releases/latest | sed -n 's/.*"tag_name": *"v\([^"]*\)".*/\1/p')
+    url="https://github.com/sst/openpatent/releases/latest/download/$filename"
+    specific_version=$(curl -s https://api.github.com/repos/sst/openpatent/releases/latest | sed -n 's/.*"tag_name": *"v\([^"]*\)".*/\1/p')
 
     if [[ $? -ne 0 || -z "$specific_version" ]]; then
         echo -e "${RED}Failed to fetch version information${NC}"
@@ -157,14 +157,14 @@ if [ -z "$requested_version" ]; then
 else
     # Strip leading 'v' if present
     requested_version="${requested_version#v}"
-    url="https://github.com/sst/opencode/releases/download/v${requested_version}/$filename"
+    url="https://github.com/sst/openpatent/releases/download/v${requested_version}/$filename"
     specific_version=$requested_version
     
     # Verify the release exists before downloading
-    http_status=$(curl -sI -o /dev/null -w "%{http_code}" "https://github.com/sst/opencode/releases/tag/v${requested_version}")
+    http_status=$(curl -sI -o /dev/null -w "%{http_code}" "https://github.com/sst/openpatent/releases/tag/v${requested_version}")
     if [ "$http_status" = "404" ]; then
         echo -e "${RED}Error: Release v${requested_version} not found${NC}"
-        echo -e "${MUTED}Available releases: https://github.com/sst/opencode/releases${NC}"
+        echo -e "${MUTED}Available releases: https://github.com/sst/openpatent/releases${NC}"
         exit 1
     fi
 fi
@@ -184,12 +184,12 @@ print_message() {
 }
 
 check_version() {
-    if command -v opencode >/dev/null 2>&1; then
-        opencode_path=$(which opencode)
+    if command -v openpatent >/dev/null 2>&1; then
+        openpatent_path=$(which openpatent)
 
 
         ## TODO: check if version is installed
-        # installed_version=$(opencode version)
+        # installed_version=$(openpatent version)
         installed_version="0.0.1"
         installed_version=$(echo $installed_version | awk '{print $2}')
 
@@ -243,7 +243,7 @@ download_with_progress() {
     fi
 
     local tmp_dir=${TMPDIR:-/tmp}
-    local basename="${tmp_dir}/opencode_install_$$"
+    local basename="${tmp_dir}/openpatent_install_$$"
     local tracefile="${basename}.trace"
 
     rm -f "$tracefile"
@@ -293,8 +293,8 @@ download_with_progress() {
 }
 
 download_and_install() {
-    print_message info "\n${MUTED}Installing ${NC}opencode ${MUTED}version: ${NC}$specific_version"
-    local tmp_dir="${TMPDIR:-/tmp}/opencode_install_$$"
+    print_message info "\n${MUTED}Installing ${NC}openpatent ${MUTED}version: ${NC}$specific_version"
+    local tmp_dir="${TMPDIR:-/tmp}/openpatent_install_$$"
     mkdir -p "$tmp_dir"
     
     if [[ "$os" == "windows" ]] || ! [ -t 2 ] || ! download_with_progress "$url" "$tmp_dir/$filename"; then
@@ -308,8 +308,8 @@ download_and_install() {
         unzip -q "$tmp_dir/$filename" -d "$tmp_dir"
     fi
     
-    mv "$tmp_dir/opencode" "$INSTALL_DIR"
-    chmod 755 "${INSTALL_DIR}/opencode"
+    mv "$tmp_dir/openpatent" "$INSTALL_DIR"
+    chmod 755 "${INSTALL_DIR}/openpatent"
     rm -rf "$tmp_dir"
 }
 
@@ -324,9 +324,9 @@ add_to_path() {
     if grep -Fxq "$command" "$config_file"; then
         print_message info "Command already exists in $config_file, skipping write."
     elif [[ -w $config_file ]]; then
-        echo -e "\n# opencode" >> "$config_file"
+        echo -e "\n# openpatent" >> "$config_file"
         echo "$command" >> "$config_file"
-        print_message info "${MUTED}Successfully added ${NC}opencode ${MUTED}to \$PATH in ${NC}$config_file"
+        print_message info "${MUTED}Successfully added ${NC}openpatent ${MUTED}to \$PATH in ${NC}$config_file"
     else
         print_message warning "Manually add the directory to $config_file (or similar):"
         print_message info "  $command"
@@ -408,12 +408,12 @@ echo -e "${MUTED}█░░█ █░░█ █▀▀▀ █░░█ ${NC}█░
 echo -e "${MUTED}▀▀▀▀ █▀▀▀ ▀▀▀▀ ▀  ▀ ${NC}▀▀▀▀ ▀▀▀▀ ▀▀▀▀ ▀▀▀▀"
 echo -e ""
 echo -e ""
-echo -e "${MUTED}OpenCode includes free models, to start:${NC}"
+echo -e "${MUTED}openpatent includes free models, to start:${NC}"
 echo -e ""
 echo -e "cd <project>  ${MUTED}# Open directory${NC}"
-echo -e "opencode      ${MUTED}# Run command${NC}"
+echo -e "openpatent      ${MUTED}# Run command${NC}"
 echo -e ""
-echo -e "${MUTED}For more information visit ${NC}https://opencode.ai/docs"
+echo -e "${MUTED}For more information visit ${NC}https://openpatent.ai/docs"
 echo -e ""
 echo -e ""
 

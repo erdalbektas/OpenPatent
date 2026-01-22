@@ -1,36 +1,36 @@
-id = "opencode"
-name = "OpenCode"
+id = "openpatent"
+name = "openpatent"
 description = "The open source coding agent."
 version = "1.0.209"
 schema_version = 1
 authors = ["Anomaly"]
-repository = "https://github.com/sst/opencode"
+repository = "https://github.com/sst/openpatent"
 
-[agent_servers.opencode]
-name = "OpenCode"
-icon = "./icons/opencode.svg"
+[agent_servers.openpatent]
+name = "openpatent"
+icon = "./icons/openpatent.svg"
 
-[agent_servers.opencode.targets.darwin-aarch64]
-archive = "https://github.com/sst/opencode/releases/download/v1.0.209/opencode-darwin-arm64.zip"
-cmd = "./opencode"
+[agent_servers.openpatent.targets.darwin-aarch64]
+archive = "https://github.com/sst/openpatent/releases/download/v1.0.209/openpatent-darwin-arm64.zip"
+cmd = "./openpatent"
 args = ["acp"]
 
-[agent_servers.opencode.targets.darwin-x86_64]
-archive = "https://github.com/sst/opencode/releases/download/v1.0.209/opencode-darwin-x64.zip"
-cmd = "./opencode"
+[agent_servers.openpatent.targets.darwin-x86_64]
+archive = "https://github.com/sst/openpatent/releases/download/v1.0.209/openpatent-darwin-x64.zip"
+cmd = "./openpatent"
 args = ["acp"]
 
-[agent_servers.opencode.targets.linux-aarch64]
-archive = "https://github.com/sst/opencode/releases/download/v1.0.209/opencode-linux-arm64.tar.gz"
-cmd = "./opencode"
+[agent_servers.openpatent.targets.linux-aarch64]
+archive = "https://github.com/sst/openpatent/releases/download/v1.0.209/openpatent-linux-arm64.tar.gz"
+cmd = "./openpatent"
 args = ["acp"]
 
-[agent_servers.opencode.targets.linux-x86_64]
-archive = "https://github.com/sst/opencode/releases/download/v1.0.209/opencode-linux-x64.tar.gz"
-cmd = "./opencode"
+[agent_servers.openpatent.targets.linux-x86_64]
+archive = "https://github.com/sst/openpatent/releases/download/v1.0.209/openpatent-linux-x64.tar.gz"
+cmd = "./openpatent"
 args = ["acp"]
 
-[agent_servers.opencode.targets.windows-x86_64]
-archive = "https://github.com/sst/opencode/releases/download/v1.0.209/opencode-windows-x64.zip"
-cmd = "./opencode.exe"
+[agent_servers.openpatent.targets.windows-x86_64]
+archive = "https://github.com/sst/openpatent/releases/download/v1.0.209/openpatent-windows-x64.zip"
+cmd = "./openpatent.exe"
 args = ["acp"]

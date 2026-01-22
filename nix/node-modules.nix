@@ -1,7 +1,7 @@
 { hash, lib, stdenvNoCC, bun, cacert, curl }:
 args:
 stdenvNoCC.mkDerivation {
-  pname = "opencode-node_modules";
+  pname = "openpatent-node_modules";
   version = args.version;
   src = args.src;
 

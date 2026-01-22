@@ -15,7 +15,7 @@ import { Flag } from "@/flag/flag"
 export namespace LLM {
   const log = Log.create({ service: "llm" })
 
-  export const OUTPUT_TOKEN_MAX = Flag.OPENCODE_EXPERIMENTAL_OUTPUT_TOKEN_MAX || 32_000
+  export const OUTPUT_TOKEN_MAX = Flag.openpatent_EXPERIMENTAL_OUTPUT_TOKEN_MAX || 32_000
 
   export type StreamInput = {
     user: MessageV2.User
@@ -151,13 +151,13 @@ export namespace LLM {
       maxOutputTokens,
       abortSignal: input.abort,
       headers: {
-        ...(input.model.providerID.startsWith("opencode")
+        ...(input.model.providerID.startsWith("openpatent")
           ? {
-              "x-opencode-project": Instance.project.id,
-              "x-opencode-session": input.sessionID,
-              "x-opencode-request": input.user.id,
-              "x-opencode-client": Flag.OPENCODE_CLIENT,
-            }
+            "x-openpatent-project": Instance.project.id,
+            "x-openpatent-session": input.sessionID,
+            "x-openpatent-request": input.user.id,
+            "x-openpatent-client": Flag.openpatent_CLIENT,
+          }
           : undefined),
         ...input.model.headers,
       },

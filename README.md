@@ -1,117 +1,297 @@
 <p align="center">
-  <a href="https://opencode.ai">
+  <a href="https://openpatent.ai">
     <picture>
       <source srcset="packages/console/app/src/asset/logo-ornate-dark.svg" media="(prefers-color-scheme: dark)">
       <source srcset="packages/console/app/src/asset/logo-ornate-light.svg" media="(prefers-color-scheme: light)">
-      <img src="packages/console/app/src/asset/logo-ornate-light.svg" alt="OpenCode logo">
+      <img src="packages/console/app/src/asset/logo-ornate-light.svg" alt="OpenPatent logo">
     </picture>
   </a>
 </p>
-<p align="center">The open source AI coding agent.</p>
+<p align="center">The open source AI patent department.</p>
 <p align="center">
-  <a href="https://opencode.ai/discord"><img alt="Discord" src="https://img.shields.io/discord/1391832426048651334?style=flat-square&label=discord" /></a>
-  <a href="https://www.npmjs.com/package/opencode-ai"><img alt="npm" src="https://img.shields.io/npm/v/opencode-ai?style=flat-square" /></a>
-  <a href="https://github.com/sst/opencode/actions/workflows/publish.yml"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/sst/opencode/publish.yml?style=flat-square&branch=dev" /></a>
+  <a href="https://openpatent.ai/discord"><img alt="Discord" src="https://img.shields.io/discord/1391832426048651334?style=flat-square&label=discord" /></a>
 </p>
-
-[![OpenCode Terminal UI](packages/web/src/assets/lander/screenshot.png)](https://opencode.ai)
 
 ---
 
-### Installation
+## About OpenPatent
 
-```bash
-# YOLO
-curl -fsSL https://opencode.ai/install | bash
+OpenPatent is a free and open source patent suite designed for inventors, patent attorneys, and R&D teams. It provides a comprehensive set of AI-powered tools for the entire patent lifecycle:
 
-# Package managers
-npm i -g opencode-ai@latest        # or bun/pnpm/yarn
-scoop bucket add extras; scoop install extras/opencode  # Windows
-choco install opencode             # Windows
-brew install opencode              # macOS and Linux
-paru -S opencode-bin               # Arch Linux
-mise use -g github:sst/opencode # Any OS
-nix run nixpkgs#opencode           # or github:sst/opencode for latest dev branch
-```
+- **Patent Search** - Prior art identification using boolean logic and CPC/IPC classification codes
+- **Patent Drafting** - Claims and specification drafting with proper legal terminology
+- **Patent Examination** - Mock USPTO Examiner to identify potential rejections
+- **Patent Interrogation** - Technical disclosure gap analysis
+- **Patent Illustration** - Technical drawing descriptions for patent figures
 
-> [!TIP]
-> Remove versions older than 0.1.x before installing.
+### Key Features
 
-### Desktop App (BETA)
+- **Local & Premium Agents** - Choose between free local agents or premium server-side agents
+- **Orchestrated Workflows** - Plan and execute complex patent tasks automatically
+- **Subscription Tiers** - Free tier for individual inventors, pro/enterprise for firms
+- **Provider Agnostic** - Use your own API keys (OpenAI, Anthropic, Google) or local models
+- **Open Source** - 100% transparent, auditable, and extensible
 
-OpenCode is also available as a desktop application. Download directly from the [releases page](https://github.com/sst/opencode/releases) or [opencode.ai/download](https://opencode.ai/download).
+---
 
-| Platform              | Download                              |
-| --------------------- | ------------------------------------- |
-| macOS (Apple Silicon) | `opencode-desktop-darwin-aarch64.dmg` |
-| macOS (Intel)         | `opencode-desktop-darwin-x64.dmg`     |
-| Windows               | `opencode-desktop-windows-x64.exe`    |
-| Linux                 | `.deb`, `.rpm`, or AppImage           |
+## Installation
+
+### Desktop App (Beta)
+
+Download the desktop application from [openpatent.ai/download](https://openpatent.ai/download):
+
+| Platform              | Download                                |
+| --------------------- | --------------------------------------- |
+| macOS (Apple Silicon) | `openpatent-desktop-darwin-aarch64.dmg` |
+| macOS (Intel)         | `openpatent-desktop-darwin-x64.dmg`     |
+| Windows               | `openpatent-desktop-windows-x64.exe`    |
+| Linux                 | `.deb`, `.rpm`, or AppImage             |
 
 ```bash
 # macOS (Homebrew)
-brew install --cask opencode-desktop
+brew install --cask openpatent-desktop
 ```
 
-#### Installation Directory
+### Django Server (For API Access)
 
-The install script respects the following priority order for the installation path:
-
-1. `$OPENCODE_INSTALL_DIR` - Custom installation directory
-2. `$XDG_BIN_DIR` - XDG Base Directory Specification compliant path
-3. `$HOME/bin` - Standard user binary directory (if exists or can be created)
-4. `$HOME/.opencode/bin` - Default fallback
+For API access, premium agents, and team features:
 
 ```bash
-# Examples
-OPENCODE_INSTALL_DIR=/usr/local/bin curl -fsSL https://opencode.ai/install | bash
-XDG_BIN_DIR=$HOME/.local/bin curl -fsSL https://opencode.ai/install | bash
+# Clone and setup
+git clone https://github.com/openpatent/openpatent.git
+cd openpatent
+
+# Setup virtual environment
+python3 -m venv venv
+source venv/bin/activate  # or `venv\Scripts\activate` on Windows
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run migrations
+python manage.py migrate
+
+# Start server
+python manage.py runserver
 ```
 
-### Agents
+The server provides:
 
-OpenCode includes two built-in agents you can switch between,
-you can switch between these using the `Tab` key.
-
-- **build** - Default, full access agent for development work
-- **plan** - Read-only agent for analysis and code exploration
-  - Denies file edits by default
-  - Asks permission before running bash commands
-  - Ideal for exploring unfamiliar codebases or planning changes
-
-Also, included is a **general** subagent for complex searches and multistep tasks.
-This is used internally and can be invoked using `@general` in messages.
-
-Learn more about [agents](https://opencode.ai/docs/agents).
-
-### Documentation
-
-For more info on how to configure OpenCode [**head over to our docs**](https://opencode.ai/docs).
-
-### Contributing
-
-If you're interested in contributing to OpenCode, please read our [contributing docs](./CONTRIBUTING.md) before submitting a pull request.
-
-### Building on OpenCode
-
-If you are working on a project that's related to OpenCode and is using "opencode" as a part of its name; for example, "opencode-dashboard" or "opencode-mobile", please add a note to your README to clarify that it is not built by the OpenCode team and is not affiliated with us in any way.
-
-### FAQ
-
-#### How is this different from Claude Code?
-
-It's very similar to Claude Code in terms of capability. Here are the key differences:
-
-- 100% open source
-- Not coupled to any provider. Although we recommend the models we provide through [OpenCode Zen](https://opencode.ai/zen); OpenCode can be used with Claude, OpenAI, Google or even local models. As models evolve the gaps between them will close and pricing will drop so being provider-agnostic is important.
-- Out of the box LSP support
-- A focus on TUI. OpenCode is built by neovim users and the creators of [terminal.shop](https://terminal.shop); we are going to push the limits of what's possible in the terminal.
-- A client/server architecture. This for example can allow OpenCode to run on your computer, while you can drive it remotely from a mobile app. Meaning that the TUI frontend is just one of the possible clients.
-
-#### What's the other repo?
-
-The other confusingly named repo has no relation to this one. You can [read the story behind it here](https://x.com/thdxr/status/1933561254481666466).
+- REST API for all patent operations
+- Premium agent endpoints (GPT-4o powered)
+- JWT authentication
+- Subscription management (Stripe integration)
+- Real-time updates via WebSocket
 
 ---
 
-**Join our community** [Discord](https://discord.gg/opencode) | [X.com](https://x.com/opencode)
+## Agents
+
+OpenPatent includes both local and premium agents:
+
+### Local Agents (Free)
+
+Run locally using your own LLM providers:
+
+| Agent                     | Description                                      |
+| ------------------------- | ------------------------------------------------ |
+| **Invention Disclosure**  | Analyze invention ideas and extract key features |
+| **Patent Drafter**        | Draft patent claims and specification            |
+| **Prior Art Searcher**    | Prepare prior art search queries                 |
+| **Technical Illustrator** | Create detailed drawing descriptions             |
+
+### Premium Agents (Server)
+
+Run on the OpenPatent server using GPT-4o:
+
+| Agent                        | Free    | Pro       |
+| ---------------------------- | ------- | --------- |
+| **Mock Examiner**            | 3/month | 50/month  |
+| **Office Action Response**   | 0       | 10/month  |
+| **Claim Strategy**           | 0       | 10/month  |
+| **Specification Perfection** | 0       | 20/month  |
+| **Patent Searcher**          | 3/month | 100/month |
+| **Patent Drafter**           | 3/month | 200/month |
+| **Patent Interrogator**      | 3/month | 200/month |
+| **Patent Illustrator**       | 3/month | 150/month |
+
+---
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                     OpenPatent Desktop App                          │
+│  ┌───────────────────────────────────────────────────────────────┐ │
+│  │  Tauri Shell  │  SolidJS UI  │  Local Agents  │  Providers    │ │
+│  └───────────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────────┘
+                                  │
+                                  │ HTTPS / WebSocket
+                                  ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                    OpenPatent Django Server                         │
+│  ┌───────────────────────────────────────────────────────────────┐ │
+│  │  Auth & Billing  │  Premium Agents  │  Orchestrator  │  API   │ │
+│  └───────────────────────────────────────────────────────────────┘ │
+│  ┌───────────────────────────────────────────────────────────────┐ │
+│  │              PostgreSQL Database                               │ │
+│  │  Users, Sessions, Quotas, Agent Definitions, Patent Data       │ │
+│  └───────────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## API Documentation
+
+### Authentication
+
+```bash
+# Register
+curl -X POST http://localhost:8000/api/auth/register/ \
+  -H "Content-Type: application/json" \
+  -d '{"email": "user@example.com", "password": "password123"}'
+
+# Login (get JWT token)
+curl -X POST http://localhost:8000/api/auth/login/ \
+  -H "Content-Type: application/json" \
+  -d '{"email": "user@example.com", "password": "password123"}'
+```
+
+### Premium Agents
+
+```bash
+# Execute premium agent
+curl -X POST http://localhost:8000/api/patent/agents/premium/ \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "agent_type": "mock_examiner",
+    "task": "Review my patent draft",
+    "context": {
+      "invention_title": "Laser Toaster",
+      "claims": ["1. A toaster comprising..."],
+      "specification": {"field": "The present invention..."}
+    }
+  }'
+```
+
+### Orchestrator
+
+```bash
+# Create plan
+curl -X POST http://localhost:8000/api/patent/orchestrator/plan/ \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "user_request": "Draft a patent for my laser toaster invention",
+    "technology": "software"
+  }'
+
+# Execute plan
+curl -X POST http://localhost:8000/api/patent/orchestrator/execute/ \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{"plan_id": "<plan_uuid>"}'
+```
+
+---
+
+## Configuration
+
+### Desktop App
+
+Configure via Settings > Providers:
+
+- **OpenAI** - Use your API key for premium agents
+- **Anthropic** - Claude models for local agents
+- **Google** - Gemini models
+- **Local** - LM Studio, Ollama, or OpenAI-compatible servers
+
+### Django Server
+
+Environment variables in `.env`:
+
+```env
+DJANGO_SECRET_KEY=your-secret-key
+POSTGRES_DB=openpatent
+POSTGRES_USER=openpatent
+POSTGRES_PASSWORD=openpatent
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_PUBLISHABLE_KEY=pk_test_...
+OPENAI_API_KEY=sk-...
+```
+
+---
+
+## Development
+
+### Running Tests
+
+# Django tests
+
+cd openpatent
+python manage.py test apps.patent.tests.test_agents
+
+# Frontend tests
+
+cd packages/desktop
+bun test
+
+```
+
+### Project Structure
+
+```
+
+openpatent/
+├── openpatent_django/ # Django server
+│ ├── apps/
+│ │ ├── patent/ # Patent agents and models
+│ │ │ ├── agents/ # Agent Markdown definitions
+│ │ │ ├── services/ # Premium agent implementations
+│ │ │ └── tests/ # Integration tests
+│ │ ├── accounts/ # Authentication
+│ │ ├── billing/ # Stripe integration
+│ │ └── api/ # API endpoints
+│ └── config/ # Django configuration
+├── packages/
+│ ├── desktop/ # Tauri desktop app
+│ ├── app/ # SolidJS core UI
+│ ├── openpatent/ # CLI tool (patent workflow automation)
+│ └── sdk/ # SDK for integrations
+├── docs/ # Documentation
+│ └── PATENT_ARCHITECTURE.md
+└── patent_suite/ # Standalone Python patent tools
+
+```
+
+---
+
+## Contributing
+
+OpenPatent is open source and welcomes contributions. Please read [CONTRIBUTING.md](./CONTRIBUTING.md) before submitting pull requests.
+
+### Adding New Agents
+
+1. **Local Agent**: Create a Markdown file in `packages/openpatent/agent/`
+2. **Premium Agent**: Add to `openpatent_django/apps/patent/services/premium_agents.py`
+3. **Update Models**: Add quota fields in `openpatent_django/apps/patent/models.py`
+4. **Add Tests**: Create tests in `openpatent_django/apps/patent/tests/`
+
+---
+
+## License
+
+OpenPatent is open source under the MIT License. See [LICENSE](./LICENSE) for details.
+
+---
+
+## Links
+
+- **Website**: https://openpatent.ai
+- **Documentation**: https://docs.openpatent.ai
+- **Discord**: https://openpatent.ai/discord
+- **GitHub**: https://github.com/openpatent
+```

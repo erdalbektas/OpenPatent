@@ -1,6 +1,6 @@
 ---
 description: git commit and push
-model: opencode/glm-4.6
+model: openpatent/glm-4.6
 subtask: true
 ---
 

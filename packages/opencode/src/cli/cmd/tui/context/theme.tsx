@@ -23,7 +23,7 @@ import monokai from "./theme/monokai.json" with { type: "json" }
 import nightowl from "./theme/nightowl.json" with { type: "json" }
 import nord from "./theme/nord.json" with { type: "json" }
 import onedark from "./theme/one-dark.json" with { type: "json" }
-import opencode from "./theme/opencode.json" with { type: "json" }
+import openpatent from "./theme/openpatent.json" with { type: "json" }
 import orng from "./theme/orng.json" with { type: "json" }
 import lucentOrng from "./theme/lucent-orng.json" with { type: "json" }
 import palenight from "./theme/palenight.json" with { type: "json" }
@@ -155,7 +155,7 @@ export const DEFAULT_THEMES: Record<string, ThemeJson> = {
   nightowl,
   nord,
   ["one-dark"]: onedark,
-  opencode,
+  openpatent,
   orng,
   ["lucent-orng"]: lucentOrng,
   palenight,
@@ -279,7 +279,7 @@ export const { use: useTheme, provider: ThemeProvider } = createSimpleContext({
     const [store, setStore] = createStore({
       themes: DEFAULT_THEMES,
       mode: kv.get("theme_mode", props.mode),
-      active: (sync.data.config.theme ?? kv.get("theme", "opencode")) as string,
+      active: (sync.data.config.theme ?? kv.get("theme", "openpatent")) as string,
       ready: false,
     })
 
@@ -293,7 +293,7 @@ export const { use: useTheme, provider: ThemeProvider } = createSimpleContext({
           )
         })
         .catch(() => {
-          setStore("active", "opencode")
+          setStore("active", "openpatent")
         })
         .finally(() => {
           if (store.active !== "system") {
@@ -312,7 +312,7 @@ export const { use: useTheme, provider: ThemeProvider } = createSimpleContext({
           if (store.active === "system") {
             setStore(
               produce((draft) => {
-                draft.active = "opencode"
+                draft.active = "openpatent"
                 draft.ready = true
               }),
             )
@@ -330,7 +330,7 @@ export const { use: useTheme, provider: ThemeProvider } = createSimpleContext({
       })
 
     const values = createMemo(() => {
-      return resolveTheme(store.themes[store.active] ?? store.themes.opencode, store.mode)
+      return resolveTheme(store.themes[store.active] ?? store.themes.openpatent, store.mode)
     })
 
     const syntax = createMemo(() => generateSyntax(values()))
@@ -375,7 +375,7 @@ async function getCustomThemes() {
     Global.Path.config,
     ...(await Array.fromAsync(
       Filesystem.up({
-        targets: [".opencode"],
+        targets: [".openpatent"],
         start: process.cwd(),
       }),
     )),

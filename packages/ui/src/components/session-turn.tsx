@@ -5,12 +5,12 @@ import {
   type Permission,
   TextPart,
   ToolPart,
-} from "@opencode-ai/sdk/v2/client"
+} from "@openpatent-ai/sdk/v2/client"
 import { useData } from "../context"
 import { useDiffComponent } from "../context/diff"
-import { getDirectory, getFilename } from "@opencode-ai/util/path"
-import { checksum } from "@opencode-ai/util/encode"
-import { Binary } from "@opencode-ai/util/binary"
+import { getDirectory, getFilename } from "@openpatent-ai/util/path"
+import { checksum } from "@openpatent-ai/util/encode"
+import { Binary } from "@openpatent-ai/util/binary"
 import { createEffect, createMemo, For, Match, on, onCleanup, ParentProps, Show, Switch } from "solid-js"
 import { createResizeObserver } from "@solid-primitives/resize-observer"
 import { DiffChanges } from "./diff-changes"
@@ -515,7 +515,7 @@ export function SessionTurn(
                           data-slot="session-turn-collapsible-trigger-content"
                           variant="ghost"
                           size="small"
-                          onClick={props.onStepsExpandedToggle ?? (() => {})}
+                          onClick={props.onStepsExpandedToggle ?? (() => { })}
                         >
                           <Show when={working() || waitingForSummary()}>
                             <Spinner />

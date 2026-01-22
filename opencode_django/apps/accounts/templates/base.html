@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}openpatent{% endblock %}</title>
+    <link rel="stylesheet" href="/static/css/main.css" />
+  </head>
+  <body>
+    <nav>
+      <div class="nav-brand">
+        <a href="/">openpatent</a>
+      </div>
+      <div class="nav-links">
+        {% if user.is_authenticated %}
+        <a href="/api/sessions/">Sessions</a>
+        <a href="/billing/pricing/">Pricing</a>
+        <span>{{ user.email }}</span>
+        <form action="/api/auth/logout/" method="post" style="display: inline">
+          {% csrf_token %}
+          <button type="submit" class="btn-link">Logout</button>
+        </form>
+        {% else %}
+        <a href="/api/auth/login/">Login</a>
+        <a href="/api/auth/register/">Register</a>
+        {% endif %}
+      </div>
+    </nav>
+    <main>{% block content %}{% endblock %}</main>
+    <script src="/static/js/app.js"></script>
+  </body>
+</html>

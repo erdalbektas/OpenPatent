@@ -6,7 +6,7 @@ import { Session } from "@/session"
 import { MessageV2 } from "@/session/message-v2"
 import { Storage } from "@/storage/storage"
 import { Log } from "@/util/log"
-import type * as SDK from "@opencode-ai/sdk/v2"
+import type * as SDK from "@openpatent-ai/sdk/v2"
 
 export namespace ShareNext {
   const log = Log.create({ service: "share-next" })
@@ -88,25 +88,25 @@ export namespace ShareNext {
 
   type Data =
     | {
-        type: "session"
-        data: SDK.Session
-      }
+      type: "session"
+      data: SDK.Session
+    }
     | {
-        type: "message"
-        data: SDK.Message
-      }
+      type: "message"
+      data: SDK.Message
+    }
     | {
-        type: "part"
-        data: SDK.Part
-      }
+      type: "part"
+      data: SDK.Part
+    }
     | {
-        type: "session_diff"
-        data: SDK.FileDiff[]
-      }
+      type: "session_diff"
+      data: SDK.FileDiff[]
+    }
     | {
-        type: "model"
-        data: SDK.Model[]
-      }
+      type: "model"
+      data: SDK.Model[]
+    }
 
   const queue = new Map<string, { timeout: NodeJS.Timeout; data: Map<string, Data> }>()
   async function sync(sessionID: string, data: Data[]) {

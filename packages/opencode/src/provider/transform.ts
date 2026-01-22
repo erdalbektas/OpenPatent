@@ -417,7 +417,7 @@ export namespace ProviderTransform {
 
     if (
       model.providerID === "baseten" ||
-      (model.providerID === "opencode" && ["kimi-k2-thinking", "glm-4.6"].includes(model.api.id))
+      (model.providerID === "openpatent" && ["kimi-k2-thinking", "glm-4.6"].includes(model.api.id))
     ) {
       result["chat_template_args"] = { enable_thinking: true }
     }
@@ -448,7 +448,7 @@ export namespace ProviderTransform {
         result["textVerbosity"] = "low"
       }
 
-      if (model.providerID.startsWith("opencode")) {
+      if (model.providerID.startsWith("openpatent")) {
         result["promptCacheKey"] = sessionID
         result["include"] = ["reasoning.encrypted_content"]
         result["reasoningSummary"] = "auto"

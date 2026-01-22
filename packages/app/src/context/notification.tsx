@@ -1,12 +1,12 @@
 import { createStore } from "solid-js/store"
-import { createSimpleContext } from "@opencode-ai/ui/context"
+import { createSimpleContext } from "@openpatent-ai/ui/context"
 import { useGlobalSDK } from "./global-sdk"
 import { useGlobalSync } from "./global-sync"
-import { Binary } from "@opencode-ai/util/binary"
-import { EventSessionError } from "@opencode-ai/sdk/v2"
+import { Binary } from "@openpatent-ai/util/binary"
+import { EventSessionError } from "@openpatent-ai/sdk/v2"
 import { makeAudioPlayer } from "@solid-primitives/audio"
-import idleSound from "@opencode-ai/ui/audio/staplebops-01.aac"
-import errorSound from "@opencode-ai/ui/audio/nope-03.aac"
+import idleSound from "@openpatent-ai/ui/audio/staplebops-01.aac"
+import errorSound from "@openpatent-ai/ui/audio/nope-03.aac"
 import { persisted } from "@/utils/persist"
 
 type NotificationBase = {
@@ -68,7 +68,7 @@ export const { use: useNotification, provider: NotificationProvider } = createSi
           if (isChild) break
           try {
             idlePlayer?.play()
-          } catch {}
+          } catch { }
           setStore("list", store.list.length, {
             ...base,
             type: "turn-complete",
@@ -86,7 +86,7 @@ export const { use: useNotification, provider: NotificationProvider } = createSi
           }
           try {
             errorPlayer?.play()
-          } catch {}
+          } catch { }
           setStore("list", store.list.length, {
             ...base,
             type: "error",

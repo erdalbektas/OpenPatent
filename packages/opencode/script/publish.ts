@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 import { $ } from "bun"
 import pkg from "../package.json"
-import { Script } from "@opencode-ai/script"
+import { Script } from "@openpatent-ai/script"
 import { fileURLToPath } from "url"
 
 const dir = fileURLToPath(new URL("..", import.meta.url))
@@ -10,8 +10,8 @@ process.chdir(dir)
 const { binaries } = await import("./build.ts")
 {
   const name = `${pkg.name}-${process.platform}-${process.arch}`
-  console.log(`smoke test: running dist/${name}/bin/opencode --version`)
-  await $`./dist/${name}/bin/opencode --version`
+  console.log(`smoke test: running dist/${name}/bin/openpatent --version`)
+  await $`./dist/${name}/bin/openpatent --version`
 }
 
 await $`mkdir -p ./dist/${pkg.name}`
@@ -62,7 +62,7 @@ if (!Script.preview) {
     }
   }
 
-  const image = "ghcr.io/sst/opencode"
+  const image = "ghcr.io/sst/openpatent"
   const platforms = "linux/amd64,linux/arm64"
   const tags = [`${image}:${Script.version}`, `${image}:latest`]
   const tagFlags = tags.flatMap((t) => ["-t", t])

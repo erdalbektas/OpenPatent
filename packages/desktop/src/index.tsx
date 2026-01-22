@@ -1,6 +1,6 @@
 // @refresh reload
 import { render } from "solid-js/web"
-import { App, PlatformProvider, Platform } from "@opencode-ai/app"
+import { App, PlatformProvider, Platform } from "@openpatent-ai/app"
 import { open, save } from "@tauri-apps/plugin-dialog"
 import { open as shellOpen } from "@tauri-apps/plugin-shell"
 import { type as ostype } from "@tauri-apps/plugin-os"
@@ -13,6 +13,7 @@ import { createMenu } from "./menu"
 import { check, Update } from "@tauri-apps/plugin-updater"
 import { invoke } from "@tauri-apps/api/core"
 import { relaunch } from "@tauri-apps/plugin-process"
+import { getCurrentWindow } from "@tauri-apps/api/window"
 import pkg from "../package.json"
 
 const root = document.getElementById("root")
@@ -104,6 +105,33 @@ createMenu()
 root?.addEventListener("mousewheel", (e) => {
   e.stopPropagation()
 })
+
+// Listen for menu events
+async function setupMenuListeners() {
+  const window = await getCurrentWindow()
+
+  window.listen("open-settings", () => {
+    const event = new CustomEvent("open-settings")
+    window.dispatchEvent(event)
+  })
+
+  window.listen("open-agents", () => {
+    const event = new CustomEvent("open-agents")
+    window.dispatchEvent(event)
+  })
+
+  window.listen("open-premium", () => {
+    const event = new CustomEvent("open-premium")
+    window.dispatchEvent(event)
+  })
+
+  window.listen("open-patent-hub", () => {
+    const event = new CustomEvent("open-patent-hub")
+    window.dispatchEvent(event)
+  })
+}
+
+setupMenuListeners()
 
 render(() => {
   return (

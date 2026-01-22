@@ -16,8 +16,8 @@ import { Flag } from "@/flag/flag.ts"
 import path from "path"
 import { Shell } from "@/shell/shell"
 
-const MAX_OUTPUT_LENGTH = Flag.OPENCODE_EXPERIMENTAL_BASH_MAX_OUTPUT_LENGTH || 30_000
-const DEFAULT_TIMEOUT = Flag.OPENCODE_EXPERIMENTAL_BASH_DEFAULT_TIMEOUT_MS || 2 * 60 * 1000
+const MAX_OUTPUT_LENGTH = Flag.openpatent_EXPERIMENTAL_BASH_MAX_OUTPUT_LENGTH || 30_000
+const DEFAULT_TIMEOUT = Flag.openpatent_EXPERIMENTAL_BASH_DEFAULT_TIMEOUT_MS || 2 * 60 * 1000
 
 export const log = Log.create({ service: "bash-tool" })
 

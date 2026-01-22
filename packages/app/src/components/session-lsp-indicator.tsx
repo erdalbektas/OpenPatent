@@ -1,7 +1,7 @@
 import { createMemo, Show } from "solid-js"
-import { Icon } from "@opencode-ai/ui/icon"
+import { Icon } from "@openpatent-ai/ui/icon"
 import { useSync } from "@/context/sync"
-import { Tooltip } from "@opencode-ai/ui/tooltip"
+import { Tooltip } from "@openpatent-ai/ui/tooltip"
 
 export function SessionLspIndicator() {
   const sync = useSync()

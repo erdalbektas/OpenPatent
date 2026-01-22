@@ -11,7 +11,7 @@ import { Session } from "../session"
 import z from "zod"
 import { Provider } from "../provider/provider"
 import { filter, mapValues, sortBy, pipe } from "remeda"
-import { NamedError } from "@opencode-ai/util/error"
+import { NamedError } from "@openpatent-ai/util/error"
 import { ModelsDev } from "../provider/models"
 import { Ripgrep } from "../file/ripgrep"
 import { Config } from "../config/config"
@@ -109,7 +109,7 @@ export namespace Server {
         "/global/health",
         describeRoute({
           summary: "Get health",
-          description: "Get health information about the OpenCode server.",
+          description: "Get health information about the openpatent server.",
           operationId: "global.health",
           responses: {
             200: {
@@ -130,7 +130,7 @@ export namespace Server {
         "/global/event",
         describeRoute({
           summary: "Get global events",
-          description: "Subscribe to global events from the OpenCode system using server-sent events.",
+          description: "Subscribe to global events from the openpatent system using server-sent events.",
           operationId: "global.event",
           responses: {
             200: {
@@ -197,7 +197,7 @@ export namespace Server {
         "/global/dispose",
         describeRoute({
           summary: "Dispose instance",
-          description: "Clean up and dispose all OpenCode instances, releasing all resources.",
+          description: "Clean up and dispose all openpatent instances, releasing all resources.",
           operationId: "global.dispose",
           responses: {
             200: {
@@ -223,7 +223,7 @@ export namespace Server {
         },
       )
       .use(async (c, next) => {
-        const directory = c.req.query("directory") || c.req.header("x-opencode-directory") || process.cwd()
+        const directory = c.req.query("directory") || c.req.header("x-openpatent-directory") || process.cwd()
         return Instance.provide({
           directory,
           init: InstanceBootstrap,
@@ -237,9 +237,9 @@ export namespace Server {
         openAPIRouteHandler(app, {
           documentation: {
             info: {
-              title: "opencode",
+              title: "openpatent",
               version: "0.0.3",
-              description: "opencode api",
+              description: "openpatent api",
             },
             openapi: "3.1.1",
           },
@@ -253,7 +253,7 @@ export namespace Server {
         "/pty",
         describeRoute({
           summary: "List PTY sessions",
-          description: "Get a list of all active pseudo-terminal (PTY) sessions managed by OpenCode.",
+          description: "Get a list of all active pseudo-terminal (PTY) sessions managed by openpatent.",
           operationId: "pty.list",
           responses: {
             200: {
@@ -412,7 +412,7 @@ export namespace Server {
         "/config",
         describeRoute({
           summary: "Get configuration",
-          description: "Retrieve the current OpenCode configuration settings and preferences.",
+          description: "Retrieve the current openpatent configuration settings and preferences.",
           operationId: "config.get",
           responses: {
             200: {
@@ -434,7 +434,7 @@ export namespace Server {
         "/config",
         describeRoute({
           summary: "Update configuration",
-          description: "Update OpenCode configuration settings and preferences.",
+          description: "Update openpatent configuration settings and preferences.",
           operationId: "config.update",
           responses: {
             200: {
@@ -533,7 +533,7 @@ export namespace Server {
         "/instance/dispose",
         describeRoute({
           summary: "Dispose instance",
-          description: "Clean up and dispose the current OpenCode instance, releasing all resources.",
+          description: "Clean up and dispose the current openpatent instance, releasing all resources.",
           operationId: "instance.dispose",
           responses: {
             200: {
@@ -555,7 +555,7 @@ export namespace Server {
         "/path",
         describeRoute({
           summary: "Get paths",
-          description: "Retrieve the current working directory and related path information for the OpenCode instance.",
+          description: "Retrieve the current working directory and related path information for the openpatent instance.",
           operationId: "path.get",
           responses: {
             200: {
@@ -618,7 +618,7 @@ export namespace Server {
         "/session",
         describeRoute({
           summary: "List sessions",
-          description: "Get a list of all OpenCode sessions, sorted by most recently updated.",
+          description: "Get a list of all openpatent sessions, sorted by most recently updated.",
           operationId: "session.list",
           responses: {
             200: {
@@ -668,7 +668,7 @@ export namespace Server {
         "/session/:sessionID",
         describeRoute({
           summary: "Get session",
-          description: "Retrieve detailed information about a specific OpenCode session.",
+          description: "Retrieve detailed information about a specific openpatent session.",
           tags: ["Session"],
           operationId: "session.get",
           responses: {
@@ -761,7 +761,7 @@ export namespace Server {
         "/session",
         describeRoute({
           summary: "Create session",
-          description: "Create a new OpenCode session for interacting with AI assistants and managing conversations.",
+          description: "Create a new openpatent session for interacting with AI assistants and managing conversations.",
           operationId: "session.create",
           responses: {
             ...errors(400),
@@ -1564,7 +1564,7 @@ export namespace Server {
         "/command",
         describeRoute({
           summary: "List commands",
-          description: "Get a list of all available commands in the OpenCode system.",
+          description: "Get a list of all available commands in the openpatent system.",
           operationId: "command.list",
           responses: {
             200: {
@@ -2000,7 +2000,7 @@ export namespace Server {
         "/agent",
         describeRoute({
           summary: "List agents",
-          description: "Get a list of all available AI agents in the OpenCode system.",
+          description: "Get a list of all available AI agents in the openpatent system.",
           operationId: "app.agents",
           responses: {
             200: {
@@ -2632,10 +2632,10 @@ export namespace Server {
         },
       )
       .all("/*", async (c) => {
-        return proxy(`https://app.opencode.ai${c.req.path}`, {
+        return proxy(`https://app.openpatent.ai${c.req.path}`, {
           ...c.req,
           headers: {
-            host: "app.opencode.ai",
+            host: "app.openpatent.ai",
           },
         })
       }),
@@ -2645,9 +2645,9 @@ export namespace Server {
     const result = await generateSpecs(App(), {
       documentation: {
         info: {
-          title: "opencode",
+          title: "openpatent",
           version: "1.0.0",
-          description: "opencode api",
+          description: "openpatent api",
         },
         openapi: "3.1.1",
       },

@@ -12,10 +12,10 @@ body:
       required: true
 
   - type: input
-    id: opencode-version
+    id: openpatent-version
     attributes:
-      label: OpenCode version
-      description: What version of OpenCode are you using?
+      label: OpenPatent version
+      description: What version of OpenPatent are you using?
     validations:
       required: false
 

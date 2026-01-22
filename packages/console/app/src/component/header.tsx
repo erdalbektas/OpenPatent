@@ -9,10 +9,10 @@ import copyBrandAssetsDark from "../asset/lander/brand-assets-dark.svg"
 
 // SVG files for copying (separate from button icons)
 // Replace these with your actual SVG files for copying
-import copyLogoSvgLight from "../asset/lander/opencode-logo-light.svg"
-import copyLogoSvgDark from "../asset/lander/opencode-logo-dark.svg"
-import copyWordmarkSvgLight from "../asset/lander/opencode-wordmark-light.svg"
-import copyWordmarkSvgDark from "../asset/lander/opencode-wordmark-dark.svg"
+import copyLogoSvgLight from "../asset/lander/openpatent-logo-light.svg"
+import copyLogoSvgDark from "../asset/lander/openpatent-logo-dark.svg"
+import copyWordmarkSvgLight from "../asset/lander/openpatent-wordmark-light.svg"
+import copyWordmarkSvgDark from "../asset/lander/openpatent-wordmark-dark.svg"
 import { A, createAsync, useNavigate } from "@solidjs/router"
 import { createMemo, Match, Show, Switch } from "solid-js"
 import { createStore } from "solid-js/store"
@@ -40,9 +40,9 @@ export function Header(props: { zen?: boolean; hideGetStarted?: boolean }) {
   const starCount = createMemo(() =>
     githubData()?.stars
       ? new Intl.NumberFormat("en-US", {
-          notation: "compact",
-          compactDisplay: "short",
-        }).format(githubData()?.stars!)
+        notation: "compact",
+        compactDisplay: "short",
+      }).format(githubData()?.stars!)
       : config.github.starsFormatted.compact,
   )
 
@@ -119,8 +119,8 @@ export function Header(props: { zen?: boolean; hideGetStarted?: boolean }) {
     <section data-component="top">
       <div onContextMenu={handleLogoContextMenu}>
         <A href="/">
-          <img data-slot="logo light" src={logoLight} alt="opencode logo light" width="189" height="34" />
-          <img data-slot="logo dark" src={logoDark} alt="opencode logo dark" width="189" height="34" />
+          <img data-slot="logo light" src={logoLight} alt="openpatent logo light" width="189" height="34" />
+          <img data-slot="logo dark" src={logoDark} alt="openpatent logo dark" width="189" height="34" />
         </A>
       </div>
 

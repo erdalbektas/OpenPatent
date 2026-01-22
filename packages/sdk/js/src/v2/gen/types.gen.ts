@@ -414,15 +414,15 @@ export type CompactionPart = {
 export type Part =
   | TextPart
   | {
-      id: string
-      sessionID: string
-      messageID: string
-      type: "subtask"
-      prompt: string
-      description: string
-      agent: string
-      command?: string
-    }
+    id: string
+    sessionID: string
+    messageID: string
+    type: "subtask"
+    prompt: string
+    description: string
+    agent: string
+    command?: string
+  }
   | ReasoningPart
   | FilePart
   | ToolPart
@@ -517,17 +517,17 @@ export type EventTodoUpdated = {
 
 export type SessionStatus =
   | {
-      type: "idle"
-    }
+    type: "idle"
+  }
   | {
-      type: "retry"
-      attempt: number
-      message: string
-      next: number
-    }
+    type: "retry"
+    attempt: number
+    message: string
+    next: number
+  }
   | {
-      type: "busy"
-    }
+    type: "busy"
+  }
 
 export type EventSessionStatus = {
   type: "session.status"
@@ -562,21 +562,21 @@ export type EventTuiCommandExecute = {
   type: "tui.command.execute"
   properties: {
     command:
-      | "session.list"
-      | "session.new"
-      | "session.share"
-      | "session.interrupt"
-      | "session.compact"
-      | "session.page.up"
-      | "session.page.down"
-      | "session.half.page.up"
-      | "session.half.page.down"
-      | "session.first"
-      | "session.last"
-      | "prompt.clear"
-      | "prompt.submit"
-      | "agent.cycle"
-      | string
+    | "session.list"
+    | "session.new"
+    | "session.share"
+    | "session.interrupt"
+    | "session.compact"
+    | "session.page.up"
+    | "session.page.down"
+    | "session.half.page.up"
+    | "session.half.page.down"
+    | "session.first"
+    | "session.last"
+    | "prompt.clear"
+    | "prompt.submit"
+    | "agent.cycle"
+    | string
   }
 }
 
@@ -1162,7 +1162,7 @@ export type KeybindsConfig = {
 export type LogLevel = "DEBUG" | "INFO" | "WARN" | "ERROR"
 
 /**
- * Server configuration for opencode serve and web commands
+ * Server configuration for openpatent serve and web commands
  */
 export type ServerConfig = {
   /**
@@ -1204,57 +1204,57 @@ export type AgentConfig = {
   permission?: {
     edit?: "ask" | "allow" | "deny"
     bash?:
-      | "ask"
-      | "allow"
-      | "deny"
-      | {
-          [key: string]: "ask" | "allow" | "deny"
-        }
+    | "ask"
+    | "allow"
+    | "deny"
+    | {
+      [key: string]: "ask" | "allow" | "deny"
+    }
     skill?:
-      | "ask"
-      | "allow"
-      | "deny"
-      | {
-          [key: string]: "ask" | "allow" | "deny"
-        }
+    | "ask"
+    | "allow"
+    | "deny"
+    | {
+      [key: string]: "ask" | "allow" | "deny"
+    }
     webfetch?: "ask" | "allow" | "deny"
     doom_loop?: "ask" | "allow" | "deny"
     external_directory?: "ask" | "allow" | "deny"
   }
   [key: string]:
-    | unknown
-    | string
-    | number
+  | unknown
+  | string
+  | number
+  | {
+    [key: string]: boolean
+  }
+  | boolean
+  | "subagent"
+  | "primary"
+  | "all"
+  | string
+  | number
+  | {
+    edit?: "ask" | "allow" | "deny"
+    bash?:
+    | "ask"
+    | "allow"
+    | "deny"
     | {
-        [key: string]: boolean
-      }
-    | boolean
-    | "subagent"
-    | "primary"
-    | "all"
-    | string
-    | number
+      [key: string]: "ask" | "allow" | "deny"
+    }
+    skill?:
+    | "ask"
+    | "allow"
+    | "deny"
     | {
-        edit?: "ask" | "allow" | "deny"
-        bash?:
-          | "ask"
-          | "allow"
-          | "deny"
-          | {
-              [key: string]: "ask" | "allow" | "deny"
-            }
-        skill?:
-          | "ask"
-          | "allow"
-          | "deny"
-          | {
-              [key: string]: "ask" | "allow" | "deny"
-            }
-        webfetch?: "ask" | "allow" | "deny"
-        doom_loop?: "ask" | "allow" | "deny"
-        external_directory?: "ask" | "allow" | "deny"
-      }
-    | undefined
+      [key: string]: "ask" | "allow" | "deny"
+    }
+    webfetch?: "ask" | "allow" | "deny"
+    doom_loop?: "ask" | "allow" | "deny"
+    external_directory?: "ask" | "allow" | "deny"
+  }
+  | undefined
 }
 
 export type ProviderConfig = {
@@ -1274,10 +1274,10 @@ export type ProviderConfig = {
       temperature?: boolean
       tool_call?: boolean
       interleaved?:
-        | true
-        | {
-            field: "reasoning_content" | "reasoning_details"
-          }
+      | true
+      | {
+        field: "reasoning_content" | "reasoning_details"
+      }
       cost?: {
         input: number
         output: number
@@ -1441,7 +1441,7 @@ export type Config = {
   }
   server?: ServerConfig
   /**
-   * Command configuration, see https://opencode.ai/docs/commands
+   * Command configuration, see https://openpatent.ai/docs/commands
    */
   command?: {
     [key: string]: {
@@ -1502,7 +1502,7 @@ export type Config = {
     [key: string]: AgentConfig | undefined
   }
   /**
-   * Agent configuration, see https://opencode.ai/docs/agent
+   * Agent configuration, see https://openpatent.ai/docs/agent
    */
   agent?: {
     plan?: AgentConfig
@@ -1527,36 +1527,36 @@ export type Config = {
     [key: string]: McpLocalConfig | McpRemoteConfig
   }
   formatter?:
-    | false
-    | {
-        [key: string]: {
-          disabled?: boolean
-          command?: Array<string>
-          environment?: {
-            [key: string]: string
-          }
-          extensions?: Array<string>
-        }
+  | false
+  | {
+    [key: string]: {
+      disabled?: boolean
+      command?: Array<string>
+      environment?: {
+        [key: string]: string
       }
+      extensions?: Array<string>
+    }
+  }
   lsp?:
-    | false
+  | false
+  | {
+    [key: string]:
     | {
-        [key: string]:
-          | {
-              disabled: true
-            }
-          | {
-              command: Array<string>
-              extensions?: Array<string>
-              disabled?: boolean
-              env?: {
-                [key: string]: string
-              }
-              initialization?: {
-                [key: string]: unknown
-              }
-            }
+      disabled: true
+    }
+    | {
+      command: Array<string>
+      extensions?: Array<string>
+      disabled?: boolean
+      env?: {
+        [key: string]: string
       }
+      initialization?: {
+        [key: string]: unknown
+      }
+    }
+  }
   /**
    * Additional instruction files or patterns to include
    */
@@ -1565,19 +1565,19 @@ export type Config = {
   permission?: {
     edit?: "ask" | "allow" | "deny"
     bash?:
-      | "ask"
-      | "allow"
-      | "deny"
-      | {
-          [key: string]: "ask" | "allow" | "deny"
-        }
+    | "ask"
+    | "allow"
+    | "deny"
+    | {
+      [key: string]: "ask" | "allow" | "deny"
+    }
     skill?:
-      | "ask"
-      | "allow"
-      | "deny"
-      | {
-          [key: string]: "ask" | "allow" | "deny"
-        }
+    | "ask"
+    | "allow"
+    | "deny"
+    | {
+      [key: string]: "ask" | "allow" | "deny"
+    }
     webfetch?: "ask" | "allow" | "deny"
     doom_loop?: "ask" | "allow" | "deny"
     external_directory?: "ask" | "allow" | "deny"
@@ -1752,10 +1752,10 @@ export type Model = {
       pdf: boolean
     }
     interleaved:
-      | boolean
-      | {
-          field: "reasoning_content" | "reasoning_details"
-        }
+    | boolean
+    | {
+      field: "reasoning_content" | "reasoning_details"
+    }
   }
   cost: {
     input: number
@@ -3462,10 +3462,10 @@ export type ProviderListResponses = {
           temperature: boolean
           tool_call: boolean
           interleaved?:
-            | true
-            | {
-                field: "reasoning_content" | "reasoning_details"
-              }
+          | true
+          | {
+            field: "reasoning_content" | "reasoning_details"
+          }
           cost?: {
             input: number
             output: number

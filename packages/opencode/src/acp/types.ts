@@ -1,5 +1,5 @@
 import type { McpServer } from "@agentclientprotocol/sdk"
-import type { OpencodeClient } from "@opencode-ai/sdk/v2"
+import type { openpatentClient } from "@openpatent-ai/sdk/v2"
 
 export interface ACPSessionState {
   id: string
@@ -14,7 +14,7 @@ export interface ACPSessionState {
 }
 
 export interface ACPConfig {
-  sdk: OpencodeClient
+  sdk: openpatentClient
   defaultModel?: {
     providerID: string
     modelID: string

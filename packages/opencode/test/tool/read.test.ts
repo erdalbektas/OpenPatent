@@ -10,7 +10,7 @@ const ctx = {
   callID: "",
   agent: "build",
   abort: AbortSignal.any([]),
-  metadata: () => {},
+  metadata: () => { },
 }
 
 describe("tool.read external_directory permission", () => {
@@ -19,7 +19,7 @@ describe("tool.read external_directory permission", () => {
       init: async (dir) => {
         await Bun.write(path.join(dir, "test.txt"), "hello world")
         await Bun.write(
-          path.join(dir, "opencode.json"),
+          path.join(dir, "openpatent.json"),
           JSON.stringify({
             permission: {
               external_directory: "deny",
@@ -43,7 +43,7 @@ describe("tool.read external_directory permission", () => {
       init: async (dir) => {
         await Bun.write(path.join(dir, "subdir", "test.txt"), "nested content")
         await Bun.write(
-          path.join(dir, "opencode.json"),
+          path.join(dir, "openpatent.json"),
           JSON.stringify({
             permission: {
               external_directory: "deny",
@@ -71,7 +71,7 @@ describe("tool.read external_directory permission", () => {
     await using tmp = await tmpdir({
       init: async (dir) => {
         await Bun.write(
-          path.join(dir, "opencode.json"),
+          path.join(dir, "openpatent.json"),
           JSON.stringify({
             permission: {
               external_directory: "deny",
@@ -95,7 +95,7 @@ describe("tool.read external_directory permission", () => {
     await using tmp = await tmpdir({
       init: async (dir) => {
         await Bun.write(
-          path.join(dir, "opencode.json"),
+          path.join(dir, "openpatent.json"),
           JSON.stringify({
             permission: {
               external_directory: "deny",
@@ -124,7 +124,7 @@ describe("tool.read external_directory permission", () => {
     await using tmp = await tmpdir({
       init: async (dir) => {
         await Bun.write(
-          path.join(dir, "opencode.json"),
+          path.join(dir, "openpatent.json"),
           JSON.stringify({
             permission: {
               external_directory: "allow",

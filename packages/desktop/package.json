@@ -1,5 +1,5 @@
 {
-  "name": "@opencode-ai/desktop",
+  "name": "@openpatent-ai/desktop",
   "private": true,
   "version": "1.0.209",
   "type": "module",
@@ -12,7 +12,7 @@
     "tauri": "tauri"
   },
   "dependencies": {
-    "@opencode-ai/app": "workspace:*",
+    "@openpatent-ai/app": "workspace:*",
     "@solid-primitives/storage": "catalog:",
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-dialog": "~2",

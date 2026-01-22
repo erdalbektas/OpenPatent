@@ -1,12 +1,14 @@
 {
-  "$schema": "https://opencode.ai/config.json",
-  // "plugin": ["opencode-openai-codex-auth"],
+  "$schema": "https://openpatent.ai/config.json",
+  // "plugin": ["openpatent-openai-codex-auth"],
   // "enterprise": {
-  //   "url": "https://enterprise.dev.opencode.ai",
+  //   "url": "https://enterprise.dev.openpatent.ai",
   // },
-  "instructions": ["STYLE_GUIDE.md"],
+  "instructions": [
+    "STYLE_GUIDE.md"
+  ],
   "provider": {
-    "opencode": {
+    "openpatent": {
       "options": {},
     },
   },

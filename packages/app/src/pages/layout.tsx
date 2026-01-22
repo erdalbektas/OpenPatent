@@ -16,19 +16,19 @@ import { DateTime } from "luxon"
 import { A, useNavigate, useParams } from "@solidjs/router"
 import { useLayout, getAvatarColors, LocalProject } from "@/context/layout"
 import { useGlobalSync } from "@/context/global-sync"
-import { base64Decode, base64Encode } from "@opencode-ai/util/encode"
-import { Avatar } from "@opencode-ai/ui/avatar"
-import { ResizeHandle } from "@opencode-ai/ui/resize-handle"
-import { Button } from "@opencode-ai/ui/button"
-import { Icon } from "@opencode-ai/ui/icon"
-import { IconButton } from "@opencode-ai/ui/icon-button"
-import { Tooltip } from "@opencode-ai/ui/tooltip"
-import { Collapsible } from "@opencode-ai/ui/collapsible"
-import { DiffChanges } from "@opencode-ai/ui/diff-changes"
-import { Spinner } from "@opencode-ai/ui/spinner"
-import { getFilename } from "@opencode-ai/util/path"
-import { DropdownMenu } from "@opencode-ai/ui/dropdown-menu"
-import { Session } from "@opencode-ai/sdk/v2/client"
+import { base64Decode, base64Encode } from "@openpatent-ai/util/encode"
+import { Avatar } from "@openpatent-ai/ui/avatar"
+import { ResizeHandle } from "@openpatent-ai/ui/resize-handle"
+import { Button } from "@openpatent-ai/ui/button"
+import { Icon } from "@openpatent-ai/ui/icon"
+import { IconButton } from "@openpatent-ai/ui/icon-button"
+import { Tooltip } from "@openpatent-ai/ui/tooltip"
+import { Collapsible } from "@openpatent-ai/ui/collapsible"
+import { DiffChanges } from "@openpatent-ai/ui/diff-changes"
+import { Spinner } from "@openpatent-ai/ui/spinner"
+import { getFilename } from "@openpatent-ai/util/path"
+import { DropdownMenu } from "@openpatent-ai/ui/dropdown-menu"
+import { Session } from "@openpatent-ai/sdk/v2/client"
 import { usePlatform } from "@/context/platform"
 import { createStore, produce } from "solid-js/store"
 import {
@@ -41,15 +41,18 @@ import {
 } from "@thisbeyond/solid-dnd"
 import type { DragEvent } from "@thisbeyond/solid-dnd"
 import { useProviders } from "@/hooks/use-providers"
-import { showToast, Toast, toaster } from "@opencode-ai/ui/toast"
+import { showToast, Toast, toaster } from "@openpatent-ai/ui/toast"
 import { useGlobalSDK } from "@/context/global-sdk"
 import { useNotification } from "@/context/notification"
-import { Binary } from "@opencode-ai/util/binary"
+import { Binary } from "@openpatent-ai/util/binary"
 import { Header } from "@/components/header"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
-import { useTheme, type ColorScheme } from "@opencode-ai/ui/theme"
+import { useDialog } from "@openpatent-ai/ui/context/dialog"
+import { useTheme, type ColorScheme } from "@openpatent-ai/ui/theme"
 import { DialogSelectProvider } from "@/components/dialog-select-provider"
 import { DialogEditProject } from "@/components/dialog-edit-project"
+import { DialogSettings } from "../../../desktop/src/components/dialog-settings"
+import { DialogAgents } from "../../../desktop/src/components/dialog-settings"
+import { DialogPremium } from "../../../desktop/src/components/dialog-settings"
 import { useCommand, type CommandOption } from "@/context/command"
 import { ConstrainDragXAxis } from "@/utils/solid-dnd"
 
@@ -135,7 +138,7 @@ export default function Layout(props: ParentProps) {
           persistent: true,
           icon: "download",
           title: "Update available",
-          description: `A new version of OpenCode (${version}) is now available to install.`,
+          description: `A new version of openpatent (${version}) is now available to install.`,
           actions: [
             {
               label: "Install and restart",
@@ -152,6 +155,22 @@ export default function Layout(props: ParentProps) {
         })
       }
     }
+  })
+
+  onMount(() => {
+    const handleOpenSettings = () => dialog.show(() => <DialogSettings />)
+    const handleOpenAgents = () => dialog.show(() => <DialogAgents />)
+    const handleOpenPremium = () => dialog.show(() => <DialogPremium />)
+
+    window.addEventListener("open-settings", handleOpenSettings)
+    window.addEventListener("open-agents", handleOpenAgents)
+    window.addEventListener("open-premium", handleOpenPremium)
+
+    onCleanup(() => {
+      window.removeEventListener("open-settings", handleOpenSettings)
+      window.removeEventListener("open-agents", handleOpenAgents)
+      window.removeEventListener("open-premium", handleOpenPremium)
+    })
   })
 
   onMount(() => {
@@ -334,14 +353,14 @@ export default function Layout(props: ParentProps) {
       },
       ...(platform.openDirectoryPickerDialog
         ? [
-            {
-              id: "project.open",
-              title: "Open project",
-              category: "Project",
-              keybind: "mod+o",
-              onSelect: () => chooseProject(),
-            },
-          ]
+          {
+            id: "project.open",
+            title: "Open project",
+            category: "Project",
+            keybind: "mod+o",
+            onSelect: () => chooseProject(),
+          },
+        ]
         : []),
       {
         id: "provider.connect",
@@ -525,13 +544,13 @@ export default function Layout(props: ParentProps) {
     const hasError = createMemo(() => notifications().some((n) => n.type === "error"))
     const name = createMemo(() => props.project.name || getFilename(props.project.worktree))
     const mask = "radial-gradient(circle 5px at calc(100% - 2px) 2px, transparent 5px, black 5.5px)"
-    const opencode = "4b0ea68d7af9a6031a7ffda7ad66e0cb83315750"
+    const openpatent = "4b0ea68d7af9a6031a7ffda7ad66e0cb83315750"
 
     return (
       <div class="relative size-5 shrink-0 rounded-sm">
         <Avatar
           fallback={name()}
-          src={props.project.id === opencode ? "https://opencode.ai/favicon.svg" : props.project.icon?.url}
+          src={props.project.id === openpatent ? "https://openpatent.ai/favicon.svg" : props.project.icon?.url}
           {...getAvatarColors(props.project.icon?.color)}
           class={`size-full ${props.class ?? ""}`}
           style={
@@ -659,14 +678,14 @@ export default function Layout(props: ParentProps) {
                         {Math.abs(updated().diffNow().as("seconds")) < 60
                           ? "Now"
                           : updated()
-                              .toRelative({
-                                style: "short",
-                                unit: ["days", "hours", "minutes"],
-                              })
-                              ?.replace(" ago", "")
-                              ?.replace(/ days?/, "d")
-                              ?.replace(" min.", "m")
-                              ?.replace(" hr.", "h")}
+                            .toRelative({
+                              style: "short",
+                              unit: ["days", "hours", "minutes"],
+                            })
+                            ?.replace(" ago", "")
+                            ?.replace(/ days?/, "d")
+                            ?.replace(" min.", "m")
+                            ?.replace(" hr.", "h")}
                       </span>
                     </Match>
                   </Switch>
@@ -920,7 +939,7 @@ export default function Layout(props: ParentProps) {
               <div class="rounded-md bg-background-stronger shadow-xs-border-base">
                 <div class="p-3 flex flex-col gap-2">
                   <div class="text-12-medium text-text-strong">Getting started</div>
-                  <div class="text-text-base">OpenCode includes free models so you can start immediately.</div>
+                  <div class="text-text-base">openpatent includes free models so you can start immediately.</div>
                   <div class="text-text-base">Connect any provider to use models, inc. Claude, GPT, Gemini etc.</div>
                 </div>
                 <Tooltip placement="right" value="Connect provider" inactive={expanded()}>
@@ -976,7 +995,7 @@ export default function Layout(props: ParentProps) {
           <Tooltip placement="right" value="Share feedback" inactive={expanded()}>
             <Button
               as={"a"}
-              href="https://opencode.ai/desktop-feedback"
+              href="https://openpatent.ai/desktop-feedback"
               target="_blank"
               class="flex w-full text-left justify-start text-text-base stroke-[1.5px] rounded-lg px-2"
               variant="ghost"

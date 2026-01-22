@@ -7,7 +7,7 @@ export namespace MDNS {
   let bonjour: Bonjour | undefined
   let currentPort: number | undefined
 
-  export function publish(port: number, name = "opencode") {
+  export function publish(port: number, name = "openpatent") {
     if (currentPort === port) return
     if (bonjour) unpublish()
 
@@ -34,7 +34,7 @@ export namespace MDNS {
       if (bonjour) {
         try {
           bonjour.destroy()
-        } catch {}
+        } catch { }
       }
       bonjour = undefined
       currentPort = undefined

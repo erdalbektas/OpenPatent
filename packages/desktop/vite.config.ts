@@ -1,5 +1,5 @@
 import { defineConfig } from "vite"
-import appPlugin from "@opencode-ai/app/vite"
+import appPlugin from "@openpatent-ai/app/vite"
 
 const host = process.env.TAURI_DEV_HOST
 
@@ -24,10 +24,10 @@ export default defineConfig({
     host: host || false,
     hmr: host
       ? {
-          protocol: "ws",
-          host,
-          port: 1421,
-        }
+        protocol: "ws",
+        host,
+        port: 1421,
+      }
       : undefined,
     watch: {
       // 3. tell Vite to ignore watching `src-tauri`

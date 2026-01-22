@@ -29,12 +29,12 @@ import { Config } from "@/config/config"
 import { Todo } from "@/session/todo"
 import { z } from "zod"
 import { LoadAPIKeyError } from "ai"
-import type { OpencodeClient, SessionMessageResponse } from "@opencode-ai/sdk/v2"
+import type { openpatentClient, SessionMessageResponse } from "@openpatent-ai/sdk/v2"
 
 export namespace ACP {
   const log = Log.create({ service: "acp-agent" })
 
-  export async function init({ sdk }: { sdk: OpencodeClient }) {
+  export async function init({ sdk }: { sdk: openpatentClient }) {
     const model = await defaultModel({ sdk })
     return {
       create: (connection: AgentSideConnection, fullConfig: ACPConfig) => {
@@ -49,7 +49,7 @@ export namespace ACP {
   export class Agent implements ACPAgent {
     private connection: AgentSideConnection
     private config: ACPConfig
-    private sdk: OpencodeClient
+    private sdk: openpatentClient
     private sessionManager
 
     constructor(connection: AgentSideConnection, config: ACPConfig) {
@@ -335,18 +335,18 @@ export namespace ACP {
       log.info("initialize", { protocolVersion: params.protocolVersion })
 
       const authMethod: AuthMethod = {
-        description: "Run `opencode auth login` in the terminal",
-        name: "Login with opencode",
-        id: "opencode-login",
+        description: "Run `openpatent auth login` in the terminal",
+        name: "Login with openpatent",
+        id: "openpatent-login",
       }
 
       // If client supports terminal-auth capability, use that instead.
       if (params.clientCapabilities?._meta?.["terminal-auth"] === true) {
         authMethod._meta = {
           "terminal-auth": {
-            command: "opencode",
+            command: "openpatent",
             args: ["auth", "login"],
-            label: "OpenCode Login",
+            label: "openpatent Login",
           },
         }
       }
@@ -366,7 +366,7 @@ export namespace ACP {
         },
         authMethods: [authMethod],
         agentInfo: {
-          name: "OpenCode",
+          name: "openpatent",
           version: Installation.VERSION,
         },
       }
@@ -1007,7 +1007,7 @@ export namespace ACP {
         return undefined
       })
 
-    return model ?? { providerID: "opencode", modelID: "big-pickle" }
+    return model ?? { providerID: "openpatent", modelID: "big-pickle" }
   }
 
   function parseUri(

@@ -3,7 +3,7 @@ import { ComponentProps, createEffect, createSignal, onCleanup, onMount, splitPr
 import { useSDK } from "@/context/sdk"
 import { SerializeAddon } from "@/addons/serialize"
 import { LocalPTY } from "@/context/terminal"
-import { resolveThemeVariant, useTheme } from "@opencode-ai/ui/theme"
+import { resolveThemeVariant, useTheme } from "@openpatent-ai/ui/theme"
 
 export interface TerminalProps extends ComponentProps<"div"> {
   pty: LocalPTY
@@ -78,7 +78,7 @@ export const Terminal = (props: TerminalProps) => {
     if (!selection) return false
     const clipboard = navigator.clipboard
     if (clipboard?.writeText) {
-      clipboard.writeText(selection).catch(() => {})
+      clipboard.writeText(selection).catch(() => { })
       return true
     }
     if (!document.body) return false
@@ -166,7 +166,7 @@ export const Terminal = (props: TerminalProps) => {
               rows: size.rows,
             },
           })
-          .catch(() => {})
+          .catch(() => { })
       }
     })
     term.onData((data) => {
@@ -192,7 +192,7 @@ export const Terminal = (props: TerminalProps) => {
             rows: term.rows,
           },
         })
-        .catch(() => {})
+        .catch(() => { })
     })
     ws.addEventListener("message", (event) => {
       term.write(event.data)

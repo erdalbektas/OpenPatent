@@ -16,11 +16,11 @@ ts-dist
 /result
 refs
 Session.vim
-opencode.json
+openpatentnt.json
 a.out
 target
 .scripts
 
 # Local dev files
-opencode-dev
+openpatentnt-dev
 logs/

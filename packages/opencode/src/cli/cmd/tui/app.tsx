@@ -201,17 +201,17 @@ function App() {
 
   // Update terminal window title based on current route and session
   createEffect(() => {
-    if (!terminalTitleEnabled() || Flag.OPENCODE_DISABLE_TERMINAL_TITLE) return
+    if (!terminalTitleEnabled() || Flag.openpatent_DISABLE_TERMINAL_TITLE) return
 
     if (route.data.type === "home") {
-      renderer.setTerminalTitle("OpenCode")
+      renderer.setTerminalTitle("openpatent")
       return
     }
 
     if (route.data.type === "session") {
       const session = sync.session.get(route.data.sessionID)
       if (!session || SessionApi.isDefaultTitle(session.title)) {
-        renderer.setTerminalTitle("OpenCode")
+        renderer.setTerminalTitle("openpatent")
         return
       }
 
@@ -394,7 +394,7 @@ function App() {
     {
       title: "View status",
       keybind: "status_view",
-      value: "opencode.status",
+      value: "openpatent.status",
       onSelect: () => {
         dialog.replace(() => <DialogStatus />)
       },
@@ -429,7 +429,7 @@ function App() {
       title: "Open docs",
       value: "docs.open",
       onSelect: () => {
-        open("https://opencode.ai/docs").catch(() => {})
+        open("https://openpatent.ai/docs").catch(() => { })
         dialog.clear()
       },
       category: "System",
@@ -438,7 +438,7 @@ function App() {
       title: "Open WebUI",
       value: "webui.open",
       onSelect: () => {
-        open(sdk.url).catch(() => {})
+        open(sdk.url).catch(() => { })
         dialog.clear()
       },
       category: "System",
@@ -507,7 +507,7 @@ function App() {
         DialogAlert.show(
           dialog,
           "Warning",
-          "While openrouter is a convenient way to access LLMs your request will often be routed to subpar providers that do not work well in our testing.\n\nFor reliable access to models check out OpenCode Zen\nhttps://opencode.ai/zen",
+          "While openrouter is a convenient way to access LLMs your request will often be routed to subpar providers that do not work well in our testing.\n\nFor reliable access to models check out openpatent Zen\nhttps://openpatent.ai/zen",
         ).then(() => kv.set("openrouter_warning", true))
       })
     }
@@ -561,7 +561,7 @@ function App() {
     toast.show({
       variant: "success",
       title: "Update Complete",
-      message: `OpenCode updated to v${evt.properties.version}`,
+      message: `openpatent updated to v${evt.properties.version}`,
       duration: 5000,
     })
   })
@@ -570,7 +570,7 @@ function App() {
     toast.show({
       variant: "info",
       title: "Update Available",
-      message: `OpenCode v${evt.properties.version} is available. Run 'opencode upgrade' to update manually.`,
+      message: `openpatent v${evt.properties.version} is available. Run 'openpatent upgrade' to update manually.`,
       duration: 10000,
     })
   })
@@ -581,7 +581,7 @@ function App() {
       height={dimensions().height}
       backgroundColor={theme.background}
       onMouseUp={async () => {
-        if (Flag.OPENCODE_EXPERIMENTAL_DISABLE_COPY_ON_SELECT) {
+        if (Flag.openpatent_EXPERIMENTAL_DISABLE_COPY_ON_SELECT) {
           renderer.clearSelection()
           return
         }
@@ -625,7 +625,7 @@ function ErrorComponent(props: {
   })
   const [copied, setCopied] = createSignal(false)
 
-  const issueURL = new URL("https://github.com/sst/opencode/issues/new?template=bug-report.yml")
+  const issueURL = new URL("https://github.com/sst/openpatent/issues/new?template=bug-report.yml")
 
   // Choose safe fallback colors per mode since theme context may not be available
   const isLight = props.mode === "light"
@@ -647,7 +647,7 @@ function ErrorComponent(props: {
     )
   }
 
-  issueURL.searchParams.set("opencode-version", Installation.VERSION)
+  issueURL.searchParams.set("openpatent-version", Installation.VERSION)
 
   const copyIssueURL = () => {
     Clipboard.copy(issueURL.toString()).then(() => {

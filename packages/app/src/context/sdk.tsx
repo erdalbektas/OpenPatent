@@ -1,5 +1,5 @@
-import { createOpencodeClient, type Event } from "@opencode-ai/sdk/v2/client"
-import { createSimpleContext } from "@opencode-ai/ui/context"
+import { createopenpatentClient, type Event } from "@openpatent-ai/sdk/v2/client"
+import { createSimpleContext } from "@openpatent-ai/ui/context"
 import { createGlobalEmitter } from "@solid-primitives/event-bus"
 import { useGlobalSDK } from "./global-sdk"
 import { usePlatform } from "./platform"
@@ -9,7 +9,7 @@ export const { use: useSDK, provider: SDKProvider } = createSimpleContext({
   init: (props: { directory: string }) => {
     const platform = usePlatform()
     const globalSDK = useGlobalSDK()
-    const sdk = createOpencodeClient({
+    const sdk = createopenpatentClient({
       baseUrl: globalSDK.url,
       signal: AbortSignal.timeout(1000 * 60 * 10),
       fetch: platform.fetch,

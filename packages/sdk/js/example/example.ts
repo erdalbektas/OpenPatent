@@ -1,7 +1,7 @@
-import { createOpencodeClient, createOpencodeServer } from "@opencode-ai/sdk"
+import { createopenpatentClient, createopenpatentServer } from "@openpatent-ai/sdk"
 
-const server = await createOpencodeServer()
-const client = createOpencodeClient({ baseUrl: server.url })
+const server = await createopenpatentServer()
+const client = createopenpatentClient({ baseUrl: server.url })
 
 const input = await Array.fromAsync(new Bun.Glob("packages/core/*.ts").scan())
 

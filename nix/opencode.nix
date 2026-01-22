@@ -13,7 +13,7 @@ let
     );
 in
 stdenvNoCC.mkDerivation (finalAttrs: {
-  pname = "opencode";
+  pname = "openpatent";
   version = args.version;
 
   src = args.src;
@@ -29,8 +29,8 @@ stdenvNoCC.mkDerivation (finalAttrs: {
   ];
 
   env.MODELS_DEV_API_JSON = args.modelsDev;
-  env.OPENCODE_VERSION = args.version;
-  env.OPENCODE_CHANNEL = "stable";
+  env.openpatent_VERSION = args.version;
+  env.openpatent_CHANNEL = "stable";
   dontConfigure = true;
 
   buildPhase = ''
@@ -40,14 +40,14 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     cp -r ${finalAttrs.node_modules}/packages .
 
     (
-      cd packages/opencode
+      cd packages/openpatent
 
       chmod -R u+w ./node_modules
-      mkdir -p ./node_modules/@opencode-ai
-      rm -f ./node_modules/@opencode-ai/{script,sdk,plugin}
-      ln -s $(pwd)/../../packages/script ./node_modules/@opencode-ai/script
-      ln -s $(pwd)/../../packages/sdk/js ./node_modules/@opencode-ai/sdk
-      ln -s $(pwd)/../../packages/plugin ./node_modules/@opencode-ai/plugin
+      mkdir -p ./node_modules/@openpatent-ai
+      rm -f ./node_modules/@openpatent-ai/{script,sdk,plugin}
+      ln -s $(pwd)/../../packages/script ./node_modules/@openpatent-ai/script
+      ln -s $(pwd)/../../packages/sdk/js ./node_modules/@openpatent-ai/sdk
+      ln -s $(pwd)/../../packages/plugin ./node_modules/@openpatent-ai/plugin
 
       cp ${./bundle.ts} ./bundle.ts
       chmod +x ./bundle.ts
@@ -60,26 +60,26 @@ stdenvNoCC.mkDerivation (finalAttrs: {
   installPhase = ''
     runHook preInstall
 
-    cd packages/opencode
+    cd packages/openpatent
     if [ ! -d dist ]; then
       echo "ERROR: dist directory missing after bundle step"
       exit 1
     fi
 
-    mkdir -p $out/lib/opencode
-    cp -r dist $out/lib/opencode/
-    chmod -R u+w $out/lib/opencode/dist
+    mkdir -p $out/lib/openpatent
+    cp -r dist $out/lib/openpatent/
+    chmod -R u+w $out/lib/openpatent/dist
 
     # Select bundled worker assets deterministically (sorted find output)
-    worker_file=$(find "$out/lib/opencode/dist" -type f \( -path '*/tui/worker.*' -o -name 'worker.*' \) | sort | head -n1)
-    parser_worker_file=$(find "$out/lib/opencode/dist" -type f -name 'parser.worker.*' | sort | head -n1)
+    worker_file=$(find "$out/lib/openpatent/dist" -type f \( -path '*/tui/worker.*' -o -name 'worker.*' \) | sort | head -n1)
+    parser_worker_file=$(find "$out/lib/openpatent/dist" -type f -name 'parser.worker.*' | sort | head -n1)
     if [ -z "$worker_file" ]; then
       echo "ERROR: bundled worker not found"
       exit 1
     fi
 
-    main_wasm=$(printf '%s\n' "$out"/lib/opencode/dist/tree-sitter-*.wasm | sort | head -n1)
-    wasm_list=$(find "$out/lib/opencode/dist" -maxdepth 1 -name 'tree-sitter-*.wasm' -print)
+    main_wasm=$(printf '%s\n' "$out"/lib/openpatent/dist/tree-sitter-*.wasm | sort | head -n1)
+    wasm_list=$(find "$out/lib/openpatent/dist" -maxdepth 1 -name 'tree-sitter-*.wasm' -print)
     for patch_file in "$worker_file" "$parser_worker_file"; do
       [ -z "$patch_file" ] && continue
       [ ! -f "$patch_file" ] && continue
@@ -89,26 +89,26 @@ stdenvNoCC.mkDerivation (finalAttrs: {
       fi
     done
 
-    mkdir -p $out/lib/opencode/node_modules
-    cp -r ../../node_modules/.bun $out/lib/opencode/node_modules/
-    mkdir -p $out/lib/opencode/node_modules/@opentui
+    mkdir -p $out/lib/openpatent/node_modules
+    cp -r ../../node_modules/.bun $out/lib/openpatent/node_modules/
+    mkdir -p $out/lib/openpatent/node_modules/@opentui
 
     mkdir -p $out/bin
-    makeWrapper ${bun}/bin/bun $out/bin/opencode \
+    makeWrapper ${bun}/bin/bun $out/bin/openpatent \
       --add-flags "run" \
-      --add-flags "$out/lib/opencode/dist/src/index.js" \
+      --add-flags "$out/lib/openpatent/dist/src/index.js" \
       --prefix PATH : ${lib.makeBinPath [ ripgrep ]} \
-      --argv0 opencode
+      --argv0 openpatent
 
     runHook postInstall
   '';
 
   postInstall = ''
-    for pkg in $out/lib/opencode/node_modules/.bun/@opentui+core-* $out/lib/opencode/node_modules/.bun/@opentui+solid-* $out/lib/opencode/node_modules/.bun/@opentui+core@* $out/lib/opencode/node_modules/.bun/@opentui+solid@*; do
+    for pkg in $out/lib/openpatent/node_modules/.bun/@opentui+core-* $out/lib/openpatent/node_modules/.bun/@opentui+solid-* $out/lib/openpatent/node_modules/.bun/@opentui+core@* $out/lib/openpatent/node_modules/.bun/@opentui+solid@*; do
       if [ -d "$pkg" ]; then
         pkgName=$(basename "$pkg" | sed 's/@opentui+\([^@]*\)@.*/\1/')
         ln -sf ../.bun/$(basename "$pkg")/node_modules/@opentui/$pkgName \
-          $out/lib/opencode/node_modules/@opentui/$pkgName
+          $out/lib/openpatent/node_modules/@opentui/$pkgName
       fi
     done
   '';
@@ -118,11 +118,11 @@ stdenvNoCC.mkDerivation (finalAttrs: {
   meta = {
     description = "AI coding agent built for the terminal";
     longDescription = ''
-      OpenCode is a terminal-based agent that can build anything.
+      openpatent is a terminal-based agent that can build anything.
       It combines a TypeScript/JavaScript core with a Go-based TUI
       to provide an interactive AI coding experience.
     '';
-    homepage = "https://github.com/sst/opencode";
+    homepage = "https://github.com/sst/openpatent";
     license = lib.licenses.mit;
     platforms = [
       "aarch64-linux"
@@ -130,6 +130,6 @@ stdenvNoCC.mkDerivation (finalAttrs: {
       "aarch64-darwin"
       "x86_64-darwin"
     ];
-    mainProgram = "opencode";
+    mainProgram = "openpatent";
   };
 })

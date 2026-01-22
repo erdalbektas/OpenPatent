@@ -1,4 +1,4 @@
-import type { NamedError } from "@opencode-ai/util/error"
+import type { NamedError } from "@openpatent-ai/util/error"
 import { MessageV2 } from "./message-v2"
 
 export namespace SessionRetry {
@@ -78,7 +78,7 @@ export namespace SessionRetry {
         ) {
           return "Provider Server Error"
         }
-      } catch {}
+      } catch { }
     }
 
     return undefined

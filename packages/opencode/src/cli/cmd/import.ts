@@ -11,7 +11,7 @@ export const ImportCommand = cmd({
   describe: "import session data from JSON file or URL",
   builder: (yargs: Argv) => {
     return yargs.positional("file", {
-      describe: "path to JSON file or opencode.ai share URL",
+      describe: "path to JSON file or openpatent.ai share URL",
       type: "string",
       demandOption: true,
     })
@@ -20,12 +20,12 @@ export const ImportCommand = cmd({
     await bootstrap(process.cwd(), async () => {
       let exportData:
         | {
-            info: Session.Info
-            messages: Array<{
-              info: any
-              parts: any[]
-            }>
-          }
+          info: Session.Info
+          messages: Array<{
+            info: any
+            parts: any[]
+          }>
+        }
         | undefined
 
       const isUrl = args.file.startsWith("http://") || args.file.startsWith("https://")
@@ -67,7 +67,7 @@ export const ImportCommand = cmd({
         }
       } else {
         const file = Bun.file(args.file)
-        exportData = await file.json().catch(() => {})
+        exportData = await file.json().catch(() => { })
         if (!exportData) {
           process.stdout.write(`File not found: ${args.file}`)
           process.stdout.write(EOL)

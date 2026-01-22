@@ -7,7 +7,7 @@ import { UnauthorizedError } from "@modelcontextprotocol/sdk/client/auth.js"
 import { type Tool as MCPToolDef, ToolListChangedNotificationSchema } from "@modelcontextprotocol/sdk/types.js"
 import { Config } from "../config/config"
 import { Log } from "../util/log"
-import { NamedError } from "@opencode-ai/util/error"
+import { NamedError } from "@openpatent-ai/util/error"
 import z from "zod/v4"
 import { Instance } from "../project/instance"
 import { Installation } from "../installation"
@@ -248,7 +248,7 @@ export namespace MCP {
       for (const { name, transport } of transports) {
         try {
           const client = new Client({
-            name: "opencode",
+            name: "openpatent",
             version: Installation.VERSION,
           })
           await client.connect(transport)
@@ -284,7 +284,7 @@ export namespace MCP {
               // Show toast for needs_auth
               Bus.publish(TuiEvent.ToastShow, {
                 title: "MCP Authentication Required",
-                message: `Server "${key}" requires authentication. Run: opencode mcp auth ${key}`,
+                message: `Server "${key}" requires authentication. Run: openpatent mcp auth ${key}`,
                 variant: "warning",
                 duration: 8000,
               }).catch((e) => log.debug("failed to show toast", { error: e }))
@@ -316,14 +316,14 @@ export namespace MCP {
         cwd,
         env: {
           ...process.env,
-          ...(cmd === "opencode" ? { BUN_BE_BUN: "1" } : {}),
+          ...(cmd === "openpatent" ? { BUN_BE_BUN: "1" } : {}),
           ...mcp.environment,
         },
       })
 
       try {
         const client = new Client({
-          name: "opencode",
+          name: "openpatent",
           version: Installation.VERSION,
         })
         await client.connect(transport)
@@ -537,7 +537,7 @@ export namespace MCP {
     // Try to connect - this will trigger the OAuth flow
     try {
       const client = new Client({
-        name: "opencode",
+        name: "openpatent",
         version: Installation.VERSION,
       })
       await client.connect(transport)

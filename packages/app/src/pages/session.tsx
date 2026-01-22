@@ -18,18 +18,18 @@ import { useLocal, type LocalFile } from "@/context/local"
 import { createStore } from "solid-js/store"
 import { PromptInput } from "@/components/prompt-input"
 import { DateTime } from "luxon"
-import { FileIcon } from "@opencode-ai/ui/file-icon"
-import { IconButton } from "@opencode-ai/ui/icon-button"
-import { Icon } from "@opencode-ai/ui/icon"
-import { Tooltip } from "@opencode-ai/ui/tooltip"
-import { DiffChanges } from "@opencode-ai/ui/diff-changes"
-import { ResizeHandle } from "@opencode-ai/ui/resize-handle"
-import { Tabs } from "@opencode-ai/ui/tabs"
-import { useCodeComponent } from "@opencode-ai/ui/context/code"
-import { SessionTurn } from "@opencode-ai/ui/session-turn"
-import { createAutoScroll } from "@opencode-ai/ui/hooks"
-import { SessionMessageRail } from "@opencode-ai/ui/session-message-rail"
-import { SessionReview } from "@opencode-ai/ui/session-review"
+import { FileIcon } from "@openpatent-ai/ui/file-icon"
+import { IconButton } from "@openpatent-ai/ui/icon-button"
+import { Icon } from "@openpatent-ai/ui/icon"
+import { Tooltip } from "@openpatent-ai/ui/tooltip"
+import { DiffChanges } from "@openpatent-ai/ui/diff-changes"
+import { ResizeHandle } from "@openpatent-ai/ui/resize-handle"
+import { Tabs } from "@openpatent-ai/ui/tabs"
+import { useCodeComponent } from "@openpatent-ai/ui/context/code"
+import { SessionTurn } from "@openpatent-ai/ui/session-turn"
+import { createAutoScroll } from "@openpatent-ai/ui/hooks"
+import { SessionMessageRail } from "@openpatent-ai/ui/session-message-rail"
+import { SessionReview } from "@openpatent-ai/ui/session-review"
 import {
   DragDropProvider,
   DragDropSensors,
@@ -43,16 +43,16 @@ import type { JSX } from "solid-js"
 import { useSync } from "@/context/sync"
 import { useTerminal, type LocalPTY } from "@/context/terminal"
 import { useLayout } from "@/context/layout"
-import { getDirectory, getFilename } from "@opencode-ai/util/path"
+import { getDirectory, getFilename } from "@openpatent-ai/util/path"
 import { Terminal } from "@/components/terminal"
-import { checksum } from "@opencode-ai/util/encode"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
+import { checksum } from "@openpatent-ai/util/encode"
+import { useDialog } from "@openpatent-ai/ui/context/dialog"
 import { DialogSelectFile } from "@/components/dialog-select-file"
 import { DialogSelectModel } from "@/components/dialog-select-model"
 import { DialogSelectMcp } from "@/components/dialog-select-mcp"
 import { useCommand } from "@/context/command"
 import { useNavigate, useParams } from "@solidjs/router"
-import { UserMessage } from "@opencode-ai/sdk/v2"
+import { UserMessage } from "@openpatent-ai/sdk/v2"
 import { useSDK } from "@/context/sdk"
 import { usePrompt } from "@/context/prompt"
 import { extractPromptFromParts } from "@/utils/prompt"
@@ -61,7 +61,7 @@ import { StatusBar } from "@/components/status-bar"
 import { SessionMcpIndicator } from "@/components/session-mcp-indicator"
 import { SessionLspIndicator } from "@/components/session-lsp-indicator"
 import { usePermission } from "@/context/permission"
-import { showToast } from "@opencode-ai/ui/toast"
+import { showToast } from "@openpatent-ai/ui/toast"
 
 function same<T>(a: readonly T[], b: readonly T[]) {
   if (a === b) return true
@@ -378,7 +378,7 @@ export default function Page() {
         const sessionID = params.id
         if (!sessionID) return
         if (status()?.type !== "idle") {
-          await sdk.client.session.abort({ sessionID }).catch(() => {})
+          await sdk.client.session.abort({ sessionID }).catch(() => { })
         }
         const revert = info()?.revert?.messageID
         // Find the last user message that's not already reverted

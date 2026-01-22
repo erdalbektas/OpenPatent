@@ -1,13 +1,13 @@
-import { Button } from "@opencode-ai/ui/button"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
-import { Dialog } from "@opencode-ai/ui/dialog"
-import { TextField } from "@opencode-ai/ui/text-field"
-import { Icon } from "@opencode-ai/ui/icon"
+import { Button } from "@openpatent-ai/ui/button"
+import { useDialog } from "@openpatent-ai/ui/context/dialog"
+import { Dialog } from "@openpatent-ai/ui/dialog"
+import { TextField } from "@openpatent-ai/ui/text-field"
+import { Icon } from "@openpatent-ai/ui/icon"
 import { createMemo, createSignal, For, Show } from "solid-js"
 import { createStore } from "solid-js/store"
 import { useGlobalSDK } from "@/context/global-sdk"
 import { type LocalProject, getAvatarColors } from "@/context/layout"
-import { Avatar } from "@opencode-ai/ui/avatar"
+import { Avatar } from "@openpatent-ai/ui/avatar"
 
 const AVATAR_COLOR_KEYS = ["pink", "mint", "orange", "purple", "cyan", "lime"] as const
 

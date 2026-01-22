@@ -1,0 +1,118 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: openpatent-db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-openpatent}
+      POSTGRES_USER: ${POSTGRES_USER:-openpatent}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-openpatent}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-openpatent}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: openpatent-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: .
+    container_name: openpatent-web
+    command: >
+      gunicorn
+      --bind 0.0.0.0:8000
+      --workers 4
+      --worker-class sync
+      --access-logfile -
+      --error-logfile -
+      config.wsgi:application
+    environment:
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      DEBUG: ${DEBUG:-False}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-*}
+      POSTGRES_DB: ${POSTGRES_DB:-openpatent}
+      POSTGRES_USER: ${POSTGRES_USER:-openpatent}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-openpatent}
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      openpatent_API_URL: ${openpatent_API_URL:-http://localhost:8000}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+      STRIPE_PRICE_ID_PRO: ${STRIPE_PRICE_ID_PRO}
+      STRIPE_PRICE_ID_ENTERPRISE: ${STRIPE_PRICE_ID_ENTERPRISE}
+    volumes:
+      - static_volume:/app/staticfiles
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  channels:
+    build: .
+    container_name: openpatent-channels
+    command: >
+      daphne
+      -b 0.0.0.0
+      -p 8001
+      config.asgi:application
+    environment:
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      DEBUG: ${DEBUG:-False}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-*}
+      POSTGRES_DB: ${POSTGRES_DB:-openpatent}
+      POSTGRES_USER: ${POSTGRES_USER:-openpatent}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-openpatent}
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      CHANNEL_LAYERS_CONFIG: '{"hosts": [( "redis", 6379 )]}'
+    volumes:
+      - static_volume:/app/staticfiles
+    ports:
+      - "8001:8001"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  nginx:
+    image: nginx:alpine
+    container_name: openpatent-nginx
+    volumes:
+      - static_volume:/usr/share/nginx/html/static:ro
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - web
+      - channels
+
+volumes:
+  postgres_data:
+
+networks:
+  default:
+    name: openpatent-network

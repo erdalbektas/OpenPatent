@@ -1,10 +1,10 @@
 {
-  "name": "@opencode-ai/web",
+  "name": "@openpatent-ai/web",
   "type": "module",
   "version": "1.0.209",
   "scripts": {
     "dev": "astro dev",
-    "dev:remote": "VITE_API_URL=https://api.opencode.ai astro dev",
+    "dev:remote": "VITE_API_URL=https://api.openpatent.ai astro dev",
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
@@ -33,7 +33,7 @@
     "toolbeam-docs-theme": "0.4.8"
   },
   "devDependencies": {
-    "opencode": "workspace:*",
+    "openpatent": "workspace:*",
     "@types/node": "catalog:",
     "typescript": "catalog:"
   }

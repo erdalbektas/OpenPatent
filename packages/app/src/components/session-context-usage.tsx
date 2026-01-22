@@ -1,9 +1,9 @@
 import { createMemo, Show } from "solid-js"
-import { Tooltip } from "@opencode-ai/ui/tooltip"
-import { ProgressCircle } from "@opencode-ai/ui/progress-circle"
+import { Tooltip } from "@openpatent-ai/ui/tooltip"
+import { ProgressCircle } from "@openpatent-ai/ui/progress-circle"
 import { useSync } from "@/context/sync"
 import { useParams } from "@solidjs/router"
-import { AssistantMessage } from "@opencode-ai/sdk/v2/client"
+import { AssistantMessage } from "@openpatent-ai/sdk/v2/client"
 
 export function SessionContextUsage() {
   const sync = useSync()

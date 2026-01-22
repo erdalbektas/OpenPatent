@@ -1,8 +1,8 @@
 import "./index.css"
 import { Title, Meta, Link } from "@solidjs/meta"
 //import { HttpHeader } from "@solidjs/start"
-import video from "../asset/lander/opencode-min.mp4"
-import videoPoster from "../asset/lander/opencode-poster.png"
+import video from "../asset/lander/openpatent-min.mp4"
+import videoPoster from "../asset/lander/openpatent-poster.png"
 import { IconCopy, IconCheck } from "../component/icon"
 import { A, createAsync } from "@solidjs/router"
 import { EmailSignup } from "~/component/email-signup"
@@ -41,9 +41,9 @@ export default function Home() {
   }
 
   return (
-    <main data-page="opencode">
+    <main data-page="openpatent">
       {/*<HttpHeader name="Cache-Control" value="public, max-age=1, s-maxage=3600, stale-while-revalidate=86400" />*/}
-      <Title>OpenCode | The open source AI coding agent</Title>
+      <Title>openpatent | The open source AI coding agent</Title>
       <Link rel="canonical" href={config.baseUrl} />
       <Meta property="og:image" content="/social-share.png" />
       <Meta name="twitter:image" content="/social-share.png" />
@@ -112,7 +112,7 @@ export default function Home() {
                       <span data-slot="command-script">
                         <span>curl -fsSL </span>
                         <span data-slot="protocol">https://</span>
-                        <span data-slot="highlight">opencode.ai/install</span>
+                        <span data-slot="highlight">openpatent.ai/install</span>
                         <span> | bash</span>
                       </span>
                       <CopyStatus />
@@ -122,7 +122,7 @@ export default function Home() {
                     <button data-copy data-slot="command" onClick={handleCopyClick}>
                       <span>
                         <span data-slot="protocol">npm i -g </span>
-                        <span data-slot="highlight">opencode-ai</span>
+                        <span data-slot="highlight">openpatent-ai</span>
                       </span>
                       <CopyStatus />
                     </button>
@@ -131,7 +131,7 @@ export default function Home() {
                     <button data-copy data-slot="command" onClick={handleCopyClick}>
                       <span>
                         <span data-slot="protocol">bun add -g </span>
-                        <span data-slot="highlight">opencode-ai</span>
+                        <span data-slot="highlight">openpatent-ai</span>
                       </span>
                       <CopyStatus />
                     </button>
@@ -140,7 +140,7 @@ export default function Home() {
                     <button data-copy data-slot="command" onClick={handleCopyClick}>
                       <span>
                         <span data-slot="protocol">brew install </span>
-                        <span data-slot="highlight">opencode</span>
+                        <span data-slot="highlight">openpatent</span>
                       </span>
                       <CopyStatus />
                     </button>
@@ -149,7 +149,7 @@ export default function Home() {
                     <button data-copy data-slot="command" onClick={handleCopyClick}>
                       <span>
                         <span data-slot="protocol">paru -S </span>
-                        <span data-slot="highlight">opencode</span>
+                        <span data-slot="highlight">openpatent</span>
                       </span>
                       <CopyStatus />
                     </button>
@@ -167,8 +167,8 @@ export default function Home() {
 
           <section data-component="what">
             <div data-slot="section-title">
-              <h3>What is OpenCode?</h3>
-              <p>OpenCode is an open source agent that helps you write code in your terminal, IDE, or desktop.</p>
+              <h3>What is openpatent?</h3>
+              <p>openpatent is an open source agent that helps you write code in your terminal, IDE, or desktop.</p>
             </div>
             <ul>
               <li>
@@ -229,7 +229,7 @@ export default function Home() {
                 <p>
                   With over <strong>{config.github.starsFormatted.full}</strong> GitHub stars,{" "}
                   <strong>{config.stats.contributors}</strong> contributors, and over{" "}
-                  <strong>{config.stats.commits}</strong> commits, OpenCode is used and trusted by over{" "}
+                  <strong>{config.stats.commits}</strong> commits, openpatent is used and trusted by over{" "}
                   <strong>{config.stats.monthlyUsers}</strong> developers every month.
                 </p>
               </div>
@@ -642,7 +642,7 @@ export default function Home() {
                 <span>[*]</span>
 
                 <p>
-                  OpenCode does not store any of your code or context data, so that it can operate in privacy sensitive
+                  openpatent does not store any of your code or context data, so that it can operate in privacy sensitive
                   environments. Learn more about <a href="/docs/enterprise/ ">privacy</a>.
                 </p>
               </div>
@@ -655,21 +655,21 @@ export default function Home() {
             </div>
             <ul>
               <li>
-                <Faq question="What is OpenCode?">
-                  OpenCode is an open source agent that helps you write and run code with any AI model. It's available
+                <Faq question="What is openpatent?">
+                  openpatent is an open source agent that helps you write and run code with any AI model. It's available
                   as a terminal-based interface, desktop app, or IDE extension.
                 </Faq>
               </li>
               <li>
-                <Faq question="How do I use OpenCode?">
+                <Faq question="How do I use openpatent?">
                   The easiest way to get started is to read the <a href="/docs">intro</a>.
                 </Faq>
               </li>
               <li>
-                <Faq question="Do I need extra AI subscriptions to use OpenCode?">
-                  Not necessarily, OpenCode comes with a set of free models that you can use without creating an
+                <Faq question="Do I need extra AI subscriptions to use openpatent?">
+                  Not necessarily, openpatent comes with a set of free models that you can use without creating an
                   account. Aside from these, you can use any of the popular coding models by creating a{" "}
-                  <A href="/zen">Zen</A> account. While we encourage users to use Zen, OpenCode also works with all
+                  <A href="/zen">Zen</A> account. While we encourage users to use Zen, openpatent also works with all
                   popular providers such as OpenAI, Anthropic, xAI etc. You can even connect your{" "}
                   <a href="/docs/providers/#lm-studio" target="_blank">
                     local models
@@ -678,20 +678,20 @@ export default function Home() {
                 </Faq>
               </li>
               <li>
-                <Faq question="Can I use my existing AI subscriptions with OpenCode?">
-                  Yes, OpenCode supports subscription plans from all major providers. You can use your Claude Pro/Max,
+                <Faq question="Can I use my existing AI subscriptions with openpatent?">
+                  Yes, openpatent supports subscription plans from all major providers. You can use your Claude Pro/Max,
                   ChatGPT Plus/Pro, or GitHub Copilot subscriptions. <a href="/docs/providers/#directory">Learn more</a>
                   .
                 </Faq>
               </li>
               <li>
-                <Faq question="Can I only use OpenCode in the terminal?">
-                  Not anymore! OpenCode is now available as an app for your desktop.
+                <Faq question="Can I only use openpatent in the terminal?">
+                  Not anymore! openpatent is now available as an app for your desktop.
                 </Faq>
               </li>
               <li>
-                <Faq question="How much does OpenCode cost?">
-                  OpenCode is 100% free to use. It also comes with a set of free models. There might be additional costs
+                <Faq question="How much does openpatent cost?">
+                  openpatent is 100% free to use. It also comes with a set of free models. There might be additional costs
                   if you connect any other provider.
                 </Faq>
               </li>
@@ -703,8 +703,8 @@ export default function Home() {
                 </Faq>
               </li>
               <li>
-                <Faq question="Is OpenCode open source?">
-                  Yes, OpenCode is fully open source. The source code is public on{" "}
+                <Faq question="Is openpatent open source?">
+                  Yes, openpatent is fully open source. The source code is public on{" "}
                   <a href={config.github.repoUrl} target="_blank">
                     GitHub
                   </a>{" "}
@@ -723,7 +723,7 @@ export default function Home() {
             <div data-slot="zen-cta-copy">
               <strong>Access reliable optimized models for coding agents</strong>
               <p>
-                Zen gives you access to a handpicked set of AI models that OpenCode has tested and benchmarked
+                Zen gives you access to a handpicked set of AI models that openpatent has tested and benchmarked
                 specifically for coding agents. No need to worry about inconsistent performance and quality across
                 providers, use validated models that work.
               </p>

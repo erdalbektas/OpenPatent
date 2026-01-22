@@ -1,33 +1,82 @@
-class SearcherAgent:
+import os
+import requests
+from typing import Dict, List, Any
+from .base import BaseAgent
+
+class SearcherAgent(BaseAgent):
     """
     Expert in boolean logic and classification codes (CPC/IPC).
     Role: Senior Search Specialist.
-    Instruction: Given an invention, formulate search queries. Retrieve results. 
-    Summarize why a result might block the invention (Section 102/103 issues).
+    If premium: Uses OpenPatent Deep Search for superior indexing.
+    If free: Uses standard mock search tool (Google Patents simulation).
     """
-    def __init__(self, search_tool):
-        self.search_tool = search_tool
+    def __init__(self, search_tool=None):
+        # search_tool is the local fallback (e.g. Google Patents)
+        self.local_search_tool = search_tool
 
-    def run(self, invention_disclosure):
-        print("SearcherAgent: Analyzing disclosure for search strategy...")
-        # Mocking sophisticated keyword extraction and boolean logic formulation
-        terms = invention_disclosure.lower().split()
+    @property
+    def name(self) -> str:
+        return "Searcher"
+
+    @property
+    def description(self) -> str:
+        return "Senior Search Specialist for prior art identification."
+
+    def run(self, task: str, context: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Executes search. Routes to OpenPatent Cloud if API key is present.
+        """
+        disclosure = context.get("disclosure", task)
+        api_key = os.getenv("OPENPATENT_API_KEY")
+
+        if api_key:
+            print(f"SearcherAgent: [Premium] Routing to Deep Search Proxy...")
+            return self._run_remote_search(disclosure, api_key)
+        else:
+            print(f"SearcherAgent: [Free] Using local search tool (Google Patents)...")
+            return self._run_local_search(disclosure)
+
+    def _run_remote_search(self, query: str, api_key: str) -> Dict[str, Any]:
+        try:
+            response = requests.post(
+                "https://api.openpatent.com/search",
+                json={"query": query},
+                headers={"Authorization": f"Bearer {api_key}"},
+                timeout=30
+            )
+            response.raise_for_status()
+            return {
+                "status": "success",
+                "mode": "premium",
+                "results": response.json()
+            }
+        except Exception as e:
+            return {
+                "status": "error",
+                "message": f"Deep Search failed: {str(e)}"
+            }
+
+    def _run_local_search(self, disclosure: str) -> Dict[str, Any]:
+        # Mocking keyword extraction
+        terms = disclosure.lower().split()
         main_subject = terms[0] if terms else "apparatus"
         keywords = f"({main_subject} AND toasting) OR (laser AND precision AND heating)"
         
-        print(f"SearcherAgent: Formulating Boolean Query -> {keywords}")
-        results = self.search_tool(keywords)
+        if self.local_search_tool:
+            results = self.local_search_tool(keywords)
+        else:
+            # Inline fallback mock results
+            results = [
+                {"id": "US-1234567-A", "title": "Laser Toaster", "abstract": "A toaster using lasers."},
+                {"id": "EP-9876543-B1", "title": "Precision Bread Heating", "abstract": "Methods for heating bread."}
+            ]
         
-        summary = "--- SearcherAgent Analysis (Anticipated Rejections) ---\n"
-        for res in results:
-            # Mock 102/103 determination
-            if "laser" in res['title'].lower() and "toaster" in res['abstract'].lower():
-                rejection_type = "35 U.S.C. 102 (Anticipation)"
-                reason = "Identical features found in a single reference."
-            else:
-                rejection_type = "35 U.S.C. 103 (Obviousness)"
-                reason = "Differences from prior art would have been obvious to a POSITA."
-                
-            summary += f"- {res['id']} ({res['title']}): Potentially blocks under {rejection_type}. Reason: {reason}\n"
-            
-        return summary, results
+        return {
+            "status": "success",
+            "mode": "free",
+            "query": keywords,
+            "results": results
+        }
+
+    def get_tools(self) -> List[Any]:
+        return []

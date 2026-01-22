@@ -8,10 +8,10 @@ import { createSimpleContext } from "../context/helper"
 export type ColorScheme = "light" | "dark" | "system"
 
 const STORAGE_KEYS = {
-  THEME_ID: "opencode-theme-id",
-  COLOR_SCHEME: "opencode-color-scheme",
-  THEME_CSS_LIGHT: "opencode-theme-css-light",
-  THEME_CSS_DARK: "opencode-theme-css-dark",
+  THEME_ID: "openpatent-theme-id",
+  COLOR_SCHEME: "openpatent-color-scheme",
+  THEME_CSS_LIGHT: "openpatent-theme-css-light",
+  THEME_CSS_DARK: "openpatent-theme-css-dark",
 } as const
 
 const THEME_STYLE_ID = "oc-theme"
@@ -38,7 +38,7 @@ function applyThemeCss(theme: DesktopTheme, themeId: string, mode: "light" | "da
   if (themeId !== "oc-1") {
     try {
       localStorage.setItem(isDark ? STORAGE_KEYS.THEME_CSS_DARK : STORAGE_KEYS.THEME_CSS_LIGHT, css)
-    } catch {}
+    } catch { }
   }
 
   const fullCss = `:root {
@@ -62,7 +62,7 @@ function cacheThemeVariants(theme: DesktopTheme, themeId: string) {
     const css = themeToCss(tokens)
     try {
       localStorage.setItem(isDark ? STORAGE_KEYS.THEME_CSS_DARK : STORAGE_KEYS.THEME_CSS_LIGHT, css)
-    } catch {}
+    } catch { }
   }
 }
 

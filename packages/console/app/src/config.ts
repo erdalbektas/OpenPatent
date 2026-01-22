@@ -3,11 +3,11 @@
  */
 export const config = {
   // Base URL
-  baseUrl: "https://opencode.ai",
+  baseUrl: "https://openpatent.ai",
 
   // GitHub
   github: {
-    repoUrl: "https://github.com/sst/opencode",
+    repoUrl: "https://github.com/sst/openpatent",
     starsFormatted: {
       compact: "41K",
       full: "41,000",
@@ -16,8 +16,8 @@ export const config = {
 
   // Social links
   social: {
-    twitter: "https://x.com/opencode",
-    discord: "https://discord.gg/opencode",
+    twitter: "https://x.com/openpatent",
+    discord: "https://discord.gg/openpatent",
   },
 
   // Static stats (used on landing page)

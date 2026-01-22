@@ -51,9 +51,9 @@ test("headers are passed to transports when oauth is enabled (default)", async (
   await using tmp = await tmpdir({
     init: async (dir) => {
       await Bun.write(
-        `${dir}/opencode.json`,
+        `${dir}/openpatent.json`,
         JSON.stringify({
-          $schema: "https://opencode.ai/config.json",
+          $schema: "https://openpatent.ai/config.json",
           mcp: {
             "test-server": {
               type: "remote",
@@ -80,7 +80,7 @@ test("headers are passed to transports when oauth is enabled (default)", async (
           Authorization: "Bearer test-token",
           "X-Custom-Header": "custom-value",
         },
-      }).catch(() => {})
+      }).catch(() => { })
 
       // Both transports should have been created with headers
       expect(transportCalls.length).toBeGreaterThanOrEqual(1)
@@ -113,7 +113,7 @@ test("headers are passed to transports when oauth is explicitly disabled", async
         headers: {
           Authorization: "Bearer test-token",
         },
-      }).catch(() => {})
+      }).catch(() => { })
 
       expect(transportCalls.length).toBeGreaterThanOrEqual(1)
 
@@ -140,7 +140,7 @@ test("no requestInit when headers are not provided", async () => {
       await MCP.add("test-server-no-headers", {
         type: "remote",
         url: "https://example.com/mcp",
-      }).catch(() => {})
+      }).catch(() => { })
 
       expect(transportCalls.length).toBeGreaterThanOrEqual(1)
 

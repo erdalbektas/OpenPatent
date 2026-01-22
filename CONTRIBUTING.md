@@ -1,11 +1,11 @@
-# Contributing to OpenCode
+# Contributing to OpenPatent
 
-We want to make it easy for you to contribute to OpenCode. Here are the most common type of changes that get merged:
+We want to make it easy for you to contribute to OpenPatent. Here are the most common type of changes that get merged:
 
 - Bug fixes
-- Additional LSPs / Formatters
-- Improvements to LLM performance
-- Support for new providers
+- Additional patent agents
+- Improvements to agent performance
+- Support for new LLM providers
 - Fixes for environment-specific quirks
 - Missing standard behavior
 - Documentation improvements
@@ -14,17 +14,17 @@ However, any UI or core product feature must go through a design review with the
 
 If you are unsure if a PR would be accepted, feel free to ask a maintainer or look for issues with any of the following labels:
 
-- [`help wanted`](https://github.com/sst/opencode/issues?q=is%3Aissue%20state%3Aopen%20label%3Ahelp-wanted)
-- [`good first issue`](https://github.com/sst/opencode/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22good%20first%20issue%22)
-- [`bug`](https://github.com/sst/opencode/issues?q=is%3Aissue%20state%3Aopen%20label%3Abug)
-- [`perf`](https://github.com/sst/opencode/issues?q=is%3Aopen%20is%3Aissue%20label%3A%22perf%22)
+- [`help wanted`](https://github.com/openpatent/openpatent/issues?q=is%3Aissue%20state%3Aopen%20label%3Ahelp-wanted)
+- [`good first issue`](https://github.com/openpatent/openpatent/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22good%20first%20issue%22)
+- [`bug`](https://github.com/openpatent/openpatent/issues?q=is%3Aissue%20state%3Aopen%20label%3Abug)
+- [`perf`](https://github.com/openpatent/openpatent/issues?q=is%3Aopen%20is%3Aissue%20label%3A%22perf%22)
 
 > [!NOTE]
 > PRs that ignore these guardrails will likely be closed.
 
 Want to take on an issue? Leave a comment and a maintainer may assign it to you unless it is something we are already working on.
 
-## Developing OpenCode
+## Developing OpenPatent
 
 - Requirements: Bun 1.3+
 - Install dependencies and start the dev server from the repo root:
@@ -36,97 +36,64 @@ Want to take on an issue? Leave a comment and a maintainer may assign it to you 
 
 ### Running against a different directory
 
-By default, `bun dev` runs OpenCode in the `packages/opencode` directory. To run it against a different directory or repository:
+By default, `bun dev` runs OpenPatent in the `packages/openpatent` directory. To run it against a different directory or repository:
 
 ```bash
 bun dev <directory>
 ```
 
-To run OpenCode in the root of the opencode repo itself:
+To run OpenPatent in the root of the openpatent repo itself:
 
 ```bash
 bun dev .
 ```
 
-### Building a "localcode"
+### Project Structure
 
-To compile a standalone executable:
-
-```bash
-./packages/opencode/script/build.ts --single
+```
+openpatent/
+├── openpatent_django/        # Django server for premium agents
+│   └── apps/patent/        # Patent agents and models
+├── packages/
+│   ├── desktop/            # Tauri desktop application
+│   ├── app/                # SolidJS core UI
+│   ├── openpatent/         # CLI tool (patent workflow)
+│   └── ui/                 # UI components
+├── docs/                   # Documentation
+└── patent_suite/           # Standalone patent tools
 ```
 
-Then run it with:
+### Testing
 
 ```bash
-./packages/opencode/dist/opencode-<platform>/bin/opencode
+# Django tests
+cd openpatent_django
+python manage.py test apps.patent.tests.test_agents
+
+# Frontend tests
+cd packages/desktop
+bun test
 ```
 
-Replace `<platform>` with your platform (e.g., `darwin-arm64`, `linux-x64`).
+## Code Style
 
-- Core pieces:
-  - `packages/opencode`: OpenCode core business logic & server.
-  - `packages/opencode/src/cli/cmd/tui/`: The TUI code, written in SolidJS with [opentui](https://github.com/sst/opentui)
-  - `packages/plugin`: Source for `@opencode-ai/plugin`
+OpenPatent follows the style guide in `STYLE_GUIDE.md`. Key points:
 
-> [!NOTE]
-> If you make changes to the API or SDK (e.g. `packages/opencode/src/server/server.ts`), run `./script/generate.ts` to regenerate the SDK and related files.
+- Use Bun APIs where possible
+- Avoid try/catch when possible
+- Avoid else statements
+- Prefer single word variables where possible
+- No comments unless explicitly requested
 
-Please try to follow the [style guide](./STYLE_GUIDE.md)
+## Submitting Changes
 
-### Setting up a Debugger
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/my-feature`
+3. Make your changes
+4. Run tests and linting
+5. Submit a pull request
 
-Bun debugging is currently rough around the edges. We hope this guide helps you get set up and avoid some pain points.
+## Getting Help
 
-The most reliable way to debug OpenCode is to run it manually in a terminal via `bun run --inspect=<url> dev ...` and attach
-your debugger via that URL. Other methods can result in breakpoints being mapped incorrectly, at least in VSCode (YMMV).
-
-Caveats:
-
-- If you want to run the OpenCode TUI and have breakpoints triggered in the server code, you might need to run `bun dev spawn` instead of
-  the usual `bun dev`. This is because `bun dev` runs the server in a worker thread and breakpoints might not work there.
-- If `spawn` does not work for you, you can debug the server separately:
-  - Debug server: `bun run --inspect=ws://localhost:6499/ ./src/index.ts serve --port 4096`,
-    then attach TUI with `opencode attach http://localhost:4096`
-  - Debug TUI: `bun run --inspect=ws://localhost:6499/ --conditions=browser ./src/index.ts`
-
-Other tips and tricks:
-
-- You might want to use `--inspect-wait` or `--inspect-brk` instead of `--inspect`, depending on your workflow
-- Specifying `--inspect=ws://localhost:6499/` on every invocation can be tiresome, you may want to `export BUN_OPTIONS=--inspect=ws://localhost:6499/` instead
-
-#### VSCode Setup
-
-If you use VSCode, you can use our example configurations [.vscode/settings.example.json](.vscode/settings.example.json) and [.vscode/launch.example.json](.vscode/launch.example.json).
-
-Some debug methods that can be problematic:
-
-- Debug configurations with `"request": "launch"` can have breakpoints incorrectly mapped and thus unusable
-- The same problem arises when running OpenCode in the VSCode `JavaScript Debug Terminal`
-
-With that said, you may want to try these methods, as they might work for you.
-
-## Pull Request Expectations
-
-- Try to keep pull requests small and focused.
-- Link relevant issue(s) in the description
-- Explain the issue and why your change fixes it
-- Avoid having verbose LLM generated PR descriptions
-- Before adding new functions or functionality, ensure that such behavior doesn't already exist elsewhere in the codebase.
-
-### Style Preferences
-
-These are not strictly enforced, they are just general guidelines:
-
-- **Functions:** Keep logic within a single function unless breaking it out adds clear reuse or composition benefits.
-- **Destructuring:** Do not do unnecessary destructuring of variables.
-- **Control flow:** Avoid `else` statements.
-- **Error handling:** Prefer `.catch(...)` instead of `try`/`catch` when possible.
-- **Types:** Reach for precise types and avoid `any`.
-- **Variables:** Stick to immutable patterns and avoid `let`.
-- **Naming:** Choose concise single-word identifiers when they remain descriptive.
-- **Runtime APIs:** Use Bun helpers such as `Bun.file()` when they fit the use case.
-
-## Feature Requests
-
-For net-new functionality, start with a design conversation. Open an issue describing the problem, your proposed approach (optional), and why it belongs in OpenCode. The core team will help decide whether it should move forward; please wait for that approval instead of opening a feature PR directly.
+- Discord: https://openpatent.ai/discord
+- GitHub Issues: https://github.com/openpatent/openpatent/issues

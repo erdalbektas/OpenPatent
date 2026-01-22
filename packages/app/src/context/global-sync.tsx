@@ -16,16 +16,16 @@ import {
   type LspStatus,
   type VcsInfo,
   type Permission,
-  createOpencodeClient,
-} from "@opencode-ai/sdk/v2/client"
+  createopenpatentClient,
+} from "@openpatent-ai/sdk/v2/client"
 import { createStore, produce, reconcile } from "solid-js/store"
-import { Binary } from "@opencode-ai/util/binary"
-import { retry } from "@opencode-ai/util/retry"
+import { Binary } from "@openpatent-ai/util/binary"
+import { retry } from "@openpatent-ai/util/retry"
 import { useGlobalSDK } from "./global-sdk"
 import { ErrorPage, type InitError } from "../pages/error"
 import { batch, createContext, useContext, onMount, type ParentProps, Switch, Match } from "solid-js"
-import { showToast } from "@opencode-ai/ui/toast"
-import { getFilename } from "@opencode-ai/util/path"
+import { showToast } from "@openpatent-ai/ui/toast"
+import { getFilename } from "@openpatent-ai/util/path"
 
 type State = {
   ready: boolean
@@ -136,7 +136,7 @@ function createGlobalSync() {
   async function bootstrapInstance(directory: string) {
     if (!directory) return
     const [store, setStore] = child(directory)
-    const sdk = createOpencodeClient({
+    const sdk = createopenpatentClient({
       baseUrl: globalSDK.url,
       directory,
       throwOnError: true,
@@ -382,7 +382,7 @@ function createGlobalSync() {
         break
       }
       case "lsp.updated": {
-        const sdk = createOpencodeClient({
+        const sdk = createopenpatentClient({
           baseUrl: globalSDK.url,
           directory,
           throwOnError: true,
@@ -416,7 +416,7 @@ function createGlobalSync() {
         globalSDK.client.project.list().then(async (x) => {
           setGlobalStore(
             "project",
-            x.data!.filter((p) => !p.worktree.includes("opencode-test")).sort((a, b) => a.id.localeCompare(b.id)),
+            x.data!.filter((p) => !p.worktree.includes("openpatent-test")).sort((a, b) => a.id.localeCompare(b.id)),
           )
         }),
       ),

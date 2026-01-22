@@ -193,7 +193,7 @@ export namespace Session {
       info: result,
     })
     const cfg = await Config.get()
-    if (!result.parentID && (Flag.OPENCODE_AUTO_SHARE || cfg.share === "auto"))
+    if (!result.parentID && (Flag.openpatent_AUTO_SHARE || cfg.share === "auto"))
       share(result.id)
         .then((share) => {
           update(result.id, (draft) => {
@@ -300,7 +300,7 @@ export namespace Session {
       for (const child of await children(sessionID)) {
         await remove(child.id)
       }
-      await unshare(sessionID).catch(() => {})
+      await unshare(sessionID).catch(() => { })
       for (const msg of await Storage.list(["message", sessionID])) {
         for (const part of await Storage.list(["part", msg.at(-1)!])) {
           await Storage.remove(part)

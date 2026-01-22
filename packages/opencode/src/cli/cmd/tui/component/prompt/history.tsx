@@ -5,7 +5,7 @@ import { createStore, produce } from "solid-js/store"
 import { clone } from "remeda"
 import { createSimpleContext } from "../../context/helper"
 import { appendFile, writeFile } from "fs/promises"
-import type { AgentPart, FilePart, TextPart } from "@opencode-ai/sdk/v2"
+import type { AgentPart, FilePart, TextPart } from "@openpatent-ai/sdk/v2"
 
 export type PromptInfo = {
   input: string
@@ -14,14 +14,14 @@ export type PromptInfo = {
     | Omit<FilePart, "id" | "messageID" | "sessionID">
     | Omit<AgentPart, "id" | "messageID" | "sessionID">
     | (Omit<TextPart, "id" | "messageID" | "sessionID"> & {
-        source?: {
-          text: {
-            start: number
-            end: number
-            value: string
-          }
+      source?: {
+        text: {
+          start: number
+          end: number
+          value: string
         }
-      })
+      }
+    })
   )[]
 }
 
@@ -51,7 +51,7 @@ export const { use: usePromptHistory, provider: PromptHistoryProvider } = create
       // Rewrite file with only valid entries to self-heal corruption
       if (lines.length > 0) {
         const content = lines.map((line) => JSON.stringify(line)).join("\n") + "\n"
-        writeFile(historyFile.name!, content).catch(() => {})
+        writeFile(historyFile.name!, content).catch(() => { })
       }
     })
 
@@ -97,11 +97,11 @@ export const { use: usePromptHistory, provider: PromptHistoryProvider } = create
 
         if (trimmed) {
           const content = store.history.map((line) => JSON.stringify(line)).join("\n") + "\n"
-          writeFile(historyFile.name!, content).catch(() => {})
+          writeFile(historyFile.name!, content).catch(() => { })
           return
         }
 
-        appendFile(historyFile.name!, JSON.stringify(entry) + "\n").catch(() => {})
+        appendFile(historyFile.name!, JSON.stringify(entry) + "\n").catch(() => { })
       },
     }
   },

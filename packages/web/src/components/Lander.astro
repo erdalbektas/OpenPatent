@@ -24,7 +24,7 @@ const discord = config.social.filter(s => s.icon === 'discord')[0];
 
 const command = "curl -fsSL"
 const protocol = "https://"
-const url = "opencode.ai/install"
+const url = "openpatent.ai/install"
 const bash = "| bash"
 
 let darkImage: ImageMetadata | undefined;
@@ -85,9 +85,9 @@ if (image) {
     <section class="alternatives">
       <div class="col1">
         <h3>npm</h3>
-        <button class="command" data-command="npm install -g opencode-ai">
+        <button class="command" data-command="npm install -g openpatent-ai">
           <code>
-            <span>npm install -g</span> <span class="highlight">opencode-ai</span>
+            <span>npm install -g</span> <span class="highlight">openpatent-ai</span>
           </code>
           <span class="copy">
             <CopyIcon />
@@ -97,9 +97,9 @@ if (image) {
       </div>
       <div class="col2">
         <h3>Bun</h3>
-        <button class="command" data-command="bun install -g opencode-ai">
+        <button class="command" data-command="bun install -g openpatent-ai">
           <code>
-            <span>bun install -g</span> <span class="highlight">opencode-ai</span>
+            <span>bun install -g</span> <span class="highlight">openpatent-ai</span>
           </code>
           <span class="copy">
             <CopyIcon />
@@ -109,9 +109,9 @@ if (image) {
       </div>
       <div class="col3">
         <h3>Homebrew</h3>
-        <button class="command" data-command="brew install opencode">
+        <button class="command" data-command="brew install openpatent">
           <code>
-            <span>brew install</span> <span class="highlight">opencode</span>
+            <span>brew install</span> <span class="highlight">openpatent</span>
           </code>
           <span class="copy">
             <CopyIcon />
@@ -121,9 +121,9 @@ if (image) {
       </div>
       <div class="col4">
         <h3>Paru</h3>
-        <button class="command" data-command="paru -S opencode-bin">
+        <button class="command" data-command="paru -S openpatent-bin">
           <code>
-            <span>paru -S</span> <span class="highlight">opencode-bin</span>
+            <span>paru -S</span> <span class="highlight">openpatent-bin</span>
           </code>
           <span class="copy">
             <CopyIcon />
@@ -133,9 +133,9 @@ if (image) {
       </div>
       <div class="col4">
         <h3>Mise</h3>
-        <button class="command" data-command="mise use -g github:sst/opencode">
+        <button class="command" data-command="mise use -g github:sst/openpatent">
           <code>
-            <span>mise use -g</span> <span class="highlight">github:sst/opencode</span>
+            <span>mise use -g</span> <span class="highlight">github:sst/openpatent</span>
           </code>
           <span class="copy">
             <CopyIcon />
@@ -148,26 +148,26 @@ if (image) {
     <section class="images">
       <div class="left">
         <figure>
-          <figcaption>opencode TUI with the tokyonight theme</figcaption>
+          <figcaption>openpatent TUI with the tokyonight theme</figcaption>
           <a href="/docs/cli">
-            <Image src={TuiScreenshot} alt="opencode TUI with the tokyonight theme" />
+            <Image src={TuiScreenshot} alt="openpatent TUI with the tokyonight theme" />
           </a>
         </figure>
       </div>
       <div class="right">
         <div class="row1">
           <figure>
-            <figcaption>opencode in VS Code</figcaption>
+            <figcaption>openpatent in VS Code</figcaption>
             <a href="/docs/ide">
-              <Image src={VscodeScreenshot} alt="opencode in VS Code" />
+              <Image src={VscodeScreenshot} alt="openpatent in VS Code" />
             </a>
           </figure>
         </div>
         <div class="row2">
           <figure>
-            <figcaption>opencode in GitHub</figcaption>
+            <figcaption>openpatent in GitHub</figcaption>
             <a href="/docs/github">
-              <Image src={GithubScreenshot} alt="opencode in GitHub" />
+              <Image src={GithubScreenshot} alt="openpatent in GitHub" />
             </a>
           </figure>
         </div>

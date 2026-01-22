@@ -15,7 +15,7 @@ export namespace Clipboard {
     const os = platform()
 
     if (os === "darwin") {
-      const tmpfile = path.join(tmpdir(), "opencode-clipboard.png")
+      const tmpfile = path.join(tmpdir(), "openpatent-clipboard.png")
       try {
         await $`osascript -e 'set imageData to the clipboard as "PNGf"' -e 'set fileRef to open for access POSIX file "${tmpfile}" with write permission' -e 'set eof fileRef to 0' -e 'write imageData to fileRef' -e 'close access fileRef'`
           .nothrow()
@@ -52,7 +52,7 @@ export namespace Clipboard {
       }
     }
 
-    const text = await clipboardy.read().catch(() => {})
+    const text = await clipboardy.read().catch(() => { })
     if (text) {
       return { data: text, mime: "text/plain" }
     }
@@ -76,7 +76,7 @@ export namespace Clipboard {
           const proc = Bun.spawn(["wl-copy"], { stdin: "pipe", stdout: "ignore", stderr: "ignore" })
           proc.stdin.write(text)
           proc.stdin.end()
-          await proc.exited.catch(() => {})
+          await proc.exited.catch(() => { })
         }
       }
       if (Bun.which("xclip")) {
@@ -89,7 +89,7 @@ export namespace Clipboard {
           })
           proc.stdin.write(text)
           proc.stdin.end()
-          await proc.exited.catch(() => {})
+          await proc.exited.catch(() => { })
         }
       }
       if (Bun.which("xsel")) {
@@ -102,7 +102,7 @@ export namespace Clipboard {
           })
           proc.stdin.write(text)
           proc.stdin.end()
-          await proc.exited.catch(() => {})
+          await proc.exited.catch(() => { })
         }
       }
     }
@@ -117,7 +117,7 @@ export namespace Clipboard {
 
     console.log("clipboard: no native support")
     return async (text: string) => {
-      await clipboardy.write(text).catch(() => {})
+      await clipboardy.write(text).catch(() => { })
     }
   })
 

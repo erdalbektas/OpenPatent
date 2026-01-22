@@ -21,9 +21,9 @@ test("loads built-in agents when no custom agents configured", async () => {
 test("custom subagent works alongside built-in primary agents", async () => {
   await using tmp = await tmpdir({
     init: async (dir) => {
-      const opencodeDir = path.join(dir, ".opencode")
-      await fs.mkdir(opencodeDir, { recursive: true })
-      const agentDir = path.join(opencodeDir, "agent")
+      const openpatentDir = path.join(dir, ".openpatent")
+      await fs.mkdir(openpatentDir, { recursive: true })
+      const agentDir = path.join(openpatentDir, "agent")
       await fs.mkdir(agentDir, { recursive: true })
 
       await Bun.write(
@@ -56,9 +56,9 @@ test("throws error when all primary agents are disabled", async () => {
   await using tmp = await tmpdir({
     init: async (dir) => {
       await Bun.write(
-        path.join(dir, "opencode.json"),
+        path.join(dir, "openpatent.json"),
         JSON.stringify({
-          $schema: "https://opencode.ai/config.json",
+          $schema: "https://openpatent.ai/config.json",
           agent: {
             build: { disable: true },
             plan: { disable: true },
@@ -84,9 +84,9 @@ test("does not throw when at least one primary agent remains", async () => {
   await using tmp = await tmpdir({
     init: async (dir) => {
       await Bun.write(
-        path.join(dir, "opencode.json"),
+        path.join(dir, "openpatent.json"),
         JSON.stringify({
-          $schema: "https://opencode.ai/config.json",
+          $schema: "https://openpatent.ai/config.json",
           agent: {
             build: { disable: true },
           },
@@ -108,9 +108,9 @@ test("does not throw when at least one primary agent remains", async () => {
 test("custom primary agent satisfies requirement when built-ins disabled", async () => {
   await using tmp = await tmpdir({
     init: async (dir) => {
-      const opencodeDir = path.join(dir, ".opencode")
-      await fs.mkdir(opencodeDir, { recursive: true })
-      const agentDir = path.join(opencodeDir, "agent")
+      const openpatentDir = path.join(dir, ".openpatent")
+      await fs.mkdir(openpatentDir, { recursive: true })
+      const agentDir = path.join(openpatentDir, "agent")
       await fs.mkdir(agentDir, { recursive: true })
 
       await Bun.write(
@@ -123,9 +123,9 @@ Custom primary agent`,
       )
 
       await Bun.write(
-        path.join(dir, "opencode.json"),
+        path.join(dir, "openpatent.json"),
         JSON.stringify({
-          $schema: "https://opencode.ai/config.json",
+          $schema: "https://openpatent.ai/config.json",
           agent: {
             build: { disable: true },
             plan: { disable: true },

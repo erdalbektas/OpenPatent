@@ -1,12 +1,12 @@
 {
-  "name": "@opencode-ai/console-app",
+  "name": "@openpatent-ai/console-app",
   "version": "1.0.209",
   "type": "module",
   "scripts": {
     "typecheck": "tsgo --noEmit",
     "dev": "vite dev --host 0.0.0.0",
-    "dev:remote": "VITE_AUTH_URL=https://auth.dev.opencode.ai bun sst shell --stage=dev bun dev",
-    "build": "./script/generate-sitemap.ts && vite build && ../../opencode/script/schema.ts ./.output/public/config.json",
+    "dev:remote": "VITE_AUTH_URL=https://auth.dev.openpatent.ai bun sst shell --stage=dev bun dev",
+    "build": "./script/generate-sitemap.ts && vite build && ../../openpatent/script/schema.ts ./.output/public/config.json",
     "start": "vite start"
   },
   "dependencies": {
@@ -15,10 +15,10 @@
     "@jsx-email/render": "1.1.1",
     "@kobalte/core": "catalog:",
     "@openauthjs/openauth": "catalog:",
-    "@opencode-ai/console-core": "workspace:*",
-    "@opencode-ai/console-mail": "workspace:*",
-    "@opencode-ai/console-resource": "workspace:*",
-    "@opencode-ai/ui": "workspace:*",
+    "@openpatent-ai/console-core": "workspace:*",
+    "@openpatent-ai/console-mail": "workspace:*",
+    "@openpatent-ai/console-resource": "workspace:*",
+    "@openpatent-ai/ui": "workspace:*",
     "@solidjs/meta": "catalog:",
     "@solidjs/router": "catalog:",
     "@solidjs/start": "catalog:",

@@ -11,9 +11,9 @@ test("Bedrock: config region takes precedence over AWS_REGION env var", async ()
   await using tmp = await tmpdir({
     init: async (dir) => {
       await Bun.write(
-        path.join(dir, "opencode.json"),
+        path.join(dir, "openpatent.json"),
         JSON.stringify({
-          $schema: "https://opencode.ai/config.json",
+          $schema: "https://openpatent.ai/config.json",
           provider: {
             "amazon-bedrock": {
               options: {
@@ -44,9 +44,9 @@ test("Bedrock: falls back to AWS_REGION env var when no config", async () => {
   await using tmp = await tmpdir({
     init: async (dir) => {
       await Bun.write(
-        path.join(dir, "opencode.json"),
+        path.join(dir, "openpatent.json"),
         JSON.stringify({
-          $schema: "https://opencode.ai/config.json",
+          $schema: "https://openpatent.ai/config.json",
         }),
       )
     },
@@ -69,9 +69,9 @@ test("Bedrock: without explicit region config, uses AWS_REGION env or defaults",
   await using tmp = await tmpdir({
     init: async (dir) => {
       await Bun.write(
-        path.join(dir, "opencode.json"),
+        path.join(dir, "openpatent.json"),
         JSON.stringify({
-          $schema: "https://opencode.ai/config.json",
+          $schema: "https://openpatent.ai/config.json",
         }),
       )
     },
@@ -96,9 +96,9 @@ test("Bedrock: uses config region in provider options", async () => {
   await using tmp = await tmpdir({
     init: async (dir) => {
       await Bun.write(
-        path.join(dir, "opencode.json"),
+        path.join(dir, "openpatent.json"),
         JSON.stringify({
-          $schema: "https://opencode.ai/config.json",
+          $schema: "https://openpatent.ai/config.json",
           provider: {
             "amazon-bedrock": {
               options: {
@@ -129,9 +129,9 @@ test("Bedrock: respects config region for different instances", async () => {
   await using tmp1 = await tmpdir({
     init: async (dir) => {
       await Bun.write(
-        path.join(dir, "opencode.json"),
+        path.join(dir, "openpatent.json"),
         JSON.stringify({
-          $schema: "https://opencode.ai/config.json",
+          $schema: "https://openpatent.ai/config.json",
           provider: {
             "amazon-bedrock": {
               options: {
@@ -160,9 +160,9 @@ test("Bedrock: respects config region for different instances", async () => {
   await using tmp2 = await tmpdir({
     init: async (dir) => {
       await Bun.write(
-        path.join(dir, "opencode.json"),
+        path.join(dir, "openpatent.json"),
         JSON.stringify({
-          $schema: "https://opencode.ai/config.json",
+          $schema: "https://openpatent.ai/config.json",
           provider: {
             "amazon-bedrock": {
               options: {
@@ -192,9 +192,9 @@ test("Bedrock: loads when bearer token from auth.json is present", async () => {
   await using tmp = await tmpdir({
     init: async (dir) => {
       await Bun.write(
-        path.join(dir, "opencode.json"),
+        path.join(dir, "openpatent.json"),
         JSON.stringify({
-          $schema: "https://opencode.ai/config.json",
+          $schema: "https://openpatent.ai/config.json",
           provider: {
             "amazon-bedrock": {
               options: {

@@ -1,8 +1,8 @@
-import type { Hooks, PluginInput, Plugin as PluginInstance } from "@opencode-ai/plugin"
+import type { Hooks, PluginInput, Plugin as PluginInstance } from "@openpatent-ai/plugin"
 import { Config } from "../config/config"
 import { Bus } from "../bus"
 import { Log } from "../util/log"
-import { createOpencodeClient } from "@opencode-ai/sdk"
+import { createopenpatentClient } from "@openpatent-ai/sdk"
 import { Server } from "../server/server"
 import { BunProc } from "../bun"
 import { Instance } from "../project/instance"
@@ -12,7 +12,7 @@ export namespace Plugin {
   const log = Log.create({ service: "plugin" })
 
   const state = Instance.state(async () => {
-    const client = createOpencodeClient({
+    const client = createopenpatentClient({
       baseUrl: "http://localhost:4096",
       // @ts-ignore - fetch type incompatibility
       fetch: async (...args) => Server.App().fetch(...args),
@@ -28,9 +28,9 @@ export namespace Plugin {
       $: Bun.$,
     }
     const plugins = [...(config.plugin ?? [])]
-    if (!Flag.OPENCODE_DISABLE_DEFAULT_PLUGINS) {
-      plugins.push("opencode-copilot-auth@0.0.9")
-      plugins.push("opencode-anthropic-auth@0.0.5")
+    if (!Flag.openpatent_DISABLE_DEFAULT_PLUGINS) {
+      plugins.push("openpatent-copilot-auth@0.0.9")
+      plugins.push("openpatent-anthropic-auth@0.0.5")
     }
     for (let plugin of plugins) {
       log.info("loading plugin", { path: plugin })

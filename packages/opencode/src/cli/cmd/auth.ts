@@ -10,7 +10,7 @@ import { Config } from "../../config/config"
 import { Global } from "../../global"
 import { Plugin } from "../../plugin"
 import { Instance } from "../../project/instance"
-import type { Hooks } from "@opencode-ai/plugin"
+import type { Hooks } from "@openpatent-ai/plugin"
 
 type PluginAuth = NonNullable<Hooks["auth"]>
 
@@ -164,7 +164,7 @@ export const AuthCommand = cmd({
   describe: "manage credentials",
   builder: (yargs) =>
     yargs.command(AuthLoginCommand).command(AuthLogoutCommand).command(AuthListCommand).demandCommand(),
-  async handler() {},
+  async handler() { },
 })
 
 export const AuthListCommand = cmd({
@@ -219,7 +219,7 @@ export const AuthLoginCommand = cmd({
   describe: "log in to a provider",
   builder: (yargs) =>
     yargs.positional("url", {
-      describe: "opencode auth provider",
+      describe: "openpatent auth provider",
       type: "string",
     }),
   async handler(args) {
@@ -229,7 +229,7 @@ export const AuthLoginCommand = cmd({
         UI.empty()
         prompts.intro("Add credential")
         if (args.url) {
-          const wellknown = await fetch(`${args.url}/.well-known/opencode`).then((x) => x.json() as any)
+          const wellknown = await fetch(`${args.url}/.well-known/openpatent`).then((x) => x.json() as any)
           prompts.log.info(`Running \`${wellknown.auth.command.join(" ")}\``)
           const proc = Bun.spawn({
             cmd: wellknown.auth.command,
@@ -251,7 +251,7 @@ export const AuthLoginCommand = cmd({
           prompts.outro("Done")
           return
         }
-        await ModelsDev.refresh().catch(() => {})
+        await ModelsDev.refresh().catch(() => { })
 
         const config = await Config.get()
 
@@ -269,7 +269,7 @@ export const AuthLoginCommand = cmd({
         })
 
         const priority: Record<string, number> = {
-          opencode: 0,
+          openpatent: 0,
           anthropic: 1,
           "github-copilot": 2,
           openai: 3,
@@ -292,7 +292,7 @@ export const AuthLoginCommand = cmd({
                 label: x.name,
                 value: x.id,
                 hint: {
-                  opencode: "recommended",
+                  openpatent: "recommended",
                   anthropic: "Claude Max or API key",
                 }[x.id],
               })),
@@ -329,7 +329,7 @@ export const AuthLoginCommand = cmd({
           }
 
           prompts.log.warn(
-            `This only stores a credential for ${provider} - you will need configure it in opencode.json, check the docs for examples.`,
+            `This only stores a credential for ${provider} - you will need configure it in openpatent.json, check the docs for examples.`,
           )
         }
 
@@ -341,8 +341,8 @@ export const AuthLoginCommand = cmd({
           return
         }
 
-        if (provider === "opencode") {
-          prompts.log.info("Create an api key at https://opencode.ai/auth")
+        if (provider === "openpatent") {
+          prompts.log.info("Create an api key at https://openpatent.ai/auth")
         }
 
         if (provider === "vercel") {

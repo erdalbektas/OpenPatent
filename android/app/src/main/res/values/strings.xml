@@ -1,0 +1,92 @@
+<resources>
+    <string name="app_name">OpenPatent</string>
+    
+    <!-- Auth -->
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="logout">Logout</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="username">Username</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="dont_have_account">Don\'t have an account?</string>
+    <string name="already_have_account">Already have an account?</string>
+    
+    <!-- Navigation -->
+    <string name="home">Home</string>
+    <string name="agents">Agents</string>
+    <string name="sessions">Sessions</string>
+    <string name="settings">Settings</string>
+    <string name="orchestrator">Orchestrator</string>
+    <string name="billing">Billing</string>
+    
+    <!-- Home -->
+    <string name="welcome_back">Welcome back</string>
+    <string name="quota_status">Quota Status</string>
+    <string name="recent_sessions">Recent Sessions</string>
+    <string name="quick_actions">Quick Actions</string>
+    <string name="new_session">New Session</string>
+    <string name="run_agent">Run Agent</string>
+    
+    <!-- Agents -->
+    <string name="premium_agents">Premium Agents</string>
+    <string name="local_agents">Local Agents</string>
+    <string name="execute_agent">Execute Agent</string>
+    <string name="agent_details">Agent Details</string>
+    <string name="quota_remaining">Quota Remaining</string>
+    <string name="enter_task">Enter your task…</string>
+    <string name="send">Send</string>
+    
+    <!-- Sessions -->
+    <string name="patent_sessions">Patent Sessions</string>
+    <string name="create_session">Create Session</string>
+    <string name="delete_session">Delete Session</string>
+    <string name="session_title">Session Title</string>
+    <string name="invention_title">Invention Title</string>
+    <string name="claims">Claims</string>
+    <string name="specification">Specification</string>
+    <string name="prior_art">Prior Art</string>
+    <string name="share_session">Share Session</string>
+    
+    <!-- Orchestrator -->
+    <string name="create_plan">Create Plan</string>
+    <string name="execute_plan">Execute Plan</string>
+    <string name="templates">Templates</string>
+    <string name="thinking_log">Thinking Log</string>
+    <string name="technology">Technology</string>
+    <string name="software">Software</string>
+    <string name="ai_ml">AI/ML</string>
+    <string name="biotech">Biotech</string>
+    <string name="mechanics">Mechanics</string>
+    
+    <!-- Billing -->
+    <string name="subscription">Subscription</string>
+    <string name="current_plan">Current Plan</string>
+    <string name="free_plan">Free</string>
+    <string name="pro_plan">Pro</string>
+    <string name="enterprise_plan">Enterprise</string>
+    <string name="upgrade">Upgrade</string>
+    <string name="manage_subscription">Manage Subscription</string>
+    <string name="subscribe_via_web">Subscribe via Web</string>
+    <string name="pricing">Pricing</string>
+    <string name="per_month">/month</string>
+    
+    <!-- Settings -->
+    <string name="server_url">Server URL</string>
+    <string name="theme">Theme</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="about">About</string>
+    <string name="version">Version</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    
+    <!-- Common -->
+    <string name="loading">Loading…</string>
+    <string name="error">Error</string>
+    <string name="retry">Retry</string>
+    <string name="ok">OK</string>
+    <string name="no_data">No data available</string>
+    <string name="no_internet">No internet connection</string>
+    <string name="pull_to_refresh">Pull to refresh</string>
+</resources>

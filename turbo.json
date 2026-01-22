@@ -3,11 +3,17 @@
   "tasks": {
     "typecheck": {},
     "build": {
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**"]
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "dist/**"
+      ]
     },
-    "opencode#test": {
-      "dependsOn": ["^build"],
+    "openpatent#test": {
+      "dependsOn": [
+        "^build"
+      ],
       "outputs": []
     }
   }

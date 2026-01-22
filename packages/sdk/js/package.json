@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
-  "name": "@opencode-ai/sdk",
+  "name": "@openpatent-ai/sdk",
   "version": "1.0.209",
   "type": "module",
   "scripts": {

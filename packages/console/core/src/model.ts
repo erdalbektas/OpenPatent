@@ -5,7 +5,7 @@ import { ModelTable } from "./schema/model.sql"
 import { Identifier } from "./identifier"
 import { fn } from "./util/fn"
 import { Actor } from "./actor"
-import { Resource } from "@opencode-ai/console-resource"
+import { Resource } from "@openpatent-ai/console-resource"
 
 export namespace ZenData {
   const FormatSchema = z.enum(["anthropic", "google", "openai", "oa-compat"])
@@ -69,11 +69,11 @@ export namespace ZenData {
   export const list = fn(z.void(), () => {
     const json = JSON.parse(
       Resource.ZEN_MODELS1.value +
-        Resource.ZEN_MODELS2.value +
-        Resource.ZEN_MODELS3.value +
-        Resource.ZEN_MODELS4.value +
-        Resource.ZEN_MODELS5.value +
-        Resource.ZEN_MODELS6.value,
+      Resource.ZEN_MODELS2.value +
+      Resource.ZEN_MODELS3.value +
+      Resource.ZEN_MODELS4.value +
+      Resource.ZEN_MODELS5.value +
+      Resource.ZEN_MODELS6.value,
     )
     return ModelsSchema.parse(json)
   })

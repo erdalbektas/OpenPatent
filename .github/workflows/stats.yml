@@ -9,7 +9,7 @@ concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
   stats:
-    if: github.repository == 'sst/opencode'
+    if: github.repository == 'sst/openpatent'
     runs-on: blacksmith-4vcpu-ubuntu-2404
     permissions:
       contents: write

@@ -1,4 +1,4 @@
-import { useFilteredList } from "@opencode-ai/ui/hooks"
+import { useFilteredList } from "@openpatent-ai/ui/hooks"
 import { createEffect, on, Component, Show, For, onMount, onCleanup, Switch, Match, createMemo } from "solid-js"
 import { createStore, produce } from "solid-js/store"
 import { createFocusSignal } from "@solid-primitives/active-element"
@@ -8,14 +8,14 @@ import { useLayout } from "@/context/layout"
 import { useSDK } from "@/context/sdk"
 import { useNavigate, useParams } from "@solidjs/router"
 import { useSync } from "@/context/sync"
-import { FileIcon } from "@opencode-ai/ui/file-icon"
-import { Button } from "@opencode-ai/ui/button"
-import { Icon } from "@opencode-ai/ui/icon"
-import { Tooltip } from "@opencode-ai/ui/tooltip"
-import { IconButton } from "@opencode-ai/ui/icon-button"
-import { Select } from "@opencode-ai/ui/select"
-import { getDirectory, getFilename } from "@opencode-ai/util/path"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
+import { FileIcon } from "@openpatent-ai/ui/file-icon"
+import { Button } from "@openpatent-ai/ui/button"
+import { Icon } from "@openpatent-ai/ui/icon"
+import { Tooltip } from "@openpatent-ai/ui/tooltip"
+import { IconButton } from "@openpatent-ai/ui/icon-button"
+import { Select } from "@openpatent-ai/ui/select"
+import { getDirectory, getFilename } from "@openpatent-ai/util/path"
+import { useDialog } from "@openpatent-ai/ui/context/dialog"
 import { DialogSelectModel } from "@/components/dialog-select-model"
 import { DialogSelectModelUnpaid } from "@/components/dialog-select-model-unpaid"
 import { useProviders } from "@/hooks/use-providers"
@@ -653,7 +653,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
       .abort({
         sessionID: params.id!,
       })
-      .catch(() => {})
+      .catch(() => { })
 
   const addToHistory = (prompt: Prompt, mode: "normal" | "shell") => {
     const text = prompt

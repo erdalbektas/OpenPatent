@@ -110,6 +110,7 @@ urlpatterns = [
     path('api/update_rules/', update_rules, name='update_rules'),
     path('api/save_config/', save_config, name='save_config'),
     path('api/export_config/', export_config, name='export_config'),
+    path('api/illustrate/', generate_illustration_view, name='illustrate'),
 ]
 
 def export_config(request):
@@ -158,6 +159,18 @@ def update_rules(request):
     if request.method == 'POST':
         return JsonResponse({'status': 'success', 'message': 'Rules updated (simulated)'})
     return JsonResponse({'status': 'error'}, status=400)
+
+def generate_illustration_view(request):
+    """Local proxy to trigger the IllustratorAgent."""
+    from patent_suite.agents.illustrator import IllustratorAgent
+    
+    # Simple hardcoded context for the demo
+    # In a real app, this would come from the current editor content
+    claims_text = request.GET.get('claims', 'A holographic bread slicing apparatus comprising a laser array.')
+    
+    agent = IllustratorAgent()
+    result = agent.run("Generate illustration", {"claims_text": claims_text})
+    return JsonResponse(result)
 
 # --- templates ---
 INDEX_HTML = """
@@ -617,6 +630,41 @@ INDEX_HTML = """
             transform: translateX(5px);
         }
 
+        /* Toggle Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 22px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #334155;
+            transition: .4s;
+            border-radius: 22px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px; width: 16px;
+            left: 3px; bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--accent); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        .form-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
         /* Form Styles */
         .form-group {
             margin-bottom: 24px;
@@ -831,6 +879,7 @@ INDEX_HTML = """
                 <div class="tab-btn active" onclick="switchTab(this, 'rules')">Agent Rules</div>
                 <div class="tab-btn" onclick="switchTab(this, 'export')">Export Settings</div>
                 <div class="tab-btn" onclick="switchTab(this, 'advanced')">Advanced</div>
+                <div class="tab-btn" onclick="switchTab(this, 'premium')" style="color: #fbbf24;">✨ Premium / Cloud</div>
             </div>
             <div class="modal-body" id="settings-body">
                 <div id="rules-tab-content">
@@ -905,6 +954,32 @@ INDEX_HTML = """
                     <button class="btn-premium" onclick="saveAdvancedSettings()" style="width: 100%; padding: 12px; margin-top: 32px;">Save Preferences</button>
                     <p id="save-status" style="text-align:center; font-size: 12px; color: var(--accent); margin-top: 12px; display:none;">Settings Saved!</p>
                 </div>
+                <div id="premium-tab-content" style="display:none;">
+                    <h5 style="margin: 0 0 16px 0; color:#fbbf24; font-size: 11px; text-transform: uppercase;">Cloud Hybrid Configuration</h5>
+                    <div class="form-group">
+                        <label>OpenPatent Cloud API Key</label>
+                        <input type="password" id="cloud-api-key" class="form-input" placeholder="op-..." oninput="validatePremiumKey()">
+                    </div>
+                    <div class="form-row">
+                        <label style="font-size: 13px; color: var(--text-main);">Use Cloud Agents where available?</label>
+                        <label class="switch">
+                            <input type="checkbox" id="use-cloud-agents">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div id="premium-features-locked" style="margin-top: 32px; padding: 24px; border: 1px solid #334155; border-radius: 12px; text-align: center; background: rgba(251, 191, 36, 0.05);">
+                        <div style="font-size: 24px; margin-bottom: 12px;">🔒</div>
+                        <h4 style="margin: 0 0 8px 0; color: #fbbf24;">Premium Agents Locked</h4>
+                        <p style="font-size: 12px; color: var(--text-muted);">Enter your 12-digit OpenPatent Cloud API key to unlock adversarial examiners and specialized retrieval agents.</p>
+                    </div>
+                    
+                    <div id="premium-features-unlocked" style="display:none; margin-top: 32px; padding: 24px; border: 1px solid #34d399; border-radius: 12px; text-align: center; background: rgba(52, 211, 153, 0.05);">
+                        <div style="font-size: 24px; margin-bottom: 12px;">✅</div>
+                        <h4 style="margin: 0 0 8px 0; color: #34d399;">Cloud Agents Unlocked</h4>
+                        <p style="font-size: 12px; color: var(--text-muted);">Hybrid mode active. The system will now route complex legal queries through OpenPatent Cloud.</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -945,6 +1020,7 @@ INDEX_HTML = """
                 <div style="display: flex; gap: 12px; align-items: center;">
                     <button class="btn-premium comparison-btn" id="toggle-visual-tree">Visual Tree</button>
                     <button class="btn-premium comparison-btn" id="toggle-compare">Split View</button>
+                    <button class="btn-premium" id="run-illustrator-btn">🎨 Illustrate</button>
                     <button class="btn-premium">Export</button>
                 </div>
             </div>
@@ -1175,6 +1251,35 @@ INDEX_HTML = """
                 debounce(runLinter, 500)();
             });
 
+            // Illustrator Logic
+            document.getElementById('run-illustrator-btn').onclick = async () => {
+                const btn = document.getElementById('run-illustrator-btn');
+                const container = document.getElementById('illustration-container');
+                const viewport = document.getElementById('illustration-viewport');
+                const claims = editor.getValue();
+
+                btn.innerText = '✨ Generating...';
+                btn.disabled = true;
+                container.style.display = 'block';
+                viewport.innerHTML = '<div class="skeleton" style="width: 100%; height: 300px; margin: 0;"></div>';
+
+                try {
+                    const res = await fetch(`/api/illustrate/?claims=${encodeURIComponent(claims)}`);
+                    const data = await res.json();
+                    
+                    if (data.status === 'success') {
+                        viewport.innerHTML = `<img src="${data.image_url}" alt="Patent Illustration" style="max-width: 100%; height: auto;">`;
+                    } else {
+                        viewport.innerHTML = `<p style="color: #ea4335; font-size: 12px; padding: 20px;">Error: ${data.message}</p>`;
+                    }
+                } catch (e) {
+                    viewport.innerHTML = `<p style="color: #ea4335; font-size: 12px; padding: 20px;">Service unavailable.</p>`;
+                } finally {
+                    btn.innerText = '🎨 Illustrate';
+                    btn.disabled = false;
+                }
+            };
+
             // Register Hover Provider
             monaco.languages.registerHoverProvider('patent', {
                 provideHover: function(model, position) {
@@ -1268,6 +1373,22 @@ INDEX_HTML = """
             document.getElementById('rules-tab-content').style.display = tabId === 'rules' ? 'block' : 'none';
             document.getElementById('export-tab-content').style.display = tabId === 'export' ? 'block' : 'none';
             document.getElementById('advanced-tab-content').style.display = tabId === 'advanced' ? 'block' : 'none';
+            document.getElementById('premium-tab-content').style.display = tabId === 'premium' ? 'block' : 'none';
+        }
+
+        function validatePremiumKey() {
+            const key = document.getElementById('cloud-api-key').value;
+            const lockedView = document.getElementById('premium-features-locked');
+            const unlockedView = document.getElementById('premium-features-unlocked');
+            
+            // Simple validation logic for demo: key must start with 'op-' and be longer than 10 chars
+            if (key.startsWith('op-') && key.length > 10) {
+                lockedView.style.display = 'none';
+                unlockedView.style.display = 'block';
+            } else {
+                lockedView.style.display = 'block';
+                unlockedView.style.display = 'none';
+            }
         }
 
         async function saveAdvancedSettings() {
@@ -1417,7 +1538,7 @@ INDEX_HTML = """
                 const className = classMatch ? classMatch[1] : 'UnknownAgent';
                 
                 // Extract Description (docstring simulation)
-                const descMatch = content.match(/"""([\s\S]*?)"""/) || content.match(/'''([\s\S]*?)'''/);
+                const descMatch = content.match(new RegExp('"{3}([\\s\\S]*?)"{3}')) || content.match(new RegExp("'{3}([\\s\\S]*?)'{3}"));
                 const description = descMatch ? descMatch[1].trim().split('\n')[0] : 'No description provided.';
 
                 showDetectedAgent(className, description);

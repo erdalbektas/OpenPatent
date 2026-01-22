@@ -1,4 +1,4 @@
-import type { Message, Session, Part, FileDiff, SessionStatus, Permission } from "@opencode-ai/sdk/v2"
+import type { Message, Session, Part, FileDiff, SessionStatus, Permission } from "@openpatent-ai/sdk/v2"
 import { createSimpleContext } from "./helper"
 import { PreloadMultiFileDiffResult } from "@pierre/diffs/ssr"
 

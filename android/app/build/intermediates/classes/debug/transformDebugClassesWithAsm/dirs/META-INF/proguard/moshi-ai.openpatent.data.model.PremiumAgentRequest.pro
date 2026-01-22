@@ -1,0 +1,12 @@
+-if class ai.openpatent.data.model.PremiumAgentRequest
+-keepnames class ai.openpatent.data.model.PremiumAgentRequest
+-if class ai.openpatent.data.model.PremiumAgentRequest
+-keep class ai.openpatent.data.model.PremiumAgentRequestJsonAdapter {
+    public <init>(com.squareup.moshi.Moshi);
+}
+-if class ai.openpatent.data.model.PremiumAgentRequest
+-keepnames class kotlin.jvm.internal.DefaultConstructorMarker
+-if class ai.openpatent.data.model.PremiumAgentRequest
+-keepclassmembers class ai.openpatent.data.model.PremiumAgentRequest {
+    public synthetic <init>(java.lang.String,java.lang.String,java.util.Map,java.lang.String,int,kotlin.jvm.internal.DefaultConstructorMarker);
+}

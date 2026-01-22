@@ -8,7 +8,7 @@ import { Log } from "../util/log"
 import { LANGUAGE_EXTENSIONS } from "./language"
 import z from "zod"
 import type { LSPServer } from "./server"
-import { NamedError } from "@opencode-ai/util/error"
+import { NamedError } from "@openpatent-ai/util/error"
 import { withTimeout } from "../util/timeout"
 import { Instance } from "../project/instance"
 import { Filesystem } from "../util/filesystem"
@@ -68,8 +68,8 @@ export namespace LSPClient {
       // Return server initialization options
       return [input.server.initialization ?? {}]
     })
-    connection.onRequest("client/registerCapability", async () => {})
-    connection.onRequest("client/unregisterCapability", async () => {})
+    connection.onRequest("client/registerCapability", async () => { })
+    connection.onRequest("client/unregisterCapability", async () => { })
     connection.onRequest("workspace/workspaceFolders", async () => [
       {
         name: "workspace",
@@ -207,7 +207,7 @@ export namespace LSPClient {
           }),
           3000,
         )
-          .catch(() => {})
+          .catch(() => { })
           .finally(() => {
             if (debounceTimer) clearTimeout(debounceTimer)
             unsub?.()

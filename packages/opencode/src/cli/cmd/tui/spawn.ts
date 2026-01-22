@@ -10,7 +10,7 @@ export const TuiSpawnCommand = cmd({
   builder: (yargs) =>
     withNetworkOptions(yargs).positional("project", {
       type: "string",
-      describe: "path to start opencode in",
+      describe: "path to start openpatent in",
     }),
   handler: async (args) => {
     upgrade()

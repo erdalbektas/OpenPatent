@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary brand colors matching web (#1a1a2e) -->
+    <color name="primary">#FF1A1A2E</color>
+    <color name="primary_dark">#FF16213E</color>
+    <color name="primary_light">#FF2D2D44</color>
+    
+    <!-- Secondary -->
+    <color name="secondary">#FF3B82F6</color>
+    <color name="secondary_dark">#FF2563EB</color>
+    
+    <!-- Surface -->
+    <color name="surface">#FFFFFFFF</color>
+    <color name="surface_dark">#FF121212</color>
+    <color name="background">#FFF5F5F5</color>
+    <color name="background_dark">#FF1E1E1E</color>
+    
+    <!-- Text -->
+    <color name="text_primary">#FF333333</color>
+    <color name="text_secondary">#FF666666</color>
+    <color name="text_on_primary">#FFFFFFFF</color>
+    
+    <!-- Status -->
+    <color name="success">#FF10B981</color>
+    <color name="warning">#FFF59E0B</color>
+    <color name="error">#FFEF4444</color>
+    
+    <!-- Agent colors -->
+    <color name="agent_drafter">#FF3B82F6</color>
+    <color name="agent_examiner">#FF8B5CF6</color>
+    <color name="agent_searcher">#FF10B981</color>
+    <color name="agent_interrogator">#FFF59E0B</color>
+    <color name="agent_illustrator">#FFEC4899</color>
+
+    <!-- Launcher icon -->
+    <color name="ic_launcher_background">#FF1A1A2E</color>
+</resources>
