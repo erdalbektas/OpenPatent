@@ -36,7 +36,7 @@ Want to take on an issue? Leave a comment and a maintainer may assign it to you 
 
 ### Running against a different directory
 
-By default, `bun dev` runs OpenPatent in the `packages/opencode` directory. To run it against a different directory or repository:
+By default, `bun dev` runs OpenPatent in the `packages/openpatent` directory. To run it against a different directory or repository:
 
 ```bash
 bun dev <directory>

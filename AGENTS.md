@@ -1,6 +1,6 @@
 ## Debugging
 
-- To test openpatent in the `packages/opencode` directory you can run `bun dev`
+- To test openpatent in the `packages/openpatent` directory you can run `bun dev`
 
 ## Tool Calling
 

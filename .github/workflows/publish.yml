@@ -83,7 +83,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: openpatent-cli
-          path: packages/opencode/dist
+          path: packages/openpatent/dist
 
     outputs:
       release: ${{ steps.publish.outputs.release }}

@@ -275,7 +275,7 @@ OpenPatent is open source and welcomes contributions. Please read [CONTRIBUTING.
 
 ### Adding New Agents
 
-1. **Local Agent**: Create a Markdown file in `packages/opencode/agent/`
+1. **Local Agent**: Create a Markdown file in `packages/openpatent/agent/`
 2. **Premium Agent**: Add to `openpatent_django/apps/patent/services/premium_agents.py`
 3. **Update Models**: Add quota fields in `openpatent_django/apps/patent/models.py`
 4. **Add Tests**: Create tests in `openpatent_django/apps/patent/tests/`
