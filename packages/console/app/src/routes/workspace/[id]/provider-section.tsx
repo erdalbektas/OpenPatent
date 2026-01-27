@@ -8,10 +8,24 @@ import styles from "./provider-section.module.css"
 const PROVIDERS = [
   { name: "OpenAI", key: "openai", prefix: "sk-" },
   { name: "Anthropic", key: "anthropic", prefix: "sk-ant-" },
+  { name: "OpenAI", key: "openai", prefix: "sk-" },
+  { name: "Anthropic", key: "anthropic", prefix: "sk-ant-" },
   { name: "Google Gemini", key: "google", prefix: "AI" },
+  { name: "Ollama (Local)", key: "ollama", prefix: "ollama" },
+  { name: "LM Studio (Local)", key: "lmstudio", prefix: "lm-studio" },
 ] as const
 
 type Provider = (typeof PROVIDERS)[number]
+
+// Helper to safely parse credentials if they are JSON
+function parseCredentials(creds: string) {
+  try {
+    const json = JSON.parse(creds)
+    return { apiKey: json.apiKey || "", baseUrl: json.baseUrl || "" }
+  } catch {
+    return { apiKey: creds, baseUrl: "" }
+  }
+}
 
 function maskCredentials(credentials: string) {
   return `${credentials.slice(0, 8)}...${credentials.slice(-8)}`
@@ -31,11 +45,24 @@ const removeProvider = action(async (form: FormData) => {
 const saveProvider = action(async (form: FormData) => {
   "use server"
   const provider = form.get("provider")?.toString()
-  const credentials = form.get("credentials")?.toString()
+
+  let credentials = form.get("credentials")?.toString() || ""
+  const baseUrl = form.get("baseUrl")?.toString()
+
+  // If base URL is provided, bundle it into JSON
+  if (baseUrl) {
+    credentials = JSON.stringify({
+      apiKey: credentials,
+      baseUrl: baseUrl.replace(/\/$/, "") // remove trailing slash
+    })
+  }
+
   if (!provider) return { error: "Provider is required" }
   if (!credentials) return { error: "API key is required" }
+
   const workspaceID = form.get("workspaceID")?.toString()
   if (!workspaceID) return { error: "Workspace ID is required" }
+
   return json(
     await withActor(
       () =>
@@ -96,14 +123,35 @@ function ProviderRow(props: { provider: Provider }) {
         >
           <form id={`provider-form-${props.provider.key}`} action={saveProvider} method="post" data-slot="edit-form">
             <div data-slot="input-wrapper">
+              <Show when={props.provider.key === "ollama" || props.provider.key === "lmstudio"}>
+                <div style={{ "margin-bottom": "8px" }}>
+                  <input
+                    name="baseUrl"
+                    type="text"
+                    placeholder={`Base URL (e.g. http://localhost:11434/v1)`}
+                    autocomplete="off"
+                    value={providerData() ? parseCredentials(providerData()!.credentials).baseUrl : ""}
+                    data-form-type="other"
+                  />
+                </div>
+              </Show>
               <input
                 ref={(r) => (input = r)}
                 name="credentials"
                 type="text"
-                placeholder={`Enter ${props.provider.name} API key (${props.provider.prefix}...)`}
+                placeholder={
+                  props.provider.key === "ollama"
+                    ? "Enter model tag (optional)"
+                    : `Enter ${props.provider.name} API key`
+                }
                 autocomplete="off"
                 data-form-type="other"
                 data-lpignore="true"
+                value={
+                  store.editing
+                    ? (providerData() ? parseCredentials(providerData()!.credentials).apiKey : "")
+                    : ""
+                }
               />
               <Show when={saveSubmission.result && saveSubmission.result.error}>
                 {(err) => <div data-slot="form-error">{err()}</div>}

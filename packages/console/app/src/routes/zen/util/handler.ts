@@ -494,7 +494,20 @@ export async function handler(
 
   function updateProviderKey(authInfo: AuthInfo, providerInfo: ProviderInfo) {
     if (!authInfo?.provider?.credentials) return
-    providerInfo.apiKey = authInfo.provider.credentials
+    const creds = authInfo.provider.credentials
+    // Check if credentials are JSON (for local providers)
+    if (providerInfo.id === "ollama" || providerInfo.id === "lmstudio" || creds.startsWith("{")) {
+      try {
+        const json = JSON.parse(creds)
+        if (json.apiKey) providerInfo.apiKey = json.apiKey
+        if (json.baseUrl) providerInfo.api = json.baseUrl
+      } catch (e) {
+        // Not JSON, treat as plain API key
+        providerInfo.apiKey = creds
+      }
+    } else {
+      providerInfo.apiKey = creds
+    }
   }
 
   async function trackUsage(

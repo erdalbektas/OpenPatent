@@ -75,7 +75,33 @@ export namespace ZenData {
       Resource.ZEN_MODELS5.value +
       Resource.ZEN_MODELS6.value,
     )
-    return ModelsSchema.parse(json)
+    const result = ModelsSchema.parse(json)
+
+    // Inject local providers
+    result.providers["ollama"] = {
+      api: "http://localhost:11434/v1",
+      apiKey: "ollama",
+      format: "oa-compat",
+    }
+    result.providers["lmstudio"] = {
+      api: "http://localhost:1234/v1",
+      apiKey: "lm-studio",
+      format: "oa-compat",
+    }
+
+    // Inject local models
+    result.models["ollama/llama3"] = {
+      name: "Llama 3 (Ollama)",
+      cost: { input: 0, output: 0 },
+      providers: [{ id: "ollama", model: "llama3" }]
+    }
+    result.models["lmstudio/llama3"] = {
+      name: "Llama 3 (LM Studio)",
+      cost: { input: 0, output: 0 },
+      providers: [{ id: "lmstudio", model: "llama3" }]
+    }
+
+    return result
   })
 }
 
