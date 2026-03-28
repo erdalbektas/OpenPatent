@@ -1,0 +1,331 @@
+---
+title: Modi
+description: Verschiedene Modi für unterschiedliche Anwendungsfälle.
+---
+
+:::caution
+Modi werden jetzt über die Option `agent` in der OpenPatent-Konfiguration konfiguriert. Der
+Die Option `mode` ist jetzt veraltet. [Learn more](/docs/agents).
+:::
+
+Mit den Modi in OpenPatent können Sie das Verhalten, die Tools und die Eingabeaufforderungen für verschiedene Anwendungsfälle anpassen.
+
+Es verfügt über zwei integrierte Modi: **Build** und **Plan**. Sie können anpassen
+diese oder konfigurieren Sie Ihre eigenen über die OpenPatent-Konfiguration.
+
+Sie können während einer Sitzung zwischen den Modi wechseln oder diese in Ihrer Konfigurationsdatei konfigurieren.
+
+---
+
+## Integriert
+
+OpenPatent verfügt über zwei integrierte Modi.
+
+---
+
+### Build
+
+Build ist der **Standardmodus**, bei dem alle Tools aktiviert sind. Dies ist der Standardmodus für Entwicklungsarbeiten, bei dem Sie vollen Zugriff auf Dateioperationen und Systembefehle benötigen.
+
+---
+
+### Plan
+
+Ein eingeschränkter Modus für Planung und Analyse. Im Planmodus sind die folgenden Tools standardmäßig deaktiviert:
+
+- `write` – Es können keine neuen Dateien erstellt werden
+- `edit` – Vorhandene Dateien können nicht geändert werden, mit Ausnahme der Dateien unter `.OpenPatent/plans/*.md`, um den Plan selbst detailliert darzustellen
+- `patch` – Patches können nicht angewendet werden
+- `bash` – Shell-Befehle können nicht ausgeführt werden
+
+Dieser Modus ist nützlich, wenn Sie möchten, dass AI Code analysiert, Änderungen vorschlägt oder Pläne erstellt, ohne tatsächliche Änderungen an Ihrer Codebasis vorzunehmen.
+
+---
+
+## Wechseln
+
+Sie können während einer Sitzung mit der _Tab_-Taste zwischen den Modi wechseln. Oder Ihre konfigurierte `switch_mode`-Tastenkombination.
+
+Siehe auch: [Formatters](/docs/formatters) für Informationen zur Codeformatierungskonfiguration.
+
+---
+
+## Konfiguration
+
+Sie können die integrierten Modi anpassen oder über die Konfiguration eigene erstellen. Modi können auf zwei Arten konfiguriert werden:
+
+### JSON-Konfiguration
+
+Konfigurieren Sie Modi in Ihrer `OpenPatent.json`-Konfigurationsdatei:
+
+```json title="OpenPatent.json"
+{
+  "$schema": "https://OpenPatent.ai/config.json",
+  "mode": {
+    "build": {
+      "model": "anthropic/claude-sonnet-4-20250514",
+      "prompt": "{file:./prompts/build.txt}",
+      "tools": {
+        "write": true,
+        "edit": true,
+        "bash": true
+      }
+    },
+    "plan": {
+      "model": "anthropic/claude-haiku-4-20250514",
+      "tools": {
+        "write": false,
+        "edit": false,
+        "bash": false
+      }
+    }
+  }
+}
+```
+
+### Markdown-Konfiguration
+
+Sie können Modi auch mithilfe von Markdown-Dateien definieren. Platzieren Sie sie in:
+
+- Global: `~/.config/OpenPatent/modes/`
+- Projekt: `.OpenPatent/modes/`
+
+```markdown title="~/.config/OpenPatent/modes/review.md"
+---
+model: anthropic/claude-sonnet-4-20250514
+temperature: 0.1
+tools:
+  write: false
+  edit: false
+  bash: false
+---
+
+You are in code review mode. Focus on:
+
+- Code quality and best practices
+- Potential bugs and edge cases
+- Performance implications
+- Security considerations
+
+Provide constructive feedback without making direct changes.
+```
+
+Der Name der Markdown-Datei wird zum Modusnamen (e.g., `review.md` erstellt einen `review`-Modus).
+
+Schauen wir uns diese Konfigurationsmöglichkeiten im Detail an.
+
+---
+
+### Model
+
+Verwenden Sie die `model`-Konfiguration, um das Standardmodell für diesen Modus zu überschreiben. Nützlich für die Verwendung verschiedener Modelle, die für verschiedene Aufgaben optimiert sind. Zum Beispiel ein schnelleres Modell für die Planung, ein leistungsfähigeres Modell für die Umsetzung.
+
+```json title="OpenPatent.json"
+{
+  "mode": {
+    "plan": {
+      "model": "anthropic/claude-haiku-4-20250514"
+    }
+  }
+}
+```
+
+---
+
+### Temperatur
+
+Steuern Sie die Zufälligkeit und Kreativität der Antworten von AI mit der `temperature`-Konfiguration. Niedrigere Werte machen die Antworten fokussierter und deterministischer, während höhere Werte die Kreativität und Variabilität steigern.
+
+```json title="OpenPatent.json"
+{
+  "mode": {
+    "plan": {
+      "temperature": 0.1
+    },
+    "creative": {
+      "temperature": 0.8
+    }
+  }
+}
+```
+
+Temperaturwerte liegen typischerweise zwischen 0.0 und 1.0:
+
+- **0.0-0.2**: Sehr fokussierte und deterministische Antworten, ideal für Code-Analyse und Planung
+- **0.3-0.5**: Ausgewogene Antworten mit etwas Kreativität, gut für allgemeine Entwicklungsaufgaben
+- **0.6-1.0**: Kreativere und vielfältigere Antworten, nützlich für Brainstorming und Erkundung
+
+```json title="OpenPatent.json"
+{
+  "mode": {
+    "analyze": {
+      "temperature": 0.1,
+      "prompt": "{file:./prompts/analysis.txt}"
+    },
+    "build": {
+      "temperature": 0.3
+    },
+    "brainstorm": {
+      "temperature": 0.7,
+      "prompt": "{file:./prompts/creative.txt}"
+    }
+  }
+}
+```
+
+Wenn keine Temperatur angegeben ist, verwendet OpenPatent modellspezifische Standardwerte (normalerweise 0 für die meisten Modelle, 0.55 für Qwen-Modelle).
+
+---
+
+### Prompt
+
+Geben Sie mit der `prompt`-Konfiguration eine benutzerdefinierte Systemaufforderungsdatei für diesen Modus an. Die Eingabeaufforderungsdatei sollte spezifische Anweisungen für den Zweck des Modus enthalten.
+
+```json title="OpenPatent.json"
+{
+  "mode": {
+    "review": {
+      "prompt": "{file:./prompts/code-review.txt}"
+    }
+  }
+}
+```
+
+Dieser Pfad ist relativ zum Speicherort der Konfigurationsdatei. Das funktioniert also
+sowohl die globale OpenPatent-Konfiguration als auch die projektspezifische Konfiguration.
+
+---
+
+### Werkzeuge
+
+Steuern Sie mit der `tools`-Konfiguration, welche Tools in diesem Modus verfügbar sind. Sie können bestimmte Tools aktivieren oder deaktivieren, indem Sie sie auf `true` oder `false` setzen.
+
+```json
+{
+  "mode": {
+    "readonly": {
+      "tools": {
+        "write": false,
+        "edit": false,
+        "bash": false,
+        "read": true,
+        "grep": true,
+        "glob": true
+      }
+    }
+  }
+}
+```
+
+Wenn keine Tools angegeben sind, sind alle Tools standardmäßig aktiviert.
+
+---
+
+#### Verfügbare Tools
+
+Hier sind alle Tools aufgeführt, die über den Konfigurationsmodus gesteuert werden können.
+
+| Werkzeug    | Beschreibung                 |
+| ----------- | ---------------------------- |
+| `bash`      | Shell-Befehle ausführen      |
+| `edit`      | Vorhandene Dateien ändern    |
+| `write`     | Neue Dateien erstellen       |
+| `read`      | Dateiinhalt lesen            |
+| `grep`      | Dateiinhalte durchsuchen     |
+| `glob`      | Dateien nach Muster suchen   |
+| `list`      | Verzeichnisinhalte auflisten |
+| `patch`     | Patches auf Dateien anwenden |
+| `todowrite` | Aufgabenlisten verwalten     |
+| `todoread`  | Aufgabenlisten lesen         |
+| `webfetch`  | Webinhalte abrufen           |
+
+---
+
+## Benutzerdefinierte Modi
+
+Sie können Ihre eigenen benutzerdefinierten Modi erstellen, indem Sie diese zur Konfiguration hinzufügen. Hier sind Beispiele für beide Ansätze:
+
+### Verwenden der JSON-Konfiguration
+
+```json title="OpenPatent.json" {4-14}
+{
+  "$schema": "https://OpenPatent.ai/config.json",
+  "mode": {
+    "docs": {
+      "prompt": "{file:./prompts/documentation.txt}",
+      "tools": {
+        "write": true,
+        "edit": true,
+        "bash": false,
+        "read": true,
+        "grep": true,
+        "glob": true
+      }
+    }
+  }
+}
+```
+
+### Verwendung von Markdown-Dateien
+
+Erstellen Sie Modusdateien in `.OpenPatent/modes/` für projektspezifische Modi oder `~/.config/OpenPatent/modes/` für globale Modi:
+
+```markdown title=".OpenPatent/modes/debug.md"
+---
+temperature: 0.1
+tools:
+  bash: true
+  read: true
+  grep: true
+  write: false
+  edit: false
+---
+
+You are in debug mode. Your primary goal is to help investigate and diagnose issues.
+
+Focus on:
+
+- Understanding the problem through careful analysis
+- Using bash commands to inspect system state
+- Reading relevant files and logs
+- Searching for patterns and anomalies
+- Providing clear explanations of findings
+
+Do not make any changes to files. Only investigate and report.
+```
+
+```markdown title="~/.config/OpenPatent/modes/refactor.md"
+---
+model: anthropic/claude-sonnet-4-20250514
+temperature: 0.2
+tools:
+  edit: true
+  read: true
+  grep: true
+  glob: true
+---
+
+You are in refactoring mode. Focus on improving code quality without changing functionality.
+
+Priorities:
+
+- Improve code readability and maintainability
+- Apply consistent naming conventions
+- Reduce code duplication
+- Optimize performance where appropriate
+- Ensure all tests continue to pass
+```
+
+---
+
+### Anwendungsfälle
+
+Hier sind einige häufige Anwendungsfälle für verschiedene Modi.
+
+- **Build-Modus**: Vollständige Entwicklungsarbeit mit allen aktivierten Tools
+- **Planmodus**: Analyse und Planung ohne Änderungen
+- **Überprüfungsmodus**: Codeüberprüfung mit schreibgeschütztem Zugriff plus Dokumentationstools
+- **Debug-Modus**: Konzentriert sich auf die Untersuchung mit aktivierten Bash- und Lesetools
+- **Docs-Modus**: Dokumentationsschreiben mit Dateioperationen, aber ohne Systembefehle
+
+Möglicherweise stellen Sie auch fest, dass unterschiedliche Modelle für unterschiedliche Anwendungsfälle geeignet sind.

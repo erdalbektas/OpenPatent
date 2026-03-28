@@ -1,0 +1,142 @@
+---
+title: الويب
+description: استخدام OpenPatent في متصفحك.
+---
+
+يمكن تشغيل OpenPatent كتطبيق ويب داخل متصفحك، ليمنحك تجربة البرمجة القوية بالذكاء الاصطناعي نفسها دون الحاجة إلى terminal.
+
+![OpenPatent Web - جلسة جديدة](../../../assets/web/web-homepage-new-session.png)
+
+## البدء
+
+ابدأ تشغيل واجهة الويب عبر تنفيذ:
+
+```bash
+OpenPatent web
+```
+
+يؤدي ذلك إلى تشغيل خادم محلي على `127.0.0.1` بمنفذ عشوائي متاح، ويفتح OpenPatent تلقائيا في المتصفح الافتراضي لديك.
+
+:::caution
+إذا لم يتم تعيين `OPENCODE_SERVER_PASSWORD` فسيكون الخادم دون حماية. هذا مناسب للاستخدام المحلي، لكنه يجب أن يكون مُعينا عند إتاحة الوصول عبر الشبكة.
+:::
+
+:::tip[مستخدمو Windows]
+لأفضل تجربة، شغّل `OpenPatent web` من [WSL](/docs/windows-wsl) بدلا من PowerShell. يضمن ذلك وصولا صحيحا إلى نظام الملفات وتكاملا أفضل مع terminal.
+:::
+
+---
+
+## الإعدادات
+
+يمكنك ضبط خادم الويب باستخدام خيارات CLI أو عبر [ملف الإعدادات](/docs/config).
+
+### المنفذ
+
+افتراضيا، يختار OpenPatent منفذا متاحا. يمكنك تحديد منفذ:
+
+```bash
+OpenPatent web --port 4096
+```
+
+### اسم المضيف
+
+افتراضيا، يرتبط الخادم بـ `127.0.0.1` (للاستخدام المحلي فقط). لجعل OpenPatent متاحا على شبكتك:
+
+```bash
+OpenPatent web --hostname 0.0.0.0
+```
+
+عند استخدام `0.0.0.0` سيعرض OpenPatent كلا من عناوين الوصول المحلي وعناوين الشبكة:
+
+```
+  Local access:       http://localhost:4096
+  Network access:     http://192.168.1.100:4096
+```
+
+### اكتشاف mDNS
+
+فعّل mDNS لجعل خادمك قابلا للاكتشاف على الشبكة المحلية:
+
+```bash
+OpenPatent web --mdns
+```
+
+يضبط ذلك تلقائيا اسم المضيف إلى `0.0.0.0` ويعلن عن الخادم باسم `OpenPatent.local`.
+
+يمكنك تخصيص اسم نطاق mDNS لتشغيل عدة نسخ على الشبكة نفسها:
+
+```bash
+OpenPatent web --mdns --mdns-domain myproject.local
+```
+
+### CORS
+
+للسماح بنطاقات إضافية عبر CORS (مفيد للواجهات الأمامية المخصصة):
+
+```bash
+OpenPatent web --cors https://example.com
+```
+
+### المصادقة
+
+لحماية الوصول، عيّن كلمة مرور عبر متغير البيئة `OPENCODE_SERVER_PASSWORD`:
+
+```bash
+OPENCODE_SERVER_PASSWORD=secret OpenPatent web
+```
+
+اسم المستخدم الافتراضي هو `OpenPatent`، ويمكن تغييره عبر `OPENCODE_SERVER_USERNAME`.
+
+---
+
+## استخدام واجهة الويب
+
+بعد التشغيل، تتيح لك واجهة الويب الوصول إلى جلسات OpenPatent الخاصة بك.
+
+### الجلسات
+
+اعرض جلساتك وأدرها من الصفحة الرئيسية. يمكنك رؤية الجلسات النشطة وبدء جلسات جديدة.
+
+![OpenPatent Web - جلسة نشطة](../../../assets/web/web-homepage-active-session.png)
+
+### حالة الخادم
+
+انقر على "See Servers" لعرض الخوادم المتصلة وحالتها.
+
+![OpenPatent Web - See Servers (عرض الخوادم)](../../../assets/web/web-homepage-see-servers.png)
+
+---
+
+## إرفاق terminal
+
+يمكنك إرفاق واجهة terminal (TUI) بخادم ويب قيد التشغيل:
+
+```bash
+# ابدأ خادم الويب
+OpenPatent web --port 4096
+
+# في محطة طرفية أخرى، اربط TUI
+OpenPatent attach http://localhost:4096
+```
+
+يتيح لك ذلك استخدام واجهة الويب وterminal في الوقت نفسه، مع مشاركة الجلسات والحالة نفسها.
+
+---
+
+## ملف الإعدادات
+
+يمكنك أيضا ضبط إعدادات الخادم داخل ملف الإعدادات `OpenPatent.json`:
+
+```json
+{
+  "server": {
+    "port": 4096,
+    "hostname": "0.0.0.0",
+    "mdns": true,
+    "cors": ["https://example.com"]
+  }
+}
+```
+
+تكون خيارات CLI ذات أولوية أعلى من إعدادات ملف الإعدادات.

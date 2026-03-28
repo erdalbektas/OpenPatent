@@ -1,0 +1,10 @@
+Look up Manual of Patent Examining Procedure (MPEP) sections.
+
+Search the MPEP by section number or keyword to find relevant patent examination guidance.
+
+Parameters:
+- section: MPEP section number (e.g., "2143", "706.07(a)")
+- keyword: Search keyword or phrase (e.g., "obviousness", "written description")
+- context: Brief description of why you need this lookup (helps refine results)
+
+Returns the relevant MPEP text, key holdings, and related sections.

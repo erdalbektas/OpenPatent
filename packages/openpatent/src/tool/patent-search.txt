@@ -1,0 +1,11 @@
+Search patent databases for relevant prior art references.
+
+This tool searches across patent databases including USPTO, EPO, WIPO, and Google Patents.
+
+Parameters:
+- query: The search query — can include keywords, patent classifications (CPC/IPC), inventor names, or assignee names
+- database: Which database to search (default: "all"). Options: "all", "uspto", "epo", "wipo", "google-patents"
+- date_range: Optional date range to limit results (e.g., "2020-2024")
+- max_results: Maximum number of results to return (default: 20)
+
+The search results will include patent numbers, titles, abstracts, filing dates, and relevance scores.

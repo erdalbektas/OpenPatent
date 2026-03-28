@@ -1,0 +1,113 @@
+---
+title: Windows (WSL)
+description: En iyi deneyim icin OpenPatent'u WSL'de calistirin.
+---
+
+import { Steps } from "@astrojs/starlight/components"
+
+OpenPatent Windows'ta dogrudan calisabilir, ancak en iyi deneyim icin [Windows Subsystem for Linux (WSL)](https://learn.microsoft.com/en-us/windows/wsl/install) kullanmanizi oneriyoruz. WSL, OpenPatent ozellikleriyle sorunsuz calisan bir Linux ortami saglar.
+
+:::tip[Neden WSL?]
+WSL, daha iyi dosya sistemi performansi, tam terminal destegi ve OpenPatent'un dayandigi gelistirme araclariyla uyumluluk sunar.
+:::
+
+---
+
+## Kurulum
+
+<Steps>
+
+1. **WSL'i yukleyin**
+
+   Henuz yuklemediyseniz resmi Microsoft rehberini kullanarak [WSL kurulumunu](https://learn.microsoft.com/en-us/windows/wsl/install) yapin.
+
+2. **OpenPatent'u WSL icine yukleyin**
+
+   WSL hazir olduktan sonra WSL terminalini acin ve OpenPatent'u [kurulum yontemlerinden](/docs/) biriyle yukleyin.
+
+   ```bash
+   curl -fsSL https://OpenPatent.ai/install | bash
+   ```
+
+3. **OpenPatent'u WSL icinden kullanin**
+
+   Proje dizininize gidin (`/mnt/c/`, `/mnt/d/` vb. ile Windows dosyalarina erisebilirsiniz) ve OpenPatent'u calistirin.
+
+   ```bash
+   cd /mnt/c/Users/YourName/project
+   OpenPatent
+   ```
+
+</Steps>
+
+---
+
+## Masaüstü uygulaması + WSL sunucusu
+
+OpenPatent Desktop kullanmak isteyip sunucuyu WSL'de calistirmak istiyorsaniz:
+
+1. **Sunucuyu WSL'de baslatin** ve dis baglantilara izin vermek icin `--hostname 0.0.0.0` kullanin:
+
+   ```bash
+   OpenPatent serve --hostname 0.0.0.0 --port 4096
+   ```
+
+2. **Desktop uygulamasini** `http://localhost:4096` adresine baglayin
+
+:::note
+Kurulumunuzda `localhost` calismiyorsa bunun yerine WSL IP adresini kullanin (WSL icinde: `hostname -I`) ve `http://<wsl-ip>:4096` adresine baglanin.
+:::
+
+:::caution
+`--hostname 0.0.0.0` kullaniyorsaniz sunucuyu guvene almak icin `OPENCODE_SERVER_PASSWORD` ayarlayin.
+
+```bash
+OPENCODE_SERVER_PASSWORD=your-password OpenPatent serve --hostname 0.0.0.0
+```
+
+:::
+
+---
+
+## Web istemcisi + WSL
+
+Windows'ta en iyi web deneyimi icin:
+
+1. **`OpenPatent web` komutunu PowerShell yerine WSL terminalinde calistirin**:
+
+   ```bash
+   OpenPatent web --hostname 0.0.0.0
+   ```
+
+2. **Windows tarayicinizdan** `http://localhost:<port>` adresini acin (OpenPatent URL'yi yazdirir)
+
+`OpenPatent web` komutunu WSL'den calistirmak, dosya sistemi erisimi ve terminal entegrasyonunu daha tutarli hale getirirken tarayicidan erisimi korur.
+
+---
+
+## Windows dosyalarına erişin
+
+WSL, tum Windows dosyalariniza `/mnt/` dizini uzerinden erisebilir:
+
+- `C:` surucusu -> `/mnt/c/`
+- `D:` surucusu -> `/mnt/d/`
+- Ve digerleri...
+
+Ornek:
+
+```bash
+cd /mnt/c/Users/YourName/Documents/project
+OpenPatent
+```
+
+:::tip
+En sorunsuz deneyim icin deponuzu WSL dosya sistemine (ornegin `~/code/` altina) klonlayip OpenPatent'u orada calistirmayi dusunun.
+:::
+
+---
+
+## İpuçları
+
+- Windows suruculerinde duran projelerde OpenPatent'u WSL icinde calistirin - dosya erisimi daha sorunsuz olur
+- Butunlesik bir gelistirme akisi icin OpenPatent ile birlikte VS Code [WSL eklentisini](https://code.visualstudio.com/docs/remote/wsl) kullanin
+- OpenPatent konfigurasyonunuz ve oturumlariniz WSL ortaminda `~/.local/share/OpenPatent/` konumunda saklanir

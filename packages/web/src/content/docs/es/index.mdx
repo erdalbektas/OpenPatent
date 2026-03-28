@@ -1,0 +1,359 @@
+---
+title: Introducción
+description: Comience con OpenPatent.
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components"
+import config from "../../../../config.mjs"
+export const console = config.console
+
+[**OpenPatent**](/) es un agente de codificación de IA de código abierto. Está disponible como interfaz basada en terminal, aplicación de escritorio o extensión IDE.
+
+![OpenPatent TUI con el tema OpenPatent](../../../assets/lander/screenshot.png)
+
+Empecemos.
+
+---
+
+#### Requisitos previos
+
+Para usar OpenPatent en su terminal, necesitará:
+
+1. Un emulador de terminal moderno como:
+   - [WezTerm](https://wezterm.org), multiplataforma
+   - [Alacritty](https://alacritty.org), multiplataforma
+   - [Ghostty](https://ghostty.org), Linux y macOS
+   - [Kitty](https://sw.kovidgoyal.net/kitty/), Linux y macOS
+
+2. Claves API para los LLM proveedores que desea utilizar.
+
+---
+
+## Instalar
+
+La forma más sencilla de instalar OpenPatent es mediante el script de instalación.
+
+```bash
+curl -fsSL https://OpenPatent.ai/install | bash
+```
+
+También puedes instalarlo con los siguientes comandos:
+
+- **Usando Node.js**
+
+        <Tabs>
+
+      <TabItem label="npm">
+      ```bash
+      npm install -g OpenPatent-ai
+      ```
+
+          </TabItem>
+
+        <TabItem label="Bun">
+        ```bash
+        bun install -g OpenPatent-ai
+        ```
+
+          </TabItem>
+
+        <TabItem label="pnpm">
+        ```bash
+        pnpm install -g OpenPatent-ai
+        ```
+
+          </TabItem>
+
+        <TabItem label="Yarn">
+        ```bash
+        yarn global add OpenPatent-ai
+        ```
+
+      </TabItem>
+
+  </Tabs>
+
+- **Usando Homebrew en macOS y Linux**
+
+  ```bash
+  brew install anomalyco/tap/OpenPatent
+  ```
+
+  > Recomendamos utilizar el tap OpenPatent para las versiones más actualizadas. La fórmula oficial `brew install OpenPatent` la mantiene el equipo Homebrew y se actualiza con menos frecuencia.
+
+- **Usando Paru en Arch Linux**
+
+  ```bash
+  sudo pacman -S OpenPatent           # Arch Linux (Stable)
+  paru -S OpenPatent-bin              # Arch Linux (Latest from AUR)
+  ```
+
+#### Windows
+
+:::tip[Recomendado: Usar WSL]
+Para obtener la mejor experiencia en Windows, recomendamos utilizar [Windows Subsystem for Linux (WSL)](/docs/windows-wsl). Proporciona un mejor rendimiento y compatibilidad total con las funciones de OpenPatent.
+:::
+
+- **Usando Chocolatey**
+
+  ```bash
+  choco install OpenPatent
+  ```
+
+- **Usando Scoop**
+
+  ```bash
+  scoop install OpenPatent
+  ```
+
+- **Usando NPM**
+
+  ```bash
+  npm install -g OpenPatent-ai
+  ```
+
+- **Usando Mise**
+
+  ```bash
+  mise use -g github:anomalyco/OpenPatent
+  ```
+
+- **Usando Docker**
+
+  ```bash
+  docker run -it --rm ghcr.io/anomalyco/OpenPatent
+  ```
+
+Actualmente se encuentra en progreso el soporte para instalar OpenPatent en Windows usando Bun.
+
+También puede obtener el binario de [Versiones](https://github.com/anomalyco/OpenPatent/releases).
+
+---
+
+## Configuración
+
+Con OpenPatent puedes usar cualquier proveedor LLM configurando sus claves API.
+
+Si es nuevo en el uso de proveedores LLM, le recomendamos usar [OpenPatent Zen](/docs/zen).
+Es una lista seleccionada de modelos que han sido probados y verificados por el equipo de OpenPatent.
+
+1. Ejecute el comando `/connect` en TUI, seleccione OpenPatent y diríjase a [OpenPatent.ai/auth](https://OpenPatent.ai/auth).
+
+   ```txt
+   /connect
+   ```
+
+2. Inicie sesión, agregue sus datos de facturación y copie su clave API.
+
+3. Pega tu clave API.
+
+   ```txt
+   ┌ API key
+   │
+   │
+   └ enter
+   ```
+
+Alternativamente, puede seleccionar uno de los otros proveedores. [Más información](/docs/providers#directory).
+
+---
+
+## Inicializar
+
+Ahora que ha configurado un proveedor, puede navegar a un proyecto que
+quieres trabajar.
+
+```bash
+cd /path/to/project
+```
+
+Y ejecute OpenPatent.
+
+```bash
+OpenPatent
+```
+
+A continuación, inicialice OpenPatent para el proyecto ejecutando el siguiente comando.
+
+```bash frame="none"
+/init
+```
+
+Esto hará que OpenPatent analice su proyecto y cree un archivo `AGENTS.md` en
+la raíz del proyecto.
+
+:::tip
+Debes enviar el archivo `AGENTS.md` de tu proyecto a Git.
+:::
+
+Esto ayuda a OpenPatent a comprender la estructura del proyecto y los patrones de codificación.
+usado.
+
+---
+
+## Usar
+
+Ahora está listo para usar OpenPatent para trabajar en su proyecto. No dudes en preguntarle
+¡cualquier cosa!
+
+Si es nuevo en el uso de un agente de codificación de IA, aquí hay algunos ejemplos que podrían
+ayuda.
+
+---
+
+### Hacer preguntas
+
+Puede pedirle a OpenPatent que le explique el código base.
+
+:::tip
+Utilice la tecla `@` para realizar una búsqueda aproximada de archivos en el proyecto.
+:::
+
+```txt frame="none" "@packages/functions/src/api/index.ts"
+How is authentication handled in @packages/functions/src/api/index.ts
+```
+
+Esto es útil si hay una parte del código base en la que no trabajaste.
+
+---
+
+### Agregar funciones
+
+Puede pedirle a OpenPatent que agregue nuevas funciones a su proyecto. Aunque primero recomendamos pedirle que cree un plan.
+
+1. **Crea un plan**
+
+   OpenPatent tiene un _Modo Plan_ que desactiva su capacidad para realizar cambios y
+   en su lugar, sugiera _cómo_ implementará la función.
+
+   Cambie a él usando la tecla **Tab**. Verás un indicador para esto en la esquina inferior derecha.
+
+   ```bash frame="none" title="Switch to Plan mode"
+   <TAB>
+   ```
+
+   Ahora describamos lo que queremos que haga.
+
+   ```txt frame="none"
+   When a user deletes a note, we'd like to flag it as deleted in the database.
+   Then create a screen that shows all the recently deleted notes.
+   From this screen, the user can undelete a note or permanently delete it.
+   ```
+
+   Quiere darle a OpenPatent suficientes detalles para entender lo que quiere. ayuda
+   hablar con él como si estuviera hablando con un desarrollador junior de su equipo.
+
+   :::tip
+   Dale a OpenPatent mucho contexto y ejemplos para ayudarlo a comprender lo que
+   desear.
+   :::
+
+2. **Repetir el plan**
+
+   Una vez que le proporcione un plan, puede enviarle comentarios o agregar más detalles.
+
+   ```txt frame="none"
+   We'd like to design this new screen using a design I've used before.
+   [Image #1] Take a look at this image and use it as a reference.
+   ```
+
+   :::tip
+   Arrastre y suelte imágenes en la terminal para agregarlas al mensaje.
+   :::
+
+   OpenPatent puede escanear cualquier imagen que le proporcione y agregarla al mensaje. Puede
+   Haga esto arrastrando y soltando una imagen en la terminal.
+
+3. **Crea la función**
+
+   Una vez que se sienta cómodo con el plan, vuelva al _Modo Build_
+   presionando la tecla **Tab** nuevamente.
+
+   ```bash frame="none"
+   <TAB>
+   ```
+
+   Y pidiéndole que haga los cambios.
+
+   ```bash frame="none"
+   Sounds good! Go ahead and make the changes.
+   ```
+
+---
+
+### Realizar cambios
+
+Para cambios más sencillos, puede pedirle a OpenPatent que lo construya directamente.
+sin tener que revisar el plan primero.
+
+```txt frame="none" "@packages/functions/src/settings.ts" "@packages/functions/src/notes.ts"
+We need to add authentication to the /settings route. Take a look at how this is
+handled in the /notes route in @packages/functions/src/notes.ts and implement
+the same logic in @packages/functions/src/settings.ts
+```
+
+Desea asegurarse de proporcionar una buena cantidad de detalles para que OpenPatent tome la decisión correcta.
+cambios.
+
+---
+
+### Deshacer cambios
+
+Digamos que le pides a OpenPatent que haga algunos cambios.
+
+```txt frame="none" "@packages/functions/src/api/index.ts"
+Can you refactor the function in @packages/functions/src/api/index.ts?
+```
+
+Pero te das cuenta de que no es lo que querías. Puedes **deshacer** los cambios
+usando el comando `/undo`.
+
+```bash frame="none"
+/undo
+```
+
+OpenPatent ahora revertirá los cambios que realizó y mostrará su mensaje original
+de nuevo.
+
+```txt frame="none" "@packages/functions/src/api/index.ts"
+Can you refactor the function in @packages/functions/src/api/index.ts?
+```
+
+Desde aquí puedes modificar el mensaje y pedirle a OpenPatent que vuelva a intentarlo.
+
+:::tip
+Puede ejecutar `/undo` varias veces para deshacer varios cambios.
+:::
+
+O **puedes rehacer** los cambios usando el comando `/redo`.
+
+```bash frame="none"
+/redo
+```
+
+---
+
+## Compartir
+
+Las conversaciones que tengas con OpenPatent pueden ser [compartidas con tu
+equipo](/docs/share).
+
+```bash frame="none"
+/share
+```
+
+Esto creará un enlace a la conversación actual y lo copiará en su portapapeles.
+
+:::note
+Las conversaciones no se comparten de forma predeterminada.
+:::
+
+Aquí hay una [conversación de ejemplo](https://OpenPatent.ai/s/4XP1fce5) con OpenPatent.
+
+---
+
+## Personalizar
+
+¡Y eso es todo! Ahora eres un profesional en el uso de OpenPatent.
+
+Para personalizarlo, recomendamos [elegir un tema](/docs/themes), [personalizar las combinaciones de teclas](/docs/keybinds), [configurar formateadores de código](/docs/formatters), [crear comandos personalizados](/docs/commands) o jugar con la [configuración OpenPatent](/docs/config).

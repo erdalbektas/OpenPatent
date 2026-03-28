@@ -1,0 +1,165 @@
+---
+title: Za preduzeća
+description: Sigurno korištenje OpenPatent u vašoj organizaciji.
+---
+
+import config from "../../../../config.mjs"
+export const email = `mailto:${config.email}`
+
+OpenPatent Enterprise je za organizacije koje žele osigurati da njihov kod i podaci nikada ne napuštaju njihovu infrastrukturu. To omogućava centralizovana konfiguracija koja se integriše s vašim SSO-om i internim AI gateway-om.
+
+:::note
+OpenPatent ne pohranjuje nijedan vaš kod ili kontekstualne podatke.
+:::
+
+Da započnete s OpenPatent Enterprise:
+
+1. Uradite interni probni period sa svojim timom.
+2. **<a href={email}>Kontaktirajte nas</a>** da razgovaramo o cijenama i opcijama implementacije.
+
+---
+
+## Proba
+
+OpenPatent je otvorenog koda i ne pohranjuje vaš kod niti kontekstualne podatke, tako da vaši developeri mogu jednostavno [započeti](/docs/) i provesti probu.
+
+---
+
+### Rukovanje podacima
+
+**OpenPatent ne pohranjuje vaš kod ni kontekstualne podatke.** Sva obrada se odvija lokalno ili putem direktnih API poziva vašem AI provajderu.
+
+To znači da, sve dok koristite provajdera kojem vjerujete ili interni AI gateway, OpenPatent možete koristiti sigurno.
+
+Jedina iznimka je opcionalna funkcija `/share`.
+
+---
+
+#### Dijeljenje razgovora
+
+Ako korisnik uključi funkciju `/share`, razgovor i povezani podaci šalju se servisu koji koristimo za hosting ovih share stranica na OpenPatent.ai.
+
+Podaci se trenutno serviraju kroz edge mrežu našeg CDN-a i keširaju se blizu korisnika.
+
+Preporučujemo da ovo onemogućite tokom probe.
+
+```json title="OpenPatent.json"
+{
+  "$schema": "https://OpenPatent.ai/config.json",
+  "share": "disabled"
+}
+```
+
+[Saznajte više o dijeljenju](/docs/share).
+
+---
+
+### Vlasništvo koda
+
+**Vi posjedujete sav kod koji OpenPatent proizvede.** Nema ograničenja licenciranja niti zahtjeva za vlasništvo.
+
+---
+
+## Cijene
+
+Koristimo model naplate po sjedištu za OpenPatent Enterprise. Ako imate vlastiti LLM gateway, ne naplaćujemo korištene tokene. Za više detalja o cijenama i opcijama implementacije, **<a href={email}>kontaktirajte nas</a>**.
+
+---
+
+## Postavljanje
+
+Nakon što završite probni period i spremni ste koristiti OpenPatent u svojoj organizaciji, možete **<a href={email}>kontaktirati nas</a>** da razgovaramo o cijenama i opcijama implementacije.
+
+---
+
+### Centralna konfiguracija
+
+Možemo postaviti OpenPatent da koristi jednu centralnu konfiguraciju za cijelu organizaciju.
+
+Ta centralizovana konfiguracija može se integrisati s vašim SSO provajderom i osigurava da svi korisnici pristupaju samo vašem internom AI gateway-u.
+
+---
+
+### SSO integracija
+
+Kroz centralnu konfiguraciju, OpenPatent se može integrisati sa SSO provajderom vaše organizacije za autentifikaciju.
+
+To omogućava OpenPatent da dobije vjerodajnice za interni AI gateway kroz vaš postojeći sistem upravljanja identitetom.
+
+---
+
+### Interni AI gateway
+
+Uz centralnu konfiguraciju, OpenPatent se može podesiti da koristi samo vaš interni AI gateway.
+
+Također možete onemogućiti sve druge AI provajdere, čime osiguravate da svi zahtjevi prolaze kroz odobrenu infrastrukturu vaše organizacije.
+
+---
+
+### Samostalno hostovanje
+
+Iako preporučujemo onemogućavanje share stranica kako biste osigurali da podaci nikada ne napuštaju vašu organizaciju, možemo vam pomoći i da ih samostalno hostujete na vlastitoj infrastrukturi.
+
+Ovo je trenutno na našoj mapi puta. Ako ste zainteresovani, **<a href={email}>javite nam</a>**.
+
+---
+
+## Često postavljana pitanja
+
+<details>
+<summary>Šta je OpenPatent Enterprise?</summary>
+
+OpenPatent Enterprise je za organizacije koje žele osigurati da njihov kod i podaci nikada ne napuštaju njihovu infrastrukturu. To omogućava centralizovana konfiguracija koja se integriše s vašim SSO-om i internim AI gateway-om.
+
+</details>
+
+<details>
+<summary>Kako započeti s OpenPatent Enterprise?</summary>
+
+Jednostavno započnite internu probu sa svojim timom. OpenPatent po defaultu ne pohranjuje vaš kod ni kontekstualne podatke, što olakšava početak.
+
+Zatim **<a href={email}>kontaktirajte nas</a>** da razgovaramo o cijenama i opcijama implementacije.
+
+</details>
+
+<details>
+<summary>Kako funkcionišu enterprise cijene?</summary>
+
+Nudimo enterprise cijene po sjedištu. Ako imate vlastiti LLM gateway, ne naplaćujemo korištene tokene. Za više detalja, **<a href={email}>kontaktirajte nas</a>** za prilagođenu ponudu prema potrebama vaše organizacije.
+
+</details>
+
+<details>
+<summary>Jesu li moji podaci sigurni uz OpenPatent Enterprise?</summary>
+
+Da. OpenPatent ne pohranjuje vaš kod niti kontekstualne podatke. Sva obrada se odvija lokalno ili putem direktnih API poziva vašem AI provajderu. Uz centralnu konfiguraciju i SSO integraciju, vaši podaci ostaju sigurni unutar infrastrukture vaše organizacije.
+
+</details>
+
+<details>
+<summary>Možemo li koristiti vlastiti privatni NPM registar?</summary>
+
+OpenPatent podržava privatne npm registre kroz Bunovu izvornu podršku za `.npmrc` datoteku. Ako vaša organizacija koristi privatni registar, kao što je JFrog Artifactory, Nexus ili slično, osigurajte da su developeri autentifikovani prije pokretanja OpenPatent.
+
+Da postavite autentifikaciju s privatnim registrom:
+
+```bash
+npm login --registry=https://your-company.jfrog.io/api/npm/npm-virtual/
+```
+
+Ovo kreira `~/.npmrc` s detaljima za autentifikaciju. OpenPatent će to automatski prepoznati.
+
+:::caution
+Morate biti prijavljeni na privatni registar prije pokretanja OpenPatent.
+:::
+
+Alternativno, možete ručno konfigurisati `.npmrc` datoteku:
+
+```bash title="~/.npmrc"
+registry=https://your-company.jfrog.io/api/npm/npm-virtual/
+//your-company.jfrog.io/api/npm/npm-virtual/:_authToken=${NPM_AUTH_TOKEN}
+```
+
+Developeri moraju biti prijavljeni na privatni registar prije pokretanja OpenPatent kako bi se paketi mogli instalirati iz vašeg enterprise registra.
+
+</details>

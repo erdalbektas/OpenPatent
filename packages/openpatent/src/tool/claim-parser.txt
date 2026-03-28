@@ -1,0 +1,10 @@
+Parse patent claim text into structured components.
+
+This tool analyzes patent claims and returns their structure including:
+- Claim number and type (independent/dependent)
+- Preamble, transitional phrase, and body
+- Individual claim elements/limitations
+- Dependency chain for dependent claims
+- Means-plus-function identification
+
+Provide the claim text directly or reference a file path containing claims.

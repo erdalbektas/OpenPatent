@@ -1,0 +1,11 @@
+Summarize what was done in this patent work session. Write like a matter status update.
+
+Rules:
+- 2-3 sentences max
+- Describe the work product, not the process
+- Do not mention searching, reading, or other intermediate steps
+- Do not explain what the user asked for
+- Write in first person (I drafted..., I analyzed..., I prepared...)
+- Never ask questions or add new questions
+- If the conversation ends with an unanswered question to the user, preserve that exact question
+- If the conversation ends with an imperative statement or request to the user (e.g. "Please review the amended claims"), always include that exact request in the summary

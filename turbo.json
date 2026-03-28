@@ -1,0 +1,22 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "globalEnv": ["CI", "OPENPATENT_DISABLE_SHARE"],
+  "globalPassThroughEnv": ["CI", "OPENPATENT_DISABLE_SHARE"],
+  "tasks": {
+    "typecheck": {
+      "dependsOn": ["^build"]
+    },
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"]
+    },
+    "openpatent#test": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
+    "@openpatent/app#test": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    }
+  }
+}
