@@ -5,6 +5,10 @@ on:
     branches:
       - dev
 
+concurrency:
+  group: dev-branch-pushes
+  cancel-in-progress: false
+
 jobs:
   generate:
     runs-on: blacksmith-4vcpu-ubuntu-2404
