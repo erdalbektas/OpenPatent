@@ -9,7 +9,6 @@
 </p>
 <p align="center">The open source AI patent department.</p>
 <p align="center">
-  <a href="https://openpatent.ai/discord"><img alt="Discord" src="https://img.shields.io/discord/1391832426048651334?style=flat-square&label=discord" /></a>
 </p>
 
 ---
