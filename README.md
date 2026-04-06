@@ -1,127 +1,97 @@
 # OpenPatent
 
-**AI-powered patent office suite for the command line.**
+**Local, open-source AI for patent drafting — run models, skills, and agents entirely on your computer, at no cost, forever.**
 
-OpenPatent is an intelligent, terminal-based assistant designed for patent professionals. It leverages large language models to help with patent drafting, prosecution, consulting, litigation support, portfolio management, and strategic planning — all from the comfort of your CLI.
+OpenPatent helps you draft and refine patent work where your invention data belongs: on your machine. The core is **MIT licensed**, the layout is **transparent** (you can read how agents and tools are wired), and you can use **your own** local or self-hosted models plus **your own** skills and automation — no subscription required for self-hosted use.
 
-> Built by **Tech Tank** · Contact: openpatent@techtank.com.tr
+**Website:** [openpatent.techtank.com.tr](https://openpatent.techtank.com.tr)
 
----
+## Download
 
-## Features
+Prebuilt installers (Windows, Linux, macOS) are published on GitHub:
 
-- **Patent Drafting** — Draft complete patent applications including claims, specifications, abstracts, and drawing descriptions
-- **Prosecution** — Respond to office actions, draft amendments, and construct arguments
-- **Consulting** — Patentability opinions, freedom-to-operate analysis, landscape analysis, and validity opinions
-- **Litigation Support** — Claim construction, infringement analysis, and invalidity contentions
-- **Portfolio Management** — Docket tracking, deadline management, and status reports
-- **Strategic Planning** — Prior art landscape analysis and claim strategy planning
+**[Download the latest release](https://github.com/erdalbektas/OpenPatent/releases/latest)**
 
-## Agent Architecture
+Building from source is also free and stays fully local-first — see [Getting started](#getting-started) below.
 
-OpenPatent ships with 6 primary workflow agents and 6 specialist subagents:
+## Why OpenPatent
 
-| Agent       | Purpose                                   |
-| ----------- | ----------------------------------------- |
-| `draft`     | Default agent. Drafts patent applications |
-| `prosecute` | Office action responses and amendments    |
-| `consult`   | Read-only consulting and opinions         |
-| `litigate`  | Litigation support and analysis           |
-| `manage`    | Portfolio and docket management           |
-| `strategy`  | Research and planning mode                |
+- **Local patent drafting** — Keep drafting, claims, and strategy work under your control when you use a local or self-hosted model endpoint.
+- **Open source** — MIT license; inspect, fork, and adapt the code.
+- **Transparent structure** — Core logic, agents, and patent tools live in plain view under `packages/openpatent` (see [Repository layout](#repository-layout)).
+- **Free forever (self-hosted)** — No fee to run the open-source stack yourself; optional paid services elsewhere do not change that.
+- **Your models, skills, and agents** — Plug in OpenAI-compatible local runtimes (e.g. Ollama, LM Studio) and extend behavior with your own skills and agents on your hardware.
 
-**Subagents** (invoked via task delegation): `prior-art`, `analyst`, `claims-analyst`, `legal-research`, `document-writer`, `reviewer`
+Honest scope: some workflows may call out to **optional** external APIs (for example patent database or provider APIs) when you configure them. Your LLM and custom extensions can still run entirely locally.
 
-## Patent-Specific Tools
+## Built on OpenCode
 
-| Tool                | Description                    |
-| ------------------- | ------------------------------ |
-| `patent-search`     | Search patent databases        |
-| `claim-parser`      | Parse claim structure          |
-| `mpep-lookup`       | Look up MPEP sections          |
-| `docket-query`      | Query patent docket status     |
-| `document-template` | Generate from patent templates |
-| `compliance-check`  | Validate PTO requirements      |
-| `citation-format`   | Format patent citations        |
+OpenPatent is built on **[OpenCode](https://opencode.ai)** — the same agent-first, tool-rich foundation used for local AI workflows. Upstream project: [github.com/anomalyco/opencode](https://github.com/anomalyco/opencode).
 
-## Getting Started
+## What you can do
 
-### Prerequisites
+- **Patent drafting** — Applications, claims, specifications, abstracts, and drawing descriptions from plain-language input.
+- **Prosecution** — Office action responses, amendments, and arguments.
+- **Consulting** — Patentability, FTO, landscape, and validity-style analysis (configure tools and data sources as needed).
+- **Litigation support** — Claim construction, infringement and invalidity-oriented outputs.
+- **Portfolio management** — Docket-style tracking, deadlines, and status summaries.
+- **Strategic planning** — Landscape and claim strategy support.
 
-- [Bun](https://bun.sh/) runtime
-- An API key for a supported LLM provider (OpenAI, Anthropic, Google, etc.)
+Primary workflow agents include `draft`, `prosecute`, `consult`, `litigate`, `manage`, and `strategy`. Specialist subagents (for example `prior-art`, `analyst`, `claims-analyst`) are available through task delegation. Patent-oriented tools include `patent-search`, `claim-parser`, `mpep-lookup`, `docket-query`, `document-template`, `compliance-check`, and `citation-format`.
 
-### Installation
+## Getting started
+
+### Download Directly
+
+**[Download the latest release](https://github.com/erdalbektas/OpenPatent/releases/latest)**
+
+
+### Build yourself
+
+- [Bun](https://bun.sh/) 1.3+
+- A model endpoint — **recommended for zero ongoing API cost:** a local OpenAI-compatible server (Ollama, LM Studio, vLLM, etc.). Cloud providers are optional.
+
+### Install from source
 
 ```bash
-# Clone the repository
-git clone https://github.com/techtank/openpatent.git
-cd openpatent
-
-# Install dependencies
+git clone https://github.com/erdalbektas/OpenPatent.git
+cd OpenPatent
 bun install
+bun dev
+```
 
-# Run in development mode
-bun run dev
+From the repo root, `bun dev` is the development equivalent of the `openpatent` CLI. For a standalone binary built locally:
+
+```bash
+./packages/openpatent/script/build.ts --single
+./packages/openpatent/dist/openpatent-<platform>/bin/openpatent
 ```
 
 ### Configuration
 
-Create a `.openpatent/openpatent.json` file in your project or home directory:
+**Local-first:** Select the local usage from providers menu to point OpenPatent at an OpenAI-compatible base URL (for example Ollama at `http://127.0.0.1:11434/v1`). 
+
+To do that manually, put config in `openpatent.json` or `.openpatent/openpatent.json` in your project (or the paths described in [CONTRIBUTING.md](CONTRIBUTING.md)); the file supports `$schema` for validation.
+
+**Optional cloud providers:** Also, you can configure hosted APIs (OpenAI, Anthropic, Google, and others) if you choose — that path is optional and not required for local-only use.
+
+Example (local OpenAI-compatible server — adjust host, model selection, and API key rules for your runtime):
 
 ```json
 {
+  "$schema": "https://openpatent.ai/config.json",
   "provider": {
-    "anthropic": {
-      "api_key": "YOUR_API_KEY"
+    "openai": {
+      "options": {
+        "apiKey": "ollama",
+        "baseURL": "http://127.0.0.1:11434/v1"
+      }
     }
   }
 }
 ```
 
-Alternatively, set environment variables:
-
-```bash
-export OPENPATENT_API_KEY="your-api-key"
-```
-
-### Usage
-
-```bash
-# Start OpenPatent
-openpatent
-
-# Start in a specific agent mode
-openpatent --agent draft
-openpatent --agent prosecute
-openpatent --agent consult
-```
-
-## Project Structure
-
-```
-packages/
-  openpatent/          # Core application
-    src/
-      agent/         # Agent definitions and prompts
-      tool/          # Patent-specific tools
-      session/       # Session management and system prompts
-      config/        # Configuration handling
-      cli/           # Command-line interface
-```
-
-## Development
-
-```bash
-# Run tests
-bun test
-
-# Build for production
-bun run build
-
-# Run as desktop app (Tauri)
-bun run dev:desktop
-```
+Environment variables are also supported for provider credentials where applicable.
 
 ## License
 
@@ -129,5 +99,5 @@ MIT
 
 ## Contact
 
-**Tech Tank**
-Email: openpatent@techtank.com.tr
+**Tech Tank**  
+Email: [openpatent@techtank.com.tr](mailto:openpatent@techtank.com.tr)
