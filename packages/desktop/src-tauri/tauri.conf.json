@@ -59,6 +59,11 @@
       "desktop": {
         "schemes": ["openpatent"]
       }
+    },
+    "updater": {
+      "endpoints": [
+        "https://github.com/erdalbektas/OpenPatent/releases/latest/download/latest.json"
+      ]
     }
   }
 }
