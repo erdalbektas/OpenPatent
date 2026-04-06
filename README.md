@@ -1,296 +1,103 @@
-<p align="center">
-  <a href="https://openpatent.ai">
-    <picture>
-      <source srcset="packages/console/app/src/asset/logo-ornate-dark.svg" media="(prefers-color-scheme: dark)">
-      <source srcset="packages/console/app/src/asset/logo-ornate-light.svg" media="(prefers-color-scheme: light)">
-      <img src="packages/console/app/src/asset/logo-ornate-light.svg" alt="OpenPatent logo">
-    </picture>
-  </a>
-</p>
-<p align="center">The open source AI patent department.</p>
-<p align="center">
-</p>
+# OpenPatent
 
----
+**Local, open-source AI for patent drafting — run models, skills, and agents entirely on your computer, at no cost, forever.**
 
-## About OpenPatent
+OpenPatent helps you draft and refine patent work where your invention data belongs: on your machine. The core is **MIT licensed**, the layout is **transparent** (you can read how agents and tools are wired), and you can use **your own** local or self-hosted models plus **your own** skills and automation — no subscription required for self-hosted use.
 
-OpenPatent is a free and open source patent suite designed for inventors, patent attorneys, and R&D teams. It provides a comprehensive set of AI-powered tools for the entire patent lifecycle:
+**Website:** [openpatent.techtank.com.tr](https://openpatent.techtank.com.tr)
 
-- **Patent Search** - Prior art identification using boolean logic and CPC/IPC classification codes
-- **Patent Drafting** - Claims and specification drafting with proper legal terminology
-- **Patent Examination** - Mock USPTO Examiner to identify potential rejections
-- **Patent Interrogation** - Technical disclosure gap analysis
-- **Patent Illustration** - Technical drawing descriptions for patent figures
+## Download
 
-### Key Features
+Prebuilt installers (Windows, Linux, macOS) are published on GitHub:
 
-- **Local & Premium Agents** - Choose between free local agents or premium server-side agents
-- **Orchestrated Workflows** - Plan and execute complex patent tasks automatically
-- **Subscription Tiers** - Free tier for individual inventors, pro/enterprise for firms
-- **Provider Agnostic** - Use your own API keys (OpenAI, Anthropic, Google) or local models
-- **Open Source** - 100% transparent, auditable, and extensible
+**[Download the latest release](https://github.com/erdalbektas/OpenPatent/releases/latest)**
 
----
+Building from source is also free and stays fully local-first — see [Getting started](#getting-started) below.
 
-## Installation
+## Why OpenPatent
 
-### Desktop App (Beta)
+- **Local patent drafting** — Keep drafting, claims, and strategy work under your control when you use a local or self-hosted model endpoint.
+- **Open source** — MIT license; inspect, fork, and adapt the code.
+- **Transparent structure** — Core logic, agents, and patent tools live in plain view under `packages/openpatent` (see [Repository layout](#repository-layout)).
+- **Free forever (self-hosted)** — No fee to run the open-source stack yourself; optional paid services elsewhere do not change that.
+- **Your models, skills, and agents** — Plug in OpenAI-compatible local runtimes (e.g. Ollama, LM Studio) and extend behavior with your own skills and agents on your hardware.
 
-Download the desktop application from [openpatent.ai/download](https://openpatent.ai/download):
+Honest scope: some workflows may call out to **optional** external APIs (for example patent database or provider APIs) when you configure them. Your LLM and custom extensions can still run entirely locally.
 
-| Platform              | Download                                |
-| --------------------- | --------------------------------------- |
-| macOS (Apple Silicon) | `openpatent-desktop-darwin-aarch64.dmg` |
-| macOS (Intel)         | `openpatent-desktop-darwin-x64.dmg`     |
-| Windows               | `openpatent-desktop-windows-x64.exe`    |
-| Linux                 | `.deb`, `.rpm`, or AppImage             |
+## Built on OpenCode
 
-```bash
-# macOS (Homebrew)
-brew install --cask openpatent-desktop
-```
+OpenPatent is built on **[OpenCode](https://opencode.ai)** — the same agent-first, tool-rich foundation used for local AI workflows. Upstream project: [github.com/anomalyco/opencode](https://github.com/anomalyco/opencode).
 
-### Django Server (For API Access)
+## What you can do
 
-For API access, premium agents, and team features:
+- **Patent drafting** — Applications, claims, specifications, abstracts, and drawing descriptions from plain-language input.
+- **Prosecution** — Office action responses, amendments, and arguments.
+- **Consulting** — Patentability, FTO, landscape, and validity-style analysis (configure tools and data sources as needed).
+- **Litigation support** — Claim construction, infringement and invalidity-oriented outputs.
+- **Portfolio management** — Docket-style tracking, deadlines, and status summaries.
+- **Strategic planning** — Landscape and claim strategy support.
+
+Primary workflow agents include `draft`, `prosecute`, `consult`, `litigate`, `manage`, and `strategy`. Specialist subagents (for example `prior-art`, `analyst`, `claims-analyst`) are available through task delegation. Patent-oriented tools include `patent-search`, `claim-parser`, `mpep-lookup`, `docket-query`, `document-template`, `compliance-check`, and `citation-format`.
+
+## Getting started
+
+### Download Directly
+
+**[Download the latest release](https://github.com/erdalbektas/OpenPatent/releases/latest)**
+
+
+### Build yourself
+
+- [Bun](https://bun.sh/) 1.3+
+- A model endpoint — **recommended for zero ongoing API cost:** a local OpenAI-compatible server (Ollama, LM Studio, vLLM, etc.). Cloud providers are optional.
+
+### Install from source
 
 ```bash
-# Clone and setup
-git clone https://github.com/openpatent/openpatent.git
-cd openpatent
-
-# Setup virtual environment
-python3 -m venv venv
-source venv/bin/activate  # or `venv\Scripts\activate` on Windows
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Run migrations
-python manage.py migrate
-
-# Start server
-python manage.py runserver
+git clone https://github.com/erdalbektas/OpenPatent.git
+cd OpenPatent
+bun install
+bun dev
 ```
 
-The server provides:
-
-- REST API for all patent operations
-- Premium agent endpoints (GPT-4o powered)
-- JWT authentication
-- Subscription management (Stripe integration)
-- Real-time updates via WebSocket
-
----
-
-## Agents
-
-OpenPatent includes both local and premium agents:
-
-### Local Agents (Free)
-
-Run locally using your own LLM providers:
-
-| Agent                     | Description                                      |
-| ------------------------- | ------------------------------------------------ |
-| **Invention Disclosure**  | Analyze invention ideas and extract key features |
-| **Patent Drafter**        | Draft patent claims and specification            |
-| **Prior Art Searcher**    | Prepare prior art search queries                 |
-| **Technical Illustrator** | Create detailed drawing descriptions             |
-
-### Premium Agents (Server)
-
-Run on the OpenPatent server using GPT-4o:
-
-| Agent                        | Free    | Pro       |
-| ---------------------------- | ------- | --------- |
-| **Mock Examiner**            | 3/month | 50/month  |
-| **Office Action Response**   | 0       | 10/month  |
-| **Claim Strategy**           | 0       | 10/month  |
-| **Specification Perfection** | 0       | 20/month  |
-| **Patent Searcher**          | 3/month | 100/month |
-| **Patent Drafter**           | 3/month | 200/month |
-| **Patent Interrogator**      | 3/month | 200/month |
-| **Patent Illustrator**       | 3/month | 150/month |
-
----
-
-## Architecture
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                     OpenPatent Desktop App                          │
-│  ┌───────────────────────────────────────────────────────────────┐ │
-│  │  Tauri Shell  │  SolidJS UI  │  Local Agents  │  Providers    │ │
-│  └───────────────────────────────────────────────────────────────┘ │
-└─────────────────────────────────────────────────────────────────────┘
-                                  │
-                                  │ HTTPS / WebSocket
-                                  ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                    OpenPatent Django Server                         │
-│  ┌───────────────────────────────────────────────────────────────┐ │
-│  │  Auth & Billing  │  Premium Agents  │  Orchestrator  │  API   │ │
-│  └───────────────────────────────────────────────────────────────┘ │
-│  ┌───────────────────────────────────────────────────────────────┐ │
-│  │              PostgreSQL Database                               │ │
-│  │  Users, Sessions, Quotas, Agent Definitions, Patent Data       │ │
-│  └───────────────────────────────────────────────────────────────┘ │
-└─────────────────────────────────────────────────────────────────────┘
-```
-
----
-
-## API Documentation
-
-### Authentication
+From the repo root, `bun dev` is the development equivalent of the `openpatent` CLI. For a standalone binary built locally:
 
 ```bash
-# Register
-curl -X POST http://localhost:8000/api/auth/register/ \
-  -H "Content-Type: application/json" \
-  -d '{"email": "user@example.com", "password": "password123"}'
-
-# Login (get JWT token)
-curl -X POST http://localhost:8000/api/auth/login/ \
-  -H "Content-Type: application/json" \
-  -d '{"email": "user@example.com", "password": "password123"}'
+./packages/openpatent/script/build.ts --single
+./packages/openpatent/dist/openpatent-<platform>/bin/openpatent
 ```
 
-### Premium Agents
+### Configuration
 
-```bash
-# Execute premium agent
-curl -X POST http://localhost:8000/api/patent/agents/premium/ \
-  -H "Authorization: Bearer <token>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "agent_type": "mock_examiner",
-    "task": "Review my patent draft",
-    "context": {
-      "invention_title": "Laser Toaster",
-      "claims": ["1. A toaster comprising..."],
-      "specification": {"field": "The present invention..."}
+**Local-first:** Select the local usage from providers menu to point OpenPatent at an OpenAI-compatible base URL (for example Ollama at `http://127.0.0.1:11434/v1`). 
+
+To do that manually, put config in `openpatent.json` or `.openpatent/openpatent.json` in your project (or the paths described in [CONTRIBUTING.md](CONTRIBUTING.md)); the file supports `$schema` for validation.
+
+**Optional cloud providers:** Also, you can configure hosted APIs (OpenAI, Anthropic, Google, and others) if you choose — that path is optional and not required for local-only use.
+
+Example (local OpenAI-compatible server — adjust host, model selection, and API key rules for your runtime):
+
+```json
+{
+  "$schema": "https://openpatent.ai/config.json",
+  "provider": {
+    "openai": {
+      "options": {
+        "apiKey": "ollama",
+        "baseURL": "http://127.0.0.1:11434/v1"
+      }
     }
-  }'
+  }
+}
 ```
 
-### Orchestrator
-
-```bash
-# Create plan
-curl -X POST http://localhost:8000/api/patent/orchestrator/plan/ \
-  -H "Authorization: Bearer <token>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "user_request": "Draft a patent for my laser toaster invention",
-    "technology": "software"
-  }'
-
-# Execute plan
-curl -X POST http://localhost:8000/api/patent/orchestrator/execute/ \
-  -H "Authorization: Bearer <token>" \
-  -H "Content-Type: application/json" \
-  -d '{"plan_id": "<plan_uuid>"}'
-```
-
----
-
-## Configuration
-
-### Desktop App
-
-Configure via Settings > Providers:
-
-- **OpenAI** - Use your API key for premium agents
-- **Anthropic** - Claude models for local agents
-- **Google** - Gemini models
-- **Local** - LM Studio, Ollama, or OpenAI-compatible servers
-
-### Django Server
-
-Environment variables in `.env`:
-
-```env
-DJANGO_SECRET_KEY=your-secret-key
-POSTGRES_DB=openpatent
-POSTGRES_USER=openpatent
-POSTGRES_PASSWORD=openpatent
-STRIPE_SECRET_KEY=sk_test_...
-STRIPE_PUBLISHABLE_KEY=pk_test_...
-OPENAI_API_KEY=sk-...
-```
-
----
-
-## Development
-
-### Running Tests
-
-# Django tests
-
-cd openpatent
-python manage.py test apps.patent.tests.test_agents
-
-# Frontend tests
-
-cd packages/desktop
-bun test
-
-```
-
-### Project Structure
-
-```
-
-openpatent/
-├── openpatent_django/ # Django server
-│ ├── apps/
-│ │ ├── patent/ # Patent agents and models
-│ │ │ ├── agents/ # Agent Markdown definitions
-│ │ │ ├── services/ # Premium agent implementations
-│ │ │ └── tests/ # Integration tests
-│ │ ├── accounts/ # Authentication
-│ │ ├── billing/ # Stripe integration
-│ │ └── api/ # API endpoints
-│ └── config/ # Django configuration
-├── packages/
-│ ├── desktop/ # Tauri desktop app
-│ ├── app/ # SolidJS core UI
-│ ├── openpatent/ # CLI tool (patent workflow automation)
-│ └── sdk/ # SDK for integrations
-├── docs/ # Documentation
-│ └── PATENT_ARCHITECTURE.md
-└── patent_suite/ # Standalone Python patent tools
-
-```
-
----
-
-## Contributing
-
-OpenPatent is open source and welcomes contributions. Please read [CONTRIBUTING.md](./CONTRIBUTING.md) before submitting pull requests.
-
-### Adding New Agents
-
-1. **Local Agent**: Create a Markdown file in `packages/openpatent/agent/`
-2. **Premium Agent**: Add to `openpatent_django/apps/patent/services/premium_agents.py`
-3. **Update Models**: Add quota fields in `openpatent_django/apps/patent/models.py`
-4. **Add Tests**: Create tests in `openpatent_django/apps/patent/tests/`
-
----
+Environment variables are also supported for provider credentials where applicable.
 
 ## License
 
-OpenPatent is open source under the MIT License. See [LICENSE](./LICENSE) for details.
+MIT
 
----
+## Contact
 
-## Links
-
-- **Website**: https://openpatent.ai
-- **Documentation**: https://docs.openpatent.ai
-- **Discord**: https://openpatent.ai/discord
-- **GitHub**: https://github.com/openpatent
-```
+**Tech Tank**  
+Email: [openpatent@techtank.com.tr](mailto:openpatent@techtank.com.tr)
