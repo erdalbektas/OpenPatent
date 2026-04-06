@@ -70,6 +70,25 @@ const allTargets: {
       os: "darwin",
       arch: "arm64",
     },
+    {
+      os: "darwin",
+      arch: "x64",
+      avx2: false,
+    },
+    {
+      os: "win32",
+      arch: "x64",
+      avx2: false,
+    },
+    {
+      os: "linux",
+      arch: "x64",
+      avx2: false,
+    },
+    {
+      os: "linux",
+      arch: "arm64",
+    },
   ]
 
 const targets = singleFlag

@@ -28,22 +28,18 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install Bun
-        uses: oven-sh/setup-bun@v2
         with:
-          bun-version-file: package.json
+          ref: dev   # build from dev branch which has the full monorepo
 
-      - name: Install dependencies
-        run: bun install
+      - uses: ./.github/actions/setup-bun
 
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
+      - name: Build CLI sidecar (Windows x64)
+        run: |
+          cd packages/openpatent
+          bun run build --single --baseline
+          mkdir -p ../desktop/src-tauri/sidecars
+          cp dist/openpatent-windows-x64-baseline/bin/opencode.exe ../desktop/src-tauri/sidecars/opencode-cli-x86_64-pc-windows-msvc.exe
 
-      - name: Rust cache
-        uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: packages/desktop/src-tauri -> target
 
       - name: Build Tauri NSIS installer
         run: |
@@ -68,22 +64,18 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install Bun
-        uses: oven-sh/setup-bun@v2
         with:
-          bun-version-file: package.json
+          ref: dev   # build from dev branch which has the full monorepo
 
-      - name: Install dependencies
-        run: bun install
+      - uses: ./.github/actions/setup-bun
 
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
+      - name: Build CLI sidecar (Linux x64)
+        run: |
+          cd packages/openpatent
+          bun run build --single --baseline
+          mkdir -p ../desktop/src-tauri/sidecars
+          cp dist/openpatent-linux-x64-baseline/bin/opencode ../desktop/src-tauri/sidecars/opencode-cli-x86_64-unknown-linux-gnu
 
-      - name: Rust cache
-        uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: packages/desktop/src-tauri -> target
 
       - name: Install Linux system dependencies
         run: |
