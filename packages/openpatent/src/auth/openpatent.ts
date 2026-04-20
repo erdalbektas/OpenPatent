@@ -247,7 +247,9 @@ interface UsageEntry {
 export const OpenPatentUsage = {
   async record() {
     const today = new Date().toISOString().split("T")[0]
-    const data = await Filesystem.readJson<Record<string, UsageEntry>>(usageFilepath).catch(() => ({}))
+    const data = await Filesystem.readJson<Record<string, UsageEntry>>(usageFilepath).catch(
+      () => ({} as Record<string, UsageEntry>),
+    )
     const key = (await OpenPatentAuth.get())?.userId ?? "anonymous"
     data[key] = { lastSeen: Date.now(), date: today }
     await Filesystem.writeJson(usageFilepath, data, 0o600)
@@ -255,7 +257,9 @@ export const OpenPatentUsage = {
 
   async getDailyActiveUsers(): Promise<number> {
     const today = new Date().toISOString().split("T")[0]
-    const data = await Filesystem.readJson<Record<string, UsageEntry>>(usageFilepath).catch(() => ({}))
+    const data = await Filesystem.readJson<Record<string, UsageEntry>>(usageFilepath).catch(
+      () => ({} as Record<string, UsageEntry>),
+    )
     return Object.values(data).filter((entry) => entry.date === today).length
   },
 
@@ -263,7 +267,9 @@ export const OpenPatentUsage = {
     const auth = await OpenPatentAuth.get()
     if (!auth?.userId) return false
 
-    const data = await Filesystem.readJson<Record<string, UsageEntry>>(usageFilepath).catch(() => ({}))
+    const data = await Filesystem.readJson<Record<string, UsageEntry>>(usageFilepath).catch(
+      () => ({} as Record<string, UsageEntry>),
+    )
     const entry = data[auth.userId]
     if (!entry) return false
 

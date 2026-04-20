@@ -1,4 +1,4 @@
-import { chmod, mkdir, readFile, writeFile } from "fs/promises"
+import { chmod, mkdir, readFile, rm, writeFile } from "fs/promises"
 import { createWriteStream, existsSync, statSync } from "fs"
 import { lookup } from "mime-types"
 import { realpathSync } from "fs"
@@ -74,6 +74,10 @@ export namespace Filesystem {
 
   export async function writeJson(p: string, data: unknown, mode?: number): Promise<void> {
     return write(p, JSON.stringify(data, null, 2), mode)
+  }
+
+  export async function remove(p: string): Promise<void> {
+    await rm(p, { force: true })
   }
 
   export async function writeStream(

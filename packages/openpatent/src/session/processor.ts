@@ -162,6 +162,9 @@ export namespace SessionProcessor {
                       )
                     ) {
                       const agent = await Agent.get(input.assistantMessage.agent)
+                      if (!agent) {
+                        continue
+                      }
                       await PermissionNext.ask({
                         permission: "doom_loop",
                         patterns: [value.toolName],

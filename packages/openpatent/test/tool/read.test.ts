@@ -172,6 +172,7 @@ describe("tool.read env file permissions", () => {
         directory: tmp.path,
         fn: async () => {
           const agent = await Agent.get(agentName)
+          if (!agent) throw new Error(`Agent not found: ${agentName}`)
           let askedForEnv = false
           const ctxWithPermissions = {
             ...ctx,
