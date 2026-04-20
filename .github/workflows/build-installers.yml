@@ -29,7 +29,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: dev   # build from dev branch which has the full monorepo
+          ref: ${{ github.ref }}
 
       - uses: ./.github/actions/setup-bun
 
@@ -78,7 +78,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: dev   # build from dev branch which has the full monorepo
+          ref: ${{ github.ref }}
 
       - uses: ./.github/actions/setup-bun
 
