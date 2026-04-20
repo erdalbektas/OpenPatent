@@ -106,8 +106,8 @@ pub fn spawn_local_server(
     hostname: String,
     port: u32,
     password: String,
-) -> (CommandChild, HealthCheck) {
-    let (child, exit) = cli::serve(&app, &hostname, port, &password);
+) -> Result<(CommandChild, HealthCheck), String> {
+    let (child, exit) = cli::serve(&app, &hostname, port, &password)?;
 
     let health_check = HealthCheck(tokio::spawn(async move {
         let url = format!("http://{hostname}:{port}");
@@ -140,7 +140,7 @@ pub fn spawn_local_server(
         }
     }));
 
-    (child, health_check)
+    Ok((child, health_check))
 }
 
 pub struct HealthCheck(pub JoinHandle<Result<(), String>>);

@@ -485,7 +485,13 @@ async fn initialize(app: AppHandle) {
 
         async move {
             tracing::info!("Setting up server connection");
-            let server_connection = setup_server_connection(app.clone()).await;
+            let server_connection = match setup_server_connection(app.clone()).await {
+                Ok(connection) => connection,
+                Err(err) => {
+                    let _ = server_ready_tx.send(Err(err));
+                    return;
+                }
+            };
             tracing::info!("Server connection setup");
 
             // we delay spawning this future so that the timeout is created lazily
@@ -623,7 +629,7 @@ enum ServerConnection {
     },
 }
 
-async fn setup_server_connection(app: AppHandle) -> ServerConnection {
+async fn setup_server_connection(app: AppHandle) -> Result<ServerConnection, String> {
     let custom_url = get_saved_server_url(&app).await;
 
     tracing::info!(?custom_url, "Attempting server connection");
@@ -634,7 +640,7 @@ async fn setup_server_connection(app: AppHandle) -> ServerConnection {
         tracing::info!(%url, "Connected to custom server");
         // If the default server is already local, no need to also spawn a sidecar
         if server::is_localhost_url(url) {
-            return ServerConnection::Existing { url: url.clone() };
+            return Ok(ServerConnection::Existing { url: url.clone() });
         }
         // Remote default server: fall through and also spawn a local sidecar
     }
@@ -646,22 +652,22 @@ async fn setup_server_connection(app: AppHandle) -> ServerConnection {
     tracing::debug!(url = %local_url, "Checking health of local server");
     if server::check_health(&local_url, None).await {
         tracing::info!(url = %local_url, "Health check OK, using existing server");
-        return ServerConnection::Existing { url: local_url };
+        return Ok(ServerConnection::Existing { url: local_url });
     }
 
     let password = uuid::Uuid::new_v4().to_string();
 
     tracing::info!("Spawning new local server");
     let (child, health_check) =
-        server::spawn_local_server(app, hostname.to_string(), local_port, password.clone());
+        server::spawn_local_server(app, hostname.to_string(), local_port, password.clone())?;
 
-    ServerConnection::CLI {
+    Ok(ServerConnection::CLI {
         url: local_url,
         username: Some("opencode".to_string()),
         password: Some(password),
         child,
         health_check,
-    }
+    })
 }
 
 fn get_sidecar_port() -> u32 {

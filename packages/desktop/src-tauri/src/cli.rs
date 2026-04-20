@@ -549,12 +549,45 @@ fn signal_from_status(status: std::process::ExitStatus) -> Option<i32> {
     }
 }
 
+fn sidecar_spawn_hint(app: &AppHandle, path: &Path, err: &std::io::Error) -> String {
+    let mut hints = vec![
+        format!("Failed to start local sidecar '{}': {}", path.display(), err),
+        "Try reinstalling OpenPatent Desktop.".to_string(),
+    ];
+
+    match err.kind() {
+        std::io::ErrorKind::NotFound => {
+            hints.push("The sidecar binary appears to be missing from the install directory.".to_string());
+            hints.push("Check your antivirus/quarantine history for 'openpatent-cli'.".to_string());
+        }
+        std::io::ErrorKind::PermissionDenied => {
+            hints.push("The sidecar binary exists but cannot be executed.".to_string());
+            hints.push("Check antivirus/EDR policy or Windows controlled-folder protection.".to_string());
+        }
+        _ => {}
+    }
+
+    #[cfg(windows)]
+    {
+        hints.push(
+            "If the app window appears blank or does not render, install/update Microsoft Edge WebView2 Runtime."
+                .to_string(),
+        );
+    }
+
+    if let Ok(log_dir) = app.path().app_log_dir() {
+        hints.push(format!("Collect startup logs from: {}", log_dir.display()));
+    }
+
+    hints.join("\n")
+}
+
 pub fn serve(
     app: &AppHandle,
     hostname: &str,
     port: u32,
     password: &str,
-) -> (CommandChild, oneshot::Receiver<TerminatedPayload>) {
+) -> Result<(CommandChild, oneshot::Receiver<TerminatedPayload>), String> {
     let (exit_tx, exit_rx) = oneshot::channel::<TerminatedPayload>();
 
     tracing::info!(port, "Spawning sidecar");
@@ -564,12 +597,13 @@ pub fn serve(
         ("OPENCODE_SERVER_PASSWORD", password.to_string()),
     ];
 
+    let sidecar = get_sidecar_path(app);
     let (events, child) = spawn_command(
         app,
         format!("--print-logs --log-level WARN serve --hostname {hostname} --port {port}").as_str(),
         &envs,
     )
-    .expect("Failed to spawn openpatent");
+    .map_err(|err| sidecar_spawn_hint(app, &sidecar, &err))?;
 
     let mut exit_tx = Some(exit_tx);
     tokio::spawn(
@@ -603,7 +637,7 @@ pub fn serve(
             .instrument(tracing::info_span!("sidecar")),
     );
 
-    (child, exit_rx)
+    Ok((child, exit_rx))
 }
 
 pub mod sqlite_migration {

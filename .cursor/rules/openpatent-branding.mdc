@@ -1,0 +1,16 @@
+---
+description: Enforce OpenPatent branding and naming
+alwaysApply: true
+---
+
+# OpenPatent Branding Rule
+
+- Use `OpenPatent` for product naming in user-facing text, docs, and release artifacts.
+- Prefer `openpatent` for code identifiers and binary names where naming is project-controlled.
+- Do not introduce new `opencode` names for binaries, sidecars, scripts, or workflow artifacts in this repository.
+- When touching legacy `opencode` names inherited from upstream, migrate to `openpatent` when safe and in scope.
+
+Examples:
+
+- Binary name: `openpatent-cli` (preferred) instead of `opencode-cli`.
+- Installer labels and notes should refer to `OpenPatent`.

@@ -9,7 +9,7 @@ on:
       version:
         description: "App version to embed (e.g. 1.2.16)"
         required: true
-        default: "1.2.16"
+        default: "1.2.17"
         type: string
 
 concurrency:
@@ -34,11 +34,17 @@ jobs:
       - uses: ./.github/actions/setup-bun
 
       - name: Build CLI sidecar (Windows x64)
+        shell: bash
         run: |
           cd packages/openpatent
           bun run build --single --baseline
           mkdir -p ../desktop/src-tauri/sidecars
-          cp dist/openpatent-windows-x64-baseline/bin/opencode.exe ../desktop/src-tauri/sidecars/opencode-cli-x86_64-pc-windows-msvc.exe
+          cp dist/openpatent-windows-x64-baseline/bin/opencode.exe ../desktop/src-tauri/sidecars/openpatent-cli-x86_64-pc-windows-msvc.exe
+
+      - name: Gate sidecar input (Windows)
+        shell: bash
+        run: |
+          test -f packages/desktop/src-tauri/sidecars/openpatent-cli-x86_64-pc-windows-msvc.exe
 
 
       - name: Build Tauri NSIS installer
@@ -48,6 +54,13 @@ jobs:
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+
+      - name: Gate sidecar in Windows installer
+        shell: bash
+        run: |
+          file="packages/desktop/src-tauri/target/release/bundle/nsis/OpenPatent_${{ inputs.version }}_x64-setup.exe"
+          test -f "$file"
+          7z l "$file" | grep -qi "openpatent-cli.*\\.exe"
 
       - name: Upload Windows installer artifact
         uses: actions/upload-artifact@v4
@@ -74,7 +87,11 @@ jobs:
           cd packages/openpatent
           bun run build --single --baseline
           mkdir -p ../desktop/src-tauri/sidecars
-          cp dist/openpatent-linux-x64-baseline/bin/opencode ../desktop/src-tauri/sidecars/opencode-cli-x86_64-unknown-linux-gnu
+          cp dist/openpatent-linux-x64-baseline/bin/opencode ../desktop/src-tauri/sidecars/openpatent-cli-x86_64-unknown-linux-gnu
+
+      - name: Gate sidecar input (Linux)
+        run: |
+          test -x packages/desktop/src-tauri/sidecars/openpatent-cli-x86_64-unknown-linux-gnu
 
 
       - name: Install Linux system dependencies
@@ -95,6 +112,12 @@ jobs:
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+
+      - name: Gate sidecar in Linux .deb
+        run: |
+          file="packages/desktop/src-tauri/target/release/bundle/deb/open-patent_${{ inputs.version }}_amd64.deb"
+          test -f "$file"
+          dpkg-deb -c "$file" | awk '{print $6}' | grep -Eq '^(\./)?usr/bin/openpatent-cli$'
 
       - name: Upload Linux .deb artifact
         uses: actions/upload-artifact@v4

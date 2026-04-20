@@ -34,7 +34,7 @@
     "active": true,
     "targets": ["deb", "rpm", "dmg", "nsis", "app"],
     "category": "Utility",
-    "externalBin": ["sidecars/opencode-cli"],
+    "externalBin": ["sidecars/openpatent-cli"],
     "linux": {
       "rpm": {
         "compression": {
