@@ -117,7 +117,9 @@ jobs:
         run: |
           file="packages/desktop/src-tauri/target/release/bundle/deb/open-patent_${{ inputs.version }}_amd64.deb"
           test -f "$file"
-          dpkg-deb -c "$file" | awk '{print $6}' | grep -Eq '^(\./)?usr/bin/openpatent-cli$'
+          paths="$(dpkg-deb -c "$file" | awk '{print $6}')"
+          echo "$paths" | awk '/openpatent-cli|opencode-cli|usr\/bin|open-patent/'
+          echo "$paths" | grep -Eq '^(\./)?(usr/bin/openpatent-cli|usr/lib/open-patent/openpatent-cli|usr/lib/open-patent/openpatent-cli-x86_64-unknown-linux-gnu)$'
 
       - name: Upload Linux .deb artifact
         uses: actions/upload-artifact@v4
