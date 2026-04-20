@@ -115,7 +115,7 @@ jobs:
 
       - name: Gate sidecar in Linux .deb
         run: |
-          file="packages/desktop/src-tauri/target/release/bundle/deb/open-patent_${{ inputs.version }}_amd64.deb"
+          file="packages/desktop/src-tauri/target/release/bundle/deb/OpenPatent_${{ inputs.version }}_amd64.deb"
           test -f "$file"
           paths="$(dpkg-deb -c "$file" | awk '{print $6}')"
           echo "$paths" | awk '/openpatent-cli|opencode-cli|usr\/bin|open-patent/'
