@@ -184,7 +184,7 @@
     },
     "packages/desktop": {
       "name": "@openpatent/desktop",
-      "version": "1.2.15",
+      "version": "1.2.17",
       "dependencies": {
         "@openpatent/app": "workspace:*",
         "@openpatent/ui": "workspace:*",
@@ -262,7 +262,7 @@
     },
     "packages/openpatent": {
       "name": "openpatent",
-      "version": "1.2.15",
+      "version": "1.2.16",
       "bin": {
         "openpatent": "./bin/openpatent",
       },
