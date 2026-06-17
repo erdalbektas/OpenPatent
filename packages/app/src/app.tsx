@@ -58,6 +58,7 @@ declare global {
   interface Window {
     __OPENCODE__?: {
       updaterEnabled?: boolean
+      masBuild?: boolean
       deepLinks?: string[]
       wsl?: boolean
     }
