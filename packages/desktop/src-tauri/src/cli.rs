@@ -24,7 +24,7 @@ use tracing::Instrument;
 #[cfg(windows)]
 use windows_sys::Win32::System::Threading::{CREATE_NO_WINDOW, CREATE_SUSPENDED};
 
-use crate::server::get_wsl_config;
+use crate::constants::MAS_BUILD;
 
 #[cfg(windows)]
 #[derive(Clone, Copy, Debug)]
@@ -129,6 +129,12 @@ const INSTALL_SCRIPT: &str = include_str!("../../../../install");
 #[tauri::command]
 #[specta::specta]
 pub fn install_cli(app: tauri::AppHandle) -> Result<String, String> {
+    if MAS_BUILD {
+        return Err(
+            "CLI installation is not available in the Mac App Store version".to_string(),
+        );
+    }
+
     if cfg!(not(unix)) {
         return Err("CLI installation is only supported on macOS & Linux".to_string());
     }
@@ -169,6 +175,16 @@ pub fn install_cli(app: tauri::AppHandle) -> Result<String, String> {
 }
 
 pub fn sync_cli(app: tauri::AppHandle) -> Result<(), String> {
+    if MAS_BUILD {
+        tracing::debug!("Skipping CLI sync for Mac App Store build");
+        return Ok(());
+    }
+
+    if cfg!(windows) {
+        tracing::debug!("Skipping CLI sync on Windows (desktop-only bundle)");
+        return Ok(());
+    }
+
     if cfg!(debug_assertions) {
         tracing::debug!("Skipping CLI sync for debug build");
         return Ok(());
@@ -219,21 +235,6 @@ pub fn sync_cli(app: tauri::AppHandle) -> Result<(), String> {
 
 fn get_user_shell() -> String {
     std::env::var("SHELL").unwrap_or_else(|_| "/bin/sh".to_string())
-}
-
-fn is_wsl_enabled(_app: &tauri::AppHandle) -> bool {
-    get_wsl_config(_app.clone()).is_ok_and(|v| v.enabled)
-}
-
-fn shell_escape(input: &str) -> String {
-    if input.is_empty() {
-        return "''".to_string();
-    }
-
-    let mut escaped = String::from("'");
-    escaped.push_str(&input.replace("'", "'\"'\"'"));
-    escaped.push('\'');
-    escaped
 }
 
 fn parse_shell_env(stdout: &[u8]) -> HashMap<String, String> {
@@ -395,51 +396,15 @@ pub fn spawn_command(
     );
 
     let mut cmd = if cfg!(windows) {
-        if is_wsl_enabled(app) {
-            tracing::info!("WSL is enabled, spawning CLI server in WSL");
-            let version = app.package_info().version.to_string();
-            let mut script = vec![
-                "set -e".to_string(),
-                "BIN=\"$HOME/.opencode/bin/opencode\"".to_string(),
-                "if [ ! -x \"$BIN\" ]; then".to_string(),
-                format!(
-                    "  curl -fsSL https://opencode.ai/install | bash -s -- --version {} --no-modify-path",
-                    shell_escape(&version)
-                ),
-                "fi".to_string(),
-            ];
+        let sidecar = get_sidecar_path(app);
+        let mut cmd = Command::new(sidecar);
+        cmd.args(args.split_whitespace());
 
-            let mut env_prefix = vec![
-                "OPENCODE_EXPERIMENTAL_ICON_DISCOVERY=true".to_string(),
-                "OPENCODE_EXPERIMENTAL_FILEWATCHER=true".to_string(),
-                "OPENCODE_CLIENT=desktop".to_string(),
-                "XDG_STATE_HOME=\"$HOME/.local/state\"".to_string(),
-            ];
-            env_prefix.extend(
-                envs.iter()
-                    .filter(|(key, _)| key != "OPENCODE_EXPERIMENTAL_ICON_DISCOVERY")
-                    .filter(|(key, _)| key != "OPENCODE_EXPERIMENTAL_FILEWATCHER")
-                    .filter(|(key, _)| key != "OPENCODE_CLIENT")
-                    .filter(|(key, _)| key != "XDG_STATE_HOME")
-                    .map(|(key, value)| format!("{}={}", key, shell_escape(value))),
-            );
-
-            script.push(format!("{} exec \"$BIN\" {}", env_prefix.join(" "), args));
-
-            let mut cmd = Command::new("wsl");
-            cmd.args(["-e", "bash", "-lc", &script.join("\n")]);
-            cmd
-        } else {
-            let sidecar = get_sidecar_path(app);
-            let mut cmd = Command::new(sidecar);
-            cmd.args(args.split_whitespace());
-
-            for (key, value) in envs {
-                cmd.env(key, value);
-            }
-
-            cmd
+        for (key, value) in envs {
+            cmd.env(key, value);
         }
+
+        cmd
     } else {
         let sidecar = get_sidecar_path(app);
         let shell = get_user_shell();

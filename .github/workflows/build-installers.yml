@@ -9,7 +9,7 @@ on:
       version:
         description: "App version to embed (e.g. 1.2.16)"
         required: true
-        default: "1.2.17"
+        default: "1.2.18"
         type: string
 
 concurrency:
@@ -35,16 +35,18 @@ jobs:
 
       - name: Build CLI sidecar (Windows x64)
         shell: bash
+        env:
+          RUST_TARGET: x86_64-pc-windows-msvc
+          OPENCODE_VERSION: ${{ inputs.version }}
         run: |
-          cd packages/openpatent
-          bun run build --single --baseline
-          mkdir -p ../desktop/src-tauri/sidecars
-          cp dist/openpatent-windows-x64-baseline/bin/opencode.exe ../desktop/src-tauri/sidecars/openpatent-cli-x86_64-pc-windows-msvc.exe
+          cd packages/desktop
+          bun run build:sidecar --baseline
 
       - name: Gate sidecar input (Windows)
         shell: bash
         run: |
           test -f packages/desktop/src-tauri/sidecars/openpatent-cli-x86_64-pc-windows-msvc.exe
+          packages/desktop/src-tauri/sidecars/openpatent-cli-x86_64-pc-windows-msvc.exe --version | grep -q "${{ inputs.version }}"
 
 
       - name: Build Tauri NSIS installer
@@ -83,15 +85,17 @@ jobs:
       - uses: ./.github/actions/setup-bun
 
       - name: Build CLI sidecar (Linux x64)
+        env:
+          RUST_TARGET: x86_64-unknown-linux-gnu
+          OPENCODE_VERSION: ${{ inputs.version }}
         run: |
-          cd packages/openpatent
-          bun run build --single --baseline
-          mkdir -p ../desktop/src-tauri/sidecars
-          cp dist/openpatent-linux-x64-baseline/bin/opencode ../desktop/src-tauri/sidecars/openpatent-cli-x86_64-unknown-linux-gnu
+          cd packages/desktop
+          bun run build:sidecar --baseline
 
       - name: Gate sidecar input (Linux)
         run: |
           test -x packages/desktop/src-tauri/sidecars/openpatent-cli-x86_64-unknown-linux-gnu
+          packages/desktop/src-tauri/sidecars/openpatent-cli-x86_64-unknown-linux-gnu --version | grep -q "${{ inputs.version }}"
 
 
       - name: Install Linux system dependencies

@@ -1,7 +1,7 @@
 {
   "name": "@openpatent/desktop",
   "private": true,
-  "version": "1.2.17",
+  "version": "1.2.18",
   "type": "module",
   "license": "MIT",
   "scripts": {
@@ -9,6 +9,10 @@
     "predev": "bun ./scripts/predev.ts",
     "dev": "vite",
     "build": "bun run typecheck && vite build",
+    "build:sidecar": "bun ./scripts/build-sidecar.ts",
+    "build:mas": "bash ./scripts/build-mas.sh",
+    "sign:mas": "bash ./scripts/sign-mas.sh",
+    "validate:mas-sidecar": "bun ./scripts/validate-mas-sidecar.ts",
     "preview": "vite preview",
     "tauri": "tauri"
   },
