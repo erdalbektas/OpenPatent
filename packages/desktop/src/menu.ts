@@ -5,6 +5,7 @@ import { openUrl } from "@tauri-apps/plugin-opener"
 
 import { runUpdater, UPDATER_ENABLED } from "./updater"
 import { installCli } from "./cli"
+import { MAS_BUILD } from "./mas"
 import { initI18n, t } from "./i18n"
 import { commands } from "./bindings"
 
@@ -21,15 +22,23 @@ export async function createMenu(trigger: (id: string) => void) {
           await PredefinedMenuItem.new({
             item: { About: null },
           }),
-          await MenuItem.new({
-            enabled: UPDATER_ENABLED,
-            action: () => runUpdater({ alertOnFail: true }),
-            text: t("desktop.menu.checkForUpdates"),
-          }),
-          await MenuItem.new({
-            action: () => installCli(),
-            text: t("desktop.menu.installCli"),
-          }),
+          ...(UPDATER_ENABLED
+            ? [
+                await MenuItem.new({
+                  enabled: true,
+                  action: () => runUpdater({ alertOnFail: true }),
+                  text: t("desktop.menu.checkForUpdates"),
+                }),
+              ]
+            : []),
+          ...(MAS_BUILD
+            ? []
+            : [
+                await MenuItem.new({
+                  action: () => installCli(),
+                  text: t("desktop.menu.installCli"),
+                }),
+              ]),
           await MenuItem.new({
             action: async () => window.location.reload(),
             text: t("desktop.menu.reloadWebview"),
@@ -159,11 +168,11 @@ export async function createMenu(trigger: (id: string) => void) {
         items: [
           // missing native macos search
           await MenuItem.new({
-            action: () => openUrl("https://opencode.ai/docs"),
+            action: () => openUrl("https://openpatent.techtank.com.tr/docs"),
             text: t("desktop.menu.help.documentation"),
           }),
           await MenuItem.new({
-            action: () => openUrl("https://discord.com/invite/opencode"),
+            action: () => openUrl("https://github.com/erdalbektas/OpenPatent/issues"),
             text: t("desktop.menu.help.supportForum"),
           }),
           await PredefinedMenuItem.new({
@@ -176,11 +185,12 @@ export async function createMenu(trigger: (id: string) => void) {
             item: "Separator",
           }),
           await MenuItem.new({
-            action: () => openUrl("https://github.com/anomalyco/opencode/issues/new?template=feature_request.yml"),
+            action: () =>
+              openUrl("https://github.com/erdalbektas/OpenPatent/issues/new?template=feature_request.yml"),
             text: t("desktop.menu.help.shareFeedback"),
           }),
           await MenuItem.new({
-            action: () => openUrl("https://github.com/anomalyco/opencode/issues/new?template=bug_report.yml"),
+            action: () => openUrl("https://github.com/erdalbektas/OpenPatent/issues/new?template=bug_report.yml"),
             text: t("desktop.menu.help.reportBug"),
           }),
         ],
