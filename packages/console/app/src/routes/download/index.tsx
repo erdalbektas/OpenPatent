@@ -12,7 +12,7 @@ import { config } from "~/config"
 import { useI18n } from "~/context/i18n"
 import { useLanguage } from "~/context/language"
 import desktopAppIcon from "../../asset/lander/opencode-desktop-icon.png"
-import type { DownloadPlatform } from "./types"
+import { MAC_APP_STORE_URL, type DownloadPlatform } from "./types"
 
 type OS = "macOS" | "Windows" | "Linux" | null
 
@@ -189,10 +189,10 @@ export default function Download() {
                       />
                     </svg>
                   </span>
-                  <span>{i18n.t("download.platform.macosIntel")}</span>
+                  <span>{i18n.t("download.platform.macosAppStore")}</span>
                 </div>
-                <a href={language.route(getDownloadHref("darwin-x64-dmg"))} data-component="action-button">
-                  {i18n.t("download.action.download")}
+                <a href={MAC_APP_STORE_URL} target="_blank" rel="noopener noreferrer" data-component="action-button">
+                  {i18n.t("download.action.appStore")}
                 </a>
               </div>
               <div data-component="download-row">
