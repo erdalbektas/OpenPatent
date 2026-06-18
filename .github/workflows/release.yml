@@ -11,7 +11,7 @@ on:
         description: "New version to release (e.g. 1.3.0)"
         required: true
         type: string
-        default: "1.2.17"
+        default: "1.2.18"
       draft:
         description: "Create as draft release (review before publishing)"
         required: false
@@ -41,6 +41,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: dev
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: ./.github/actions/setup-bun
@@ -58,11 +59,20 @@ jobs:
 
       - name: Commit version bump
         run: |
+          VERSION="${{ steps.bump.outputs.version }}"
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add packages/desktop/package.json
-          git commit -m "release: v${{ steps.bump.outputs.version }}"
-          git tag "v${{ steps.bump.outputs.version }}"
+          if git diff --staged --quiet; then
+            echo "Version already at ${VERSION}"
+          else
+            git commit -m "release: v${VERSION}"
+          fi
+          if git rev-parse "v${VERSION}" >/dev/null 2>&1; then
+            echo "Tag v${VERSION} already exists locally"
+          else
+            git tag "v${VERSION}"
+          fi
           git push origin HEAD:dev --follow-tags
 
       - name: Build simple changelog
@@ -99,10 +109,11 @@ jobs:
           tag_name: "v${{ steps.bump.outputs.version }}"
           release_name: "OpenPatent v${{ steps.bump.outputs.version }}"
           body: |
-            Windows installer launch reliability hotfix release.
+            OpenPatent v${{ steps.bump.outputs.version }}
 
-            - Fixes sidecar packaging and startup contract checks to prevent no-launch installs.
-            - Improves startup diagnostics for missing/blocked sidecar scenarios.
+            - Unified Windows desktop bundle (bundled sidecar only, single app version)
+            - Version-aligned sidecar builds across macOS, Windows, and Linux
+            - Mac App Store build support and menu gating
 
             ${{ steps.changelog.outputs.notes }}
           draft: ${{ inputs.draft }}
@@ -126,15 +137,17 @@ jobs:
           rustup target add aarch64-apple-darwin x86_64-apple-darwin
 
       - name: Build CLI sidecar (macOS arm64)
+        env:
+          RUST_TARGET: aarch64-apple-darwin
+          OPENCODE_VERSION: ${{ needs.prepare.outputs.version }}
         run: |
-          cd packages/openpatent
-          bun run build --single
-          mkdir -p ../desktop/src-tauri/sidecars
-          cp dist/openpatent-darwin-arm64/bin/opencode ../desktop/src-tauri/sidecars/openpatent-cli-aarch64-apple-darwin
+          cd packages/desktop
+          bun run build:sidecar
 
       - name: Gate sidecar input (macOS)
         run: |
           test -x packages/desktop/src-tauri/sidecars/openpatent-cli-aarch64-apple-darwin
+          packages/desktop/src-tauri/sidecars/openpatent-cli-aarch64-apple-darwin --version | grep -q "${{ needs.prepare.outputs.version }}"
 
       - name: Import code-signing certificate
         if: ${{ env.APPLE_CERTIFICATE != '' }}
@@ -206,16 +219,18 @@ jobs:
 
       - name: Build CLI sidecar (Windows x64)
         shell: bash
+        env:
+          RUST_TARGET: x86_64-pc-windows-msvc
+          OPENCODE_VERSION: ${{ needs.prepare.outputs.version }}
         run: |
-          cd packages/openpatent
-          bun run build --single --baseline
-          mkdir -p ../desktop/src-tauri/sidecars
-          cp dist/openpatent-windows-x64-baseline/bin/opencode.exe ../desktop/src-tauri/sidecars/openpatent-cli-x86_64-pc-windows-msvc.exe
+          cd packages/desktop
+          bun run build:sidecar --baseline
 
       - name: Gate sidecar input (Windows)
         shell: bash
         run: |
           test -f packages/desktop/src-tauri/sidecars/openpatent-cli-x86_64-pc-windows-msvc.exe
+          packages/desktop/src-tauri/sidecars/openpatent-cli-x86_64-pc-windows-msvc.exe --version | grep -q "${{ needs.prepare.outputs.version }}"
 
       - name: Build Tauri (Windows NSIS installer)
         env:
@@ -266,15 +281,17 @@ jobs:
       - uses: ./.github/actions/setup-bun
 
       - name: Build CLI sidecar (Linux x64)
+        env:
+          RUST_TARGET: x86_64-unknown-linux-gnu
+          OPENCODE_VERSION: ${{ needs.prepare.outputs.version }}
         run: |
-          cd packages/openpatent
-          bun run build --single --baseline
-          mkdir -p ../desktop/src-tauri/sidecars
-          cp dist/openpatent-linux-x64-baseline/bin/opencode ../desktop/src-tauri/sidecars/openpatent-cli-x86_64-unknown-linux-gnu
+          cd packages/desktop
+          bun run build:sidecar --baseline
 
       - name: Gate sidecar input (Linux)
         run: |
           test -x packages/desktop/src-tauri/sidecars/openpatent-cli-x86_64-unknown-linux-gnu
+          packages/desktop/src-tauri/sidecars/openpatent-cli-x86_64-unknown-linux-gnu --version | grep -q "${{ needs.prepare.outputs.version }}"
 
       - name: Install Linux system dependencies
         run: |
