@@ -58,6 +58,8 @@ jobs:
           echo "tag=v${VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: Commit version bump
+        env:
+          HUSKY: "0"
         run: |
           VERSION="${{ steps.bump.outputs.version }}"
           git config user.name  "github-actions[bot]"
