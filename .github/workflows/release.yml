@@ -62,18 +62,21 @@ jobs:
           VERSION="${{ steps.bump.outputs.version }}"
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git fetch origin dev
+          git checkout dev
+          git pull --ff-only origin dev
+          cd packages/desktop
+          bun x -y json -I -f package.json -e "this.version='${VERSION}'"
+          cd ../..
           git add packages/desktop/package.json
           if git diff --staged --quiet; then
             echo "Version already at ${VERSION}"
           else
             git commit -m "release: v${VERSION}"
           fi
-          if git rev-parse "v${VERSION}" >/dev/null 2>&1; then
-            echo "Tag v${VERSION} already exists locally"
-          else
-            git tag "v${VERSION}"
-          fi
+          git tag -f "v${VERSION}"
           git push origin HEAD:dev --follow-tags --no-verify
+          git push origin "refs/tags/v${VERSION}" --force
 
       - name: Build simple changelog
         id: changelog
@@ -102,22 +105,30 @@ jobs:
 
       - name: Create GitHub Release
         id: create_release
-        uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: "v${{ steps.bump.outputs.version }}"
-          release_name: "OpenPatent v${{ steps.bump.outputs.version }}"
-          body: |
-            OpenPatent v${{ steps.bump.outputs.version }}
+        run: |
+          VERSION="${{ steps.bump.outputs.version }}"
+          TAG="v${VERSION}"
+          if gh release view "$TAG" --repo "${{ github.repository }}" >/dev/null 2>&1; then
+            echo "Release $TAG already exists"
+          else
+            gh release create "$TAG" \
+              --repo "${{ github.repository }}" \
+              --title "OpenPatent v${VERSION}" \
+              --notes-file - <<EOF
+          OpenPatent v${VERSION}
 
-            - Unified Windows desktop bundle (bundled sidecar only, single app version)
-            - Version-aligned sidecar builds across macOS, Windows, and Linux
-            - Mac App Store build support and menu gating
+          - Unified Windows desktop bundle (bundled sidecar only, single app version)
+          - Version-aligned sidecar builds across macOS, Windows, and Linux
+          - Mac App Store build support and menu gating
 
-            ${{ steps.changelog.outputs.notes }}
-          draft: ${{ inputs.draft }}
-          prerelease: false
+          ${{ steps.changelog.outputs.notes }}
+          EOF
+          fi
+          UPLOAD_URL=$(gh api repos/${{ github.repository }}/releases/tags/$TAG --jq .upload_url)
+          echo "upload_url=${UPLOAD_URL}" >> "$GITHUB_OUTPUT"
+          echo "release_id=$(gh api repos/${{ github.repository }}/releases/tags/$TAG --jq .id)" >> "$GITHUB_OUTPUT"
 
   # ── 2. Build Tauri for macOS (arm64 + x86_64 universal) ───────────────────
   build-macos:
@@ -128,7 +139,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: "v${{ needs.prepare.outputs.version }}"
+          ref: dev
 
       - uses: ./.github/actions/setup-bun
 
@@ -213,7 +224,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: "v${{ needs.prepare.outputs.version }}"
+          ref: dev
 
       - uses: ./.github/actions/setup-bun
 
@@ -276,7 +287,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: "v${{ needs.prepare.outputs.version }}"
+          ref: dev
 
       - uses: ./.github/actions/setup-bun
 
@@ -355,7 +366,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: "v${{ needs.prepare.outputs.version }}"
+          ref: dev
 
       - name: Download all release signatures
         env:
