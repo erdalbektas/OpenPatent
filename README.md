@@ -156,7 +156,7 @@ Download the installer for your platform from **[GitHub Releases](https://github
 
 ```json
 {
-  "$schema": "https://openpatent.ai/config.json",
+  "$schema": "https://openpatent.techtank.com.tr/config.json",
   "provider": {
     "openai": {
       "options": {
