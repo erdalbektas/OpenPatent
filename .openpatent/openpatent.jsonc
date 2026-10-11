@@ -16,4 +16,9 @@
   "tools": {
     "github-triage": false,
   },
+},
+  "provider": "lmstudio",
+  "baseURL": "http://localhost:1234/v1",
+  "apiKey": "not-needed",
+  "model": "meta-llama-3-8b-instruct"
 }
