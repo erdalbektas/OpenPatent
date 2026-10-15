@@ -61,6 +61,7 @@
     "@dnd-kit/solid": "0.5.0",
     "@ibm/plex": "6.4.1",
     "@kobalte/core": "catalog:",
+    "@openpatent/patent": "workspace:*",
     "@opencode/client": "workspace:*",
     "@opencode/schema": "workspace:*",
     "@opencode/gui-extensions": "workspace:*",

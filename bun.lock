@@ -70,6 +70,7 @@
         "@opencode/session-ui": "workspace:*",
         "@opencode/ui": "workspace:*",
         "@opencode/util": "workspace:*",
+        "@openpatent/patent": "workspace:*",
         "@pierre/trees": "1.0.0-beta.4",
         "@sentry/solid": "catalog:",
         "@solid-primitives/event-bus": "1.1.2",
@@ -544,6 +545,54 @@
         "@tsconfig/bun": "catalog:",
         "@types/bun": "catalog:",
         "@typescript/native-preview": "catalog:",
+      },
+    },
+    "packages/openpatent": {
+      "name": "@openpatent/cli",
+      "version": "0.1.0",
+      "bin": {
+        "openpatent": "./bin/openpatent.ts",
+      },
+      "dependencies": {
+        "@openpatent/patent": "workspace:*",
+      },
+      "devDependencies": {
+        "@tsconfig/bun": "catalog:",
+        "@types/bun": "catalog:",
+        "@typescript/native-preview": "catalog:",
+        "typescript": "catalog:",
+      },
+    },
+    "packages/patent": {
+      "name": "@openpatent/patent",
+      "version": "0.1.0",
+      "dependencies": {
+        "zod": "catalog:",
+      },
+      "devDependencies": {
+        "@tsconfig/bun": "catalog:",
+        "@types/bun": "catalog:",
+        "@typescript/native-preview": "catalog:",
+        "typescript": "catalog:",
+      },
+    },
+    "packages/patent-plugin": {
+      "name": "@openpatent/plugin",
+      "version": "0.1.0",
+      "dependencies": {
+        "@opencode/plugin": "workspace:*",
+        "@opencode/schema": "workspace:*",
+        "@openpatent/patent": "workspace:*",
+        "effect": "catalog:",
+      },
+      "devDependencies": {
+        "@tsconfig/bun": "catalog:",
+        "@types/bun": "catalog:",
+        "@typescript/native-preview": "catalog:",
+        "typescript": "catalog:",
+      },
+      "peerDependencies": {
+        "effect": "catalog:",
       },
     },
     "packages/plugin": {
@@ -2133,6 +2182,12 @@
     "@opencode/web": ["@opencode/web@workspace:packages/web"],
 
     "@opencode/www": ["@opencode/www@workspace:services/www"],
+
+    "@openpatent/cli": ["@openpatent/cli@workspace:packages/openpatent"],
+
+    "@openpatent/patent": ["@openpatent/patent@workspace:packages/patent"],
+
+    "@openpatent/plugin": ["@openpatent/plugin@workspace:packages/patent-plugin"],
 
     "@opentelemetry/api": ["@opentelemetry/api@1.9.0", "", {}, "sha512-3giAOQvZiH5F9bMlMiv8+GSPMeqg0dbaeo58/0SlA9sxSqZhnUtxzX9/2FzyhS9sWQf5S0GJE0AKBrFqjpeYcg=="],
 
