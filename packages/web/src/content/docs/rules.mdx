@@ -1,23 +1,31 @@
 ---
 title: Rules
-description: Set custom instructions for openpatent.
+description: Set custom instructions for opencode.
 ---
 
-You can provide custom instructions to openpatent by creating an `AGENTS.md` file. This is similar to `CLAUDE.md` or Cursor's rules. It contains instructions that will be included in the LLM's context to customize its behavior for your specific project.
+You can provide custom instructions to opencode by creating an `AGENTS.md` file. This is similar to Cursor's rules. It contains instructions that will be included in the LLM's context to customize its behavior for your specific project.
 
 ---
 
 ## Initialize
 
-To create a new `AGENTS.md` file, you can run the `/init` command in openpatent.
+To create a new `AGENTS.md` file, you can run the `/init` command in opencode.
 
 :::tip
 You should commit your project's `AGENTS.md` file to Git.
 :::
 
-This will scan your project and all its contents to understand what the project is about and generate an `AGENTS.md` file with it. This helps openpatent to navigate the project better.
+`/init` scans the important files in your repo, may ask a couple of targeted questions when the codebase cannot answer them, and then creates or updates `AGENTS.md` with concise project-specific guidance.
 
-If you have an existing `AGENTS.md` file, this will try to add to it.
+It focuses on the things future agent sessions are most likely to need:
+
+- build, lint, and test commands
+- command order and focused verification steps when they matter
+- architecture and repo structure that are not obvious from filenames alone
+- project-specific conventions, setup quirks, and operational gotchas
+- references to existing instruction sources like Cursor or Copilot rules
+
+If you already have an `AGENTS.md`, `/init` will improve it in place instead of blindly replacing it.
 
 ---
 
@@ -54,43 +62,71 @@ We are adding project-specific instructions here and this will be shared across 
 
 ## Types
 
-openpatent also supports reading the `AGENTS.md` file from multiple locations. And this serves different purposes.
+opencode also supports reading the `AGENTS.md` file from multiple locations. And this serves different purposes.
 
 ### Project
 
-The ones we have seen above, where the `AGENTS.md` is placed in the project root, are project-specific rules. These only apply when you are working in this directory or its sub-directories.
+Place an `AGENTS.md` in your project root for project-specific rules. These only apply when you are working in this directory or its sub-directories.
 
 ### Global
 
-You can also have global rules in a `~/.config/openpatent/AGENTS.md` file. This gets applied across all openpatent sessions.
+You can also have global rules in a `~/.config/opencode/AGENTS.md` file. This gets applied across all opencode sessions.
 
 Since this isn't committed to Git or shared with your team, we recommend using this to specify any personal rules that the LLM should follow.
+
+### Claude Code Compatibility
+
+For users migrating from Claude Code, OpenCode supports Claude Code's file conventions as fallbacks:
+
+- **Project rules**: `CLAUDE.md` in your project directory (used if no `AGENTS.md` exists)
+- **Global rules**: `~/.claude/CLAUDE.md` (used if no `~/.config/opencode/AGENTS.md` exists)
+- **Skills**: `~/.claude/skills/` — see [Agent Skills](/docs/skills/) for details
+
+To disable Claude Code compatibility, set one of these environment variables:
+
+```bash
+export OPENCODE_DISABLE_CLAUDE_CODE=1        # Disable all .claude support
+export OPENCODE_DISABLE_CLAUDE_CODE_PROMPT=1 # Disable only ~/.claude/CLAUDE.md
+export OPENCODE_DISABLE_CLAUDE_CODE_SKILLS=1 # Disable only .claude/skills
+```
 
 ---
 
 ## Precedence
 
-So when openpatent starts, it looks for:
+When opencode starts, it looks for rule files in this order:
 
-1. **Local files** by traversing up from the current directory
-2. **Global file** by checking `~/.config/openpatent/AGENTS.md`
+1. **Local files** by traversing up from the current directory (`AGENTS.md`, `CLAUDE.md`)
+2. **Global file** at `~/.config/opencode/AGENTS.md`
+3. **Claude Code file** at `~/.claude/CLAUDE.md` (unless disabled)
 
-If you have both global and project-specific rules, openpatent will combine them together.
+The first matching file wins in each category. For example, if you have both `AGENTS.md` and `CLAUDE.md`, only `AGENTS.md` is used. Similarly, `~/.config/opencode/AGENTS.md` takes precedence over `~/.claude/CLAUDE.md`.
 
 ---
 
 ## Custom Instructions
 
-You can specify custom instruction files in your `openpatent.json` or the global `~/.config/openpatent/openpatent.json`. This allows you and your team to reuse existing rules rather than having to duplicate them to AGENTS.md.
+You can specify custom instruction files in your `opencode.json` or the global `~/.config/opencode/opencode.json`. This allows you and your team to reuse existing rules rather than having to duplicate them to AGENTS.md.
 
 Example:
 
-```json title="openpatent.json"
+```json title="opencode.json"
 {
-  "$schema": "https://openpatent.ai/config.json",
+  "$schema": "https://opencode.ai/config.json",
   "instructions": ["CONTRIBUTING.md", "docs/guidelines.md", ".cursor/rules/*.md"]
 }
 ```
+
+You can also use remote URLs to load instructions from the web.
+
+```json title="opencode.json"
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": ["https://raw.githubusercontent.com/my-org/shared-rules/main/style.md"]
+}
+```
+
+Remote instructions are fetched with a 5 second timeout.
 
 All instruction files are combined with your `AGENTS.md` files.
 
@@ -98,22 +134,22 @@ All instruction files are combined with your `AGENTS.md` files.
 
 ## Referencing External Files
 
-While openpatent doesn't automatically parse file references in `AGENTS.md`, you can achieve similar functionality in two ways:
+While opencode doesn't automatically parse file references in `AGENTS.md`, you can achieve similar functionality in two ways:
 
-### Using openpatent.json
+### Using opencode.json
 
-The recommended approach is to use the `instructions` field in `openpatent.json`:
+The recommended approach is to use the `instructions` field in `opencode.json`:
 
-```json title="openpatent.json"
+```json title="opencode.json"
 {
-  "$schema": "https://openpatent.ai/config.json",
+  "$schema": "https://opencode.ai/config.json",
   "instructions": ["docs/development-standards.md", "test/testing-guidelines.md", "packages/*/AGENTS.md"]
 }
 ```
 
 ### Manual Instructions in AGENTS.md
 
-You can teach openpatent to read external files by providing explicit instructions in your `AGENTS.md`. Here's a practical example:
+You can teach opencode to read external files by providing explicit instructions in your `AGENTS.md`. Here's a practical example:
 
 ```markdown title="AGENTS.md"
 # TypeScript Project Rules
@@ -145,8 +181,8 @@ This approach allows you to:
 - Create modular, reusable rule files
 - Share rules across projects via symlinks or git submodules
 - Keep AGENTS.md concise while referencing detailed guidelines
-- Ensure openpatent loads files only when needed for the specific task
+- Ensure opencode loads files only when needed for the specific task
 
 :::tip
-For monorepos or projects with shared standards, using `openpatent.json` with glob patterns (like `packages/*/AGENTS.md`) is more maintainable than manual instructions.
+For monorepos or projects with shared standards, using `opencode.json` with glob patterns (like `packages/*/AGENTS.md`) is more maintainable than manual instructions.
 :::

@@ -23,6 +23,7 @@
   5. Use the user's configured `sans` font-feature-settings by default.
   6. Use the user's configured `sans` font-variation-settings by default.
   7. Disable tap highlights on iOS.
+  8. Avoid one-word last lines in all wrapped text. Chromium keeps the line count, so heights do not change.
 */
 
 html,
@@ -34,6 +35,7 @@ html,
   font-feature-settings: var(--font-family-sans--font-feature-settings, normal); /* 5 */
   font-variation-settings: var(--font-family-sans--font-variation-settings, normal); /* 6 */
   -webkit-tap-highlight-color: transparent; /* 7 */
+  text-wrap-style: pretty; /* 8 */
 }
 
 /*
@@ -79,6 +81,22 @@ a {
   color: inherit;
   -webkit-text-decoration: inherit;
   text-decoration: inherit;
+  cursor: default;
+}
+
+#root:not([aria-hidden]) *[data-tauri-drag-region] {
+  app-region: drag;
+}
+
+*[data-tauri-drag-region] button,
+*[data-tauri-drag-region] a,
+*[data-tauri-drag-region] input,
+*[data-tauri-drag-region] textarea,
+*[data-tauri-drag-region] select,
+*[data-tauri-drag-region] [role="button"],
+*[data-tauri-drag-region] [role="menuitem"],
+*[data-tauri-drag-region] [contenteditable] {
+  app-region: no-drag;
 }
 
 /*
@@ -95,6 +113,7 @@ strong {
   2. Use the user's configured `mono` font-feature-settings by default.
   3. Use the user's configured `mono` font-variation-settings by default.
   4. Correct the odd `em` font sizing in all browsers.
+  5. Keep code wrapping greedy so wrapped lines break where an editor would.
 */
 
 code,
@@ -105,6 +124,17 @@ pre {
   font-feature-settings: var(--font-family-mono--font-feature-settings, normal); /* 2 */
   font-variation-settings: var(--font-family-mono--font-variation-settings, normal); /* 3 */
   font-size: 1em; /* 4 */
+  text-wrap-style: auto; /* 5 */
+}
+
+/*
+  Keep earlier lines still while the user types.
+*/
+
+input,
+textarea,
+[contenteditable] {
+  text-wrap-style: stable;
 }
 
 /*
@@ -371,4 +401,23 @@ input:where([type="button"], [type="reset"], [type="submit"]),
 
 [hidden]:where(:not([hidden="until-found"])) {
   display: none !important;
+}
+
+/*
+  Prevent iOS Safari from auto-zooming on input focus.
+  iOS WebKit zooms on any input with font-size < 16px as an accessibility feature.
+*/
+
+@media (hover: none) and (pointer: coarse) {
+  input,
+  select,
+  textarea,
+  [contenteditable="true"] {
+    font-size: 16px !important;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    font-size: 13px;
+  }
 }

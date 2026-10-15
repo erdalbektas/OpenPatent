@@ -1,4 +1,4 @@
-name: Docs Update
+name: docs-update
 
 on:
   schedule:
@@ -10,7 +10,7 @@ env:
 
 jobs:
   update-docs:
-    if: github.repository == 'sst/openpatent'
+    if: github.repository == 'sst/opencode'
     runs-on: blacksmith-4vcpu-ubuntu-2404
     permissions:
       id-token: write
@@ -18,7 +18,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0 # Fetch full history to access commits
 
@@ -41,13 +41,13 @@ jobs:
             } >> $GITHUB_OUTPUT
           fi
 
-      - name: Run openpatent
+      - name: Run opencode
         if: steps.commits.outputs.has_commits == 'true'
-        uses: sst/openpatent/github@latest
+        uses: sst/opencode/github@2c14fc5586fe0b88e5c04732d2e846769cc35671 # latest
         env:
-          openpatent_API_KEY: ${{ secrets.openpatent_API_KEY }}
+          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
         with:
-          model: openpatent/gpt-5.2
+          model: opencode/gpt-5.2
           agent: docs
           prompt: |
             Review the following commits from the last ${{ env.LOOKBACK_HOURS }} hours and identify any new features that may need documentation.

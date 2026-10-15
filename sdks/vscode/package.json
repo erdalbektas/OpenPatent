@@ -1,12 +1,12 @@
 {
-  "name": "openpatent",
-  "displayName": "openpatent",
-  "description": "OpenPatent for VS Code",
-  "version": "1.0.209",
-  "publisher": "openpatent",
+  "name": "opencode",
+  "displayName": "opencode",
+  "description": "opencode for VS Code",
+  "version": "2.0.29",
+  "publisher": "sst-dev",
   "repository": {
     "type": "git",
-    "url": "https://github.com/openpatent/openpatent"
+    "url": "https://github.com/sst/opencode"
   },
   "license": "MIT",
   "icon": "images/icon.png",
@@ -25,54 +25,54 @@
   "contributes": {
     "commands": [
       {
-        "command": "openpatent.openTerminal",
-        "title": "Open openpatent",
+        "command": "opencode.openTerminal",
+        "title": "Open opencode",
         "icon": {
           "light": "images/button-dark.svg",
           "dark": "images/button-light.svg"
         }
       },
       {
-        "command": "openpatent.openNewTerminal",
-        "title": "Open openpatent in new tab",
+        "command": "opencode.openNewTerminal",
+        "title": "Open opencode in new tab",
         "icon": {
           "light": "images/button-dark.svg",
           "dark": "images/button-light.svg"
         }
       },
       {
-        "command": "openpatent.addFilepathToTerminal",
+        "command": "opencode.addFilepathToTerminal",
         "title": "Add Filepath to Terminal"
       }
     ],
     "menus": {
       "editor/title": [
         {
-          "command": "openpatent.openNewTerminal",
+          "command": "opencode.openNewTerminal",
           "group": "navigation"
         }
       ]
     },
     "keybindings": [
       {
-        "command": "openpatent.openTerminal",
-        "title": "Run openpatent",
+        "command": "opencode.openTerminal",
+        "title": "Run opencode",
         "key": "cmd+escape",
         "mac": "cmd+escape",
         "win": "ctrl+escape",
         "linux": "ctrl+escape"
       },
       {
-        "command": "openpatent.openNewTerminal",
-        "title": "Run openpatent",
+        "command": "opencode.openNewTerminal",
+        "title": "Run opencode",
         "key": "cmd+shift+escape",
         "mac": "cmd+shift+escape",
         "win": "ctrl+shift+escape",
         "linux": "ctrl+shift+escape"
       },
       {
-        "command": "openpatent.addFilepathToTerminal",
-        "title": "openpatent: Insert At-Mentioned",
+        "command": "opencode.addFilepathToTerminal",
+        "title": "opencode: Insert At-Mentioned",
         "key": "cmd+alt+k",
         "mac": "cmd+alt+k",
         "win": "ctrl+alt+K",

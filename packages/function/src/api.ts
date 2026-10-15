@@ -5,6 +5,7 @@ import { jwtVerify, createRemoteJWKSet } from "jose"
 import { createAppAuth } from "@octokit/auth-app"
 import { Octokit } from "@octokit/rest"
 import { Resource } from "sst"
+import { parseRepositoryClaim } from "./github"
 
 type Env = {
   SYNC_SERVER: DurableObjectNamespace<SyncServer>
@@ -13,6 +14,7 @@ type Env = {
 }
 
 export class SyncServer extends DurableObject<Env> {
+  // oxlint-disable-next-line no-useless-constructor
   constructor(ctx: DurableObjectState, env: Env) {
     super(ctx, env)
   }
@@ -35,9 +37,9 @@ export class SyncServer extends DurableObject<Env> {
     })
   }
 
-  async webSocketMessage(ws, message) { }
+  async webSocketMessage(_ws, _message) {}
 
-  async webSocketClose(ws, code, reason, wasClean) {
+  async webSocketClose(ws, code, _reason, _wasClean) {
     ws.close(code, "Durable Object is closing WebSocket")
   }
 
@@ -181,7 +183,7 @@ export default new Hono<{ Bindings: Env }>()
     let info
     const messages: Record<string, any> = {}
     data.forEach((d) => {
-      const [root, type, ...splits] = d.key.split("/")
+      const [root, type] = d.key.split("/")
       if (root !== "session") return
       if (type === "info") {
         info = d.content
@@ -200,11 +202,65 @@ export default new Hono<{ Bindings: Env }>()
 
     return c.json({ info, messages })
   })
+  .post("/feishu", async (c) => {
+    const body = (await c.req.json()) as {
+      challenge?: string
+      event?: {
+        message?: {
+          message_id?: string
+          root_id?: string
+          parent_id?: string
+          chat_id?: string
+          content?: string
+        }
+      }
+    }
+    console.log(JSON.stringify(body, null, 2))
+    const challenge = body.challenge
+    if (challenge) return c.json({ challenge })
+
+    const content = body.event?.message?.content
+    const parsed =
+      typeof content === "string" && content.trim().startsWith("{")
+        ? (JSON.parse(content) as {
+            text?: string
+          })
+        : undefined
+    const text = typeof parsed?.text === "string" ? parsed.text : typeof content === "string" ? content : ""
+
+    let message = text.trim().replace(/^@_user_\d+\s*/, "")
+    message = message.replace(/^aiden,?\s*/i, "<@759257817772851260> ")
+    if (!message) return c.json({ ok: true })
+
+    const threadId = body.event?.message?.root_id || body.event?.message?.message_id
+    if (threadId) message = `${message} [${threadId}]`
+
+    const response = await fetch(
+      `https://discord.com/api/v10/channels/${Resource.DISCORD_SUPPORT_CHANNEL_ID.value}/messages`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bot ${Resource.DISCORD_SUPPORT_BOT_TOKEN.value}`,
+        },
+        body: JSON.stringify({
+          content: `${message}`,
+        }),
+      },
+    )
+
+    if (!response.ok) {
+      console.error(await response.text())
+      return c.json({ error: "Discord bot message failed" }, { status: 502 })
+    }
+
+    return c.json({ ok: true })
+  })
   /**
    * Used by the GitHub action to get GitHub installation access token given the OIDC token
    */
   .post("/exchange_github_app_token", async (c) => {
-    const EXPECTED_AUDIENCE = "openpatent-github-action"
+    const EXPECTED_AUDIENCE = "opencode-github-action"
     const GITHUB_ISSUER = "https://token.actions.githubusercontent.com"
     const JWKS_URL = `${GITHUB_ISSUER}/.well-known/jwks`
 
@@ -214,45 +270,44 @@ export default new Hono<{ Bindings: Env }>()
 
     // verify token
     const JWKS = createRemoteJWKSet(new URL(JWKS_URL))
-    let owner, repo
+    let repository: ReturnType<typeof parseRepositoryClaim>
     try {
       const { payload } = await jwtVerify(token, JWKS, {
         issuer: GITHUB_ISSUER,
         audience: EXPECTED_AUDIENCE,
       })
-      const sub = payload.sub // e.g. 'repo:my-org/my-repo:ref:refs/heads/main'
-      const parts = sub.split(":")[1].split("/")
-      owner = parts[0]
-      repo = parts[1]
+      repository = parseRepositoryClaim(payload)
     } catch (err) {
       console.error("Token verification failed:", err)
       return c.json({ error: "Invalid or expired token" }, { status: 403 })
     }
 
-    // Create app JWT token
-    const auth = createAppAuth({
-      appId: Resource.GITHUB_APP_ID.value,
-      privateKey: Resource.GITHUB_APP_PRIVATE_KEY.value,
-    })
-    const appAuth = await auth({ type: "app" })
-
-    // Lookup installation
-    const octokit = new Octokit({ auth: appAuth.token })
-    const { data: installation } = await octokit.apps.getRepoInstallation({
-      owner,
-      repo,
-    })
-
-    // Get installation token
-    const installationAuth = await auth({
-      type: "installation",
-      installationId: installation.id,
-    })
-
-    return c.json({ token: installationAuth.token })
+    try {
+      const auth = createAppAuth({
+        appId: Resource.GITHUB_APP_ID.value,
+        privateKey: Resource.GITHUB_APP_PRIVATE_KEY.value,
+      })
+      const appAuth = await auth({ type: "app" })
+      const octokit = new Octokit({ auth: appAuth.token })
+      const { data: installation } = await octokit.apps.getRepoInstallation({
+        owner: repository.owner,
+        repo: repository.repo,
+      })
+      const installationAuth = await auth({
+        type: "installation",
+        installationId: installation.id,
+      })
+      return c.json({ token: installationAuth.token })
+    } catch (error) {
+      console.error("GitHub App token exchange failed:", error)
+      return c.json(
+        { error: `Failed to exchange GitHub App token for ${repository.owner}/${repository.repo}` },
+        { status: 502 },
+      )
+    }
   })
   /**
-   * Used by the GitHub action to get GitHub installation access token given user PAT token (used when testing `openpatent github run` locally)
+   * Used by the GitHub action to get GitHub installation access token given user PAT token (used when testing `opencode github run` locally)
    */
   .post("/exchange_github_app_token_with_pat", async (c) => {
     const body = await c.req.json<{ owner: string; repo: string }>()
@@ -302,7 +357,7 @@ export default new Hono<{ Bindings: Env }>()
     }
   })
   /**
-   * Used by the openpatent CLI to check if the GitHub app is installed
+   * Used by the opencode CLI to check if the GitHub app is installed
    */
   .get("/get_github_app_installation", async (c) => {
     const owner = c.req.query("owner")

@@ -1,15 +1,20 @@
 ---
 title: Intro
-description: Get started with openpatent.
+description: Get started with OpenCode.
 ---
 
 import { Tabs, TabItem } from "@astrojs/starlight/components"
 import config from "../../../config.mjs"
 export const console = config.console
 
-[**openpatent**](/) is an open source AI coding agent. It's available as a terminal-based interface, desktop app, or IDE extension.
+:::note
+OpenCode 1 and OpenCode 2 both use the `opencode` command and cannot be installed side by side under their default command.
+See the [OpenCode 2 docs](https://opencode.ai/v2/docs/) to migrate to V2.
+:::
 
-![openpatent TUI with the openpatent theme](../../assets/lander/screenshot.png)
+[**OpenCode**](/) is an open source AI coding agent. It's available as a terminal-based interface, desktop app, or IDE extension.
+
+![OpenCode TUI with the opencode theme](../../assets/lander/screenshot.png)
 
 Let's get started.
 
@@ -17,7 +22,7 @@ Let's get started.
 
 #### Prerequisites
 
-To use openpatent in your terminal, you'll need:
+To use OpenCode in your terminal, you'll need:
 
 1. A modern terminal emulator like:
    - [WezTerm](https://wezterm.org), cross-platform
@@ -31,10 +36,11 @@ To use openpatent in your terminal, you'll need:
 
 ## Install
 
-The easiest way to install openpatent is through the install script.
+The easiest way to install OpenCode 1 is through the install script. These installation methods provide the `opencode`
+binary and can conflict with or replace an OpenCode 2 installation.
 
 ```bash
-curl -fsSL https://openpatent.ai/install | bash
+curl -fsSL https://opencode.ai/install | bash
 ```
 
 You can also install it with the following commands:
@@ -45,28 +51,28 @@ You can also install it with the following commands:
 
       <TabItem label="npm">
       ```bash
-      npm install -g openpatent-ai
+      npm install -g opencode-ai
       ```
 
           </TabItem>
 
         <TabItem label="Bun">
         ```bash
-        bun install -g openpatent-ai
+        bun install -g opencode-ai
         ```
 
           </TabItem>
 
         <TabItem label="pnpm">
         ```bash
-        pnpm install -g openpatent-ai
+        pnpm install -g opencode-ai
         ```
 
           </TabItem>
 
         <TabItem label="Yarn">
         ```bash
-        yarn global add openpatent-ai
+        yarn global add opencode-ai
         ```
 
       </TabItem>
@@ -76,63 +82,69 @@ You can also install it with the following commands:
 - **Using Homebrew on macOS and Linux**
 
   ```bash
-  brew install openpatent
+  brew install anomalyco/tap/opencode
   ```
 
-- **Using Paru on Arch Linux**
+  > We recommend using the OpenCode tap for the most up to date releases. The official `brew install opencode` formula is maintained by the Homebrew team and is updated less frequently.
+
+- **Installing on Arch Linux**
 
   ```bash
-  paru -S openpatent-bin
+  sudo pacman -S opencode           # Arch Linux (Stable)
+  paru -S opencode-bin              # Arch Linux (Latest from AUR)
   ```
 
 #### Windows
 
+:::tip[Recommended: Use WSL]
+For the best experience on Windows, we recommend using [Windows Subsystem for Linux (WSL)](/docs/windows-wsl). It provides better performance and full compatibility with OpenCode's features.
+:::
+
 - **Using Chocolatey**
 
   ```bash
-  choco install openpatent
+  choco install opencode
   ```
 
 - **Using Scoop**
 
   ```bash
-  scoop bucket add extras
-  scoop install extras/openpatent
+  scoop install opencode
   ```
 
 - **Using NPM**
 
   ```bash
-  npm install -g openpatent-ai
+  npm install -g opencode-ai
   ```
 
 - **Using Mise**
 
   ```bash
-  mise use -g github:sst/openpatent
+  mise use -g github:anomalyco/opencode
   ```
 
 - **Using Docker**
 
   ```bash
-  docker run -it --rm ghcr.io/sst/openpatent
+  docker run -it --rm ghcr.io/anomalyco/opencode
   ```
 
-Support for installing openpatent on Windows using Bun is currently in progress.
+Support for installing OpenCode on Windows using Bun is currently in progress.
 
-You can also grab the binary from the [Releases](https://github.com/sst/openpatent/releases).
+You can also grab the binary from the [Releases](https://github.com/anomalyco/opencode/releases).
 
 ---
 
 ## Configure
 
-With openpatent you can use any LLM provider by configuring their API keys.
+With OpenCode you can use any LLM provider by configuring their API keys.
 
-If you are new to using LLM providers, we recommend using [openpatent Zen](/docs/zen).
-It's a curated list of models that have been tested and verified by the openpatent
+If you are new to using LLM providers, we recommend using [OpenCode Zen](https://opencode.ai/v2/docs/console/).
+It's a curated list of models that have been tested and verified by the OpenCode
 team.
 
-1. Run the `/connect` command in the TUI, select openpatent, and head to [openpatent.ai/auth](https://openpatent.ai/auth).
+1. Run the `/connect` command in the TUI, select opencode, and head to [opencode.ai/auth](https://opencode.ai/auth).
 
    ```txt
    /connect
@@ -162,33 +174,33 @@ you want to work on.
 cd /path/to/project
 ```
 
-And run openpatent.
+And run OpenCode.
 
 ```bash
-openpatent
+opencode
 ```
 
-Next, initialize openpatent for the project by running the following command.
+Next, initialize OpenCode for the project by running the following command.
 
 ```bash frame="none"
 /init
 ```
 
-This will get openpatent to analyze your project and create an `AGENTS.md` file in
+This will get OpenCode to analyze your project and create an `AGENTS.md` file in
 the project root.
 
 :::tip
 You should commit your project's `AGENTS.md` file to Git.
 :::
 
-This helps openpatent understand the project structure and the coding patterns
+This helps OpenCode understand the project structure and the coding patterns
 used.
 
 ---
 
 ## Usage
 
-You are now ready to use openpatent to work on your project. Feel free to ask it
+You are now ready to use OpenCode to work on your project. Feel free to ask it
 anything!
 
 If you are new to using an AI coding agent, here are some examples that might
@@ -198,7 +210,7 @@ help.
 
 ### Ask questions
 
-You can ask openpatent to explain the codebase to you.
+You can ask OpenCode to explain the codebase to you.
 
 :::tip
 Use the `@` key to fuzzy search for files in the project.
@@ -214,11 +226,11 @@ This is helpful if there's a part of the codebase that you didn't work on.
 
 ### Add features
 
-You can ask openpatent to add new features to your project. Though we first recommend asking it to create a plan.
+You can ask OpenCode to add new features to your project. Though we first recommend asking it to create a plan.
 
 1. **Create a plan**
 
-   openpatent has a _Plan mode_ that disables its ability to make changes and
+   OpenCode has a _Plan mode_ that disables its ability to make changes and
    instead suggest _how_ it'll implement the feature.
 
    Switch to it using the **Tab** key. You'll see an indicator for this in the lower right corner.
@@ -235,11 +247,11 @@ You can ask openpatent to add new features to your project. Though we first reco
    From this screen, the user can undelete a note or permanently delete it.
    ```
 
-   You want to give openpatent enough details to understand what you want. It helps
+   You want to give OpenCode enough details to understand what you want. It helps
    to talk to it like you are talking to a junior developer on your team.
 
    :::tip
-   Give openpatent plenty of context and examples to help it understand what you
+   Give OpenCode plenty of context and examples to help it understand what you
    want.
    :::
 
@@ -256,7 +268,7 @@ You can ask openpatent to add new features to your project. Though we first reco
    Drag and drop images into the terminal to add them to the prompt.
    :::
 
-   openpatent can scan any images you give it and add them to the prompt. You can
+   OpenCode can scan any images you give it and add them to the prompt. You can
    do this by dragging and dropping an image into the terminal.
 
 3. **Build the feature**
@@ -278,7 +290,7 @@ You can ask openpatent to add new features to your project. Though we first reco
 
 ### Make changes
 
-For more straightforward changes, you can ask openpatent to directly build it
+For more straightforward changes, you can ask OpenCode to directly build it
 without having to review the plan first.
 
 ```txt frame="none" "@packages/functions/src/settings.ts" "@packages/functions/src/notes.ts"
@@ -287,14 +299,14 @@ handled in the /notes route in @packages/functions/src/notes.ts and implement
 the same logic in @packages/functions/src/settings.ts
 ```
 
-You want to make sure you provide a good amount of detail so openpatent makes the right
+You want to make sure you provide a good amount of detail so OpenCode makes the right
 changes.
 
 ---
 
 ### Undo changes
 
-Let's say you ask openpatent to make some changes.
+Let's say you ask OpenCode to make some changes.
 
 ```txt frame="none" "@packages/functions/src/api/index.ts"
 Can you refactor the function in @packages/functions/src/api/index.ts?
@@ -307,14 +319,14 @@ using the `/undo` command.
 /undo
 ```
 
-openpatent will now revert the changes you made and show your original message
+OpenCode will now revert the changes you made and show your original message
 again.
 
 ```txt frame="none" "@packages/functions/src/api/index.ts"
 Can you refactor the function in @packages/functions/src/api/index.ts?
 ```
 
-From here you can tweak the prompt and ask openpatent to try again.
+From here you can tweak the prompt and ask OpenCode to try again.
 
 :::tip
 You can run `/undo` multiple times to undo multiple changes.
@@ -330,7 +342,7 @@ Or you **can redo** the changes using the `/redo` command.
 
 ## Share
 
-The conversations that you have with openpatent can be [shared with your
+The conversations that you have with OpenCode can be [shared with your
 team](/docs/share).
 
 ```bash frame="none"
@@ -343,12 +355,12 @@ This will create a link to the current conversation and copy it to your clipboar
 Conversations are not shared by default.
 :::
 
-Here's an [example conversation](https://openpatent.ai/s/4XP1fce5) with openpatent.
+Here's an [example conversation](https://opencode.ai/s/4XP1fce5) with OpenCode.
 
 ---
 
 ## Customize
 
-And that's it! You are now a pro at using openpatent.
+And that's it! You are now a pro at using OpenCode.
 
-To make it your own, we recommend [picking a theme](/docs/themes), [customizing the keybinds](/docs/keybinds), [configuring code formatters](/docs/formatters), [creating custom commands](/docs/commands), or playing around with the [openpatent config](/docs/config).
+To make it your own, we recommend [picking a theme](/docs/themes), [customizing the keybinds](/docs/keybinds), [configuring code formatters](/docs/formatters), [creating custom commands](/docs/commands), or playing around with the [OpenCode config](/docs/config).

@@ -55,7 +55,7 @@ body {
 }
 
 @supports (background: -webkit-named-image(i)) {
-  [data-page="openpatent"] {
+  [data-page="opencode"] {
     border-top: 1px solid var(--color-border-weak);
   }
 }
@@ -122,7 +122,8 @@ body {
     }
   }
 
-  [data-component="content"] {}
+  [data-component="content"] {
+  }
 
   [data-component="top"] {
     padding: 24px var(--padding);
@@ -147,33 +148,28 @@ body {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        gap: 48px;
+        gap: 32px;
 
         @media (max-width: 55rem) {
-          gap: 32px;
+          gap: 24px;
         }
 
         @media (max-width: 48rem) {
           gap: 24px;
         }
-
         li {
           display: inline-block;
-
           a {
             text-decoration: none;
-
             span {
               color: var(--color-text-weak);
             }
           }
-
           a:hover {
             text-decoration: underline;
             text-underline-offset: var(--space-1);
             text-decoration-thickness: 1px;
           }
-
           [data-slot="cta-button"] {
             background: var(--color-background-strong);
             color: var(--color-text-inverted);
@@ -181,12 +177,12 @@ body {
             border-radius: 4px;
             font-weight: 500;
             text-decoration: none;
+            white-space: nowrap;
 
             @media (max-width: 55rem) {
               display: none;
             }
           }
-
           [data-slot="cta-button"]:hover {
             background: var(--color-background-strong-hover);
             text-decoration: none;
@@ -200,7 +196,7 @@ body {
     }
 
     [data-component="nav-mobile"] {
-      button>svg {
+      button > svg {
         color: var(--color-icon);
       }
     }
@@ -273,7 +269,6 @@ body {
       [data-slot="logo light"] {
         display: none;
       }
-
       [data-slot="logo dark"] {
         display: block;
       }
@@ -297,7 +292,6 @@ body {
       [data-slot="zen logo light"] {
         display: none;
       }
-
       [data-slot="zen logo dark"] {
         display: block;
       }
@@ -350,7 +344,6 @@ body {
       background: var(--color-background-strong-hover);
     }
   }
-
   [data-slot="model-logos"] {
     display: flex;
     gap: 24px;
@@ -388,7 +381,6 @@ body {
 
   [data-component="comparison"] {
     border-top: 1px solid var(--color-border-weak);
-
     video {
       width: 100%;
       height: auto;
@@ -425,7 +417,6 @@ body {
 
     ul {
       padding: 0;
-
       li {
         list-style: none;
         margin-bottom: 16px;
@@ -436,7 +427,6 @@ body {
           color: var(--color-icon);
         }
       }
-
       li:last-child {
         margin-bottom: 0;
       }
@@ -450,7 +440,6 @@ body {
 
     ul {
       padding: 0;
-
       li {
         list-style: none;
         margin-bottom: 16px;
@@ -460,13 +449,11 @@ body {
         span {
           color: var(--color-icon);
         }
-
         strong {
           font-weight: 500;
           color: var(--color-text-strong);
         }
       }
-
       li:last-child {
         margin-bottom: 0;
       }
@@ -491,7 +478,8 @@ body {
         gap: 12px;
       }
 
-      p {}
+      p {
+      }
 
       span {
         color: var(--color-icon);
@@ -579,8 +567,7 @@ body {
         border: none;
         color: var(--color-text-strong);
 
-        border: 1px solid var(--color-background-strong);
-        /* Tailwind blue-600 as example */
+        border: 1px solid var(--color-background-strong); /* Tailwind blue-600 as example */
 
         /* Tailwind-style ring */
         box-shadow: 0 0 0 3px var(--color-background-interactive);
@@ -649,12 +636,10 @@ body {
         [data-closed] & {
           display: block;
         }
-
         [data-expanded] & {
           display: none;
         }
       }
-
       [data-slot="faq-icon-minus"] {
         flex-shrink: 0;
         color: var(--color-text-weak);
@@ -663,12 +648,10 @@ body {
         [data-closed] & {
           display: none;
         }
-
         [data-expanded] & {
           display: block;
         }
       }
-
       [data-slot="faq-question-text"] {
         flex-grow: 1;
         text-align: left;
@@ -741,7 +724,6 @@ body {
         @media (max-width: 30rem) {
           margin-left: 0;
         }
-
         span {
           color: var(--color-text);
           text-decoration: none;
@@ -841,7 +823,7 @@ body {
       }
     }
 
-    [data-slot="cell"]+[data-slot="cell"] {
+    [data-slot="cell"] + [data-slot="cell"] {
       border-left: 1px solid var(--color-border-weak);
 
       @media (max-width: 40rem) {

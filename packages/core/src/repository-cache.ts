@@ -1,0 +1,249 @@
+/**
+ * Local tracking checkouts for remote Git references, one per remote and
+ * branch. Each checkout permanently tracks a single ref: the requested branch
+ * when the cache key has one, otherwise the remote default branch. Content
+ * follows "newest wins": refresh fetches and hard-resets, so readers may
+ * observe the checkout move underneath them.
+ */
+import path from "path"
+import { Clock, Context, Duration, Effect, Layer, Option, Schema } from "effect"
+import { FSUtil } from "@opencode/util/fs-util"
+import { Git } from "./git.js"
+import { Global } from "@opencode/util/global"
+import { Repository } from "./repository.js"
+import { AbsolutePath } from "./schema.js"
+import { makeGlobalNode } from "@opencode/util/effect/app-node"
+import { EffectFlock } from "@opencode/util/effect-flock"
+import { KV } from "./kv.js"
+
+const Refresh = Schema.Struct({
+  attemptedAt: Schema.Number,
+})
+const refreshInterval = Duration.toMillis(Duration.days(1))
+
+export type Result = {
+  readonly repository: string
+  readonly host: string
+  readonly remote: string
+  readonly localPath: string
+  readonly status: "cached" | "cloned" | "refreshed"
+  readonly head?: string
+  readonly branch?: string
+}
+
+export type EnsureInput = {
+  readonly reference: Repository.RemoteReference
+  /** `daily` throttles existing checkouts; `true` forces a refresh. */
+  readonly refresh?: boolean | "daily"
+  readonly branch?: string
+}
+
+export class InvalidBranchError extends Schema.TaggedError<InvalidBranchError>()("RepositoryCacheInvalidBranchError", {
+  branch: Schema.String,
+  message: Schema.String,
+}) {}
+
+export class CloneFailedError extends Schema.TaggedError<CloneFailedError>()("RepositoryCacheCloneFailedError", {
+  repository: Schema.String,
+  message: Schema.String,
+}) {}
+
+export class FetchFailedError extends Schema.TaggedError<FetchFailedError>()("RepositoryCacheFetchFailedError", {
+  repository: Schema.String,
+  message: Schema.String,
+}) {}
+
+export class CheckoutFailedError extends Schema.TaggedError<CheckoutFailedError>()(
+  "RepositoryCacheCheckoutFailedError",
+  {
+    repository: Schema.String,
+    branch: Schema.String,
+    message: Schema.String,
+  },
+) {}
+
+export class ResetFailedError extends Schema.TaggedError<ResetFailedError>()("RepositoryCacheResetFailedError", {
+  repository: Schema.String,
+  message: Schema.String,
+}) {}
+
+export class LockFailedError extends Schema.TaggedError<LockFailedError>()("RepositoryCacheLockFailedError", {
+  localPath: Schema.String,
+  message: Schema.String,
+}) {}
+
+export class CacheOperationError extends Schema.TaggedError<CacheOperationError>()("RepositoryCacheOperationError", {
+  operation: Schema.String,
+  path: Schema.String,
+  message: Schema.String,
+}) {}
+
+export type Error =
+  | InvalidBranchError
+  | CloneFailedError
+  | FetchFailedError
+  | CheckoutFailedError
+  | ResetFailedError
+  | LockFailedError
+  | CacheOperationError
+
+export interface Interface {
+  readonly ensure: (input: EnsureInput) => Effect.Effect<Result, Error>
+}
+
+export class Service extends Context.Service<Service, Interface>()("@opencode/RepositoryCache") {}
+
+export function isError(error: unknown): error is Error {
+  return (
+    error instanceof InvalidBranchError ||
+    error instanceof CloneFailedError ||
+    error instanceof FetchFailedError ||
+    error instanceof CheckoutFailedError ||
+    error instanceof ResetFailedError ||
+    error instanceof LockFailedError ||
+    error instanceof CacheOperationError
+  )
+}
+
+export const validateBranch = Effect.fn("RepositoryCache.validateBranch")(function* (branch: string) {
+  return yield* Effect.try({
+    try: () => Repository.validateBranch(branch),
+    catch: (error) => new InvalidBranchError({ branch, message: errorMessage(error) }),
+  })
+})
+
+const layer = Layer.effect(
+  Service,
+  Effect.gen(function* () {
+    const fs = yield* FSUtil.Service
+    const git = yield* Git.Service
+    const flock = yield* EffectFlock.Service
+    const global = yield* Global.Service
+    const kv = yield* KV.Service
+
+    return Service.of({
+      ensure: Effect.fn("RepositoryCache.ensure")(function* (input) {
+        if (input.branch) yield* validateBranch(input.branch)
+
+        const repository = input.reference.label
+        const localPath = Repository.cachePath(global.repos, input.reference, input.branch)
+        const key = `repository-cache:${localPath}`
+        const cloneTarget = Repository.parse(input.reference.remote) ?? input.reference
+
+        return yield* flock
+          .withLock(
+            Effect.gen(function* () {
+              yield* cacheOperation(fs.ensureDir(path.dirname(localPath)), "ensure cache directory", localPath)
+
+              const existing = yield* git.repo.discover(AbsolutePath.make(localPath))
+              const origin = existing ? yield* git.remote.get(existing) : undefined
+              const originReference = origin ? Repository.parse(origin) : undefined
+              // Discovery walks upward, so an enclosing repository with a
+              // matching origin could masquerade as the cache entry; reuse
+              // requires the checkout to live exactly at the cache path.
+              const worktree = existing ? yield* fs.resolve(localPath) : undefined
+              const reuse = Boolean(
+                existing &&
+                  existing.worktree === worktree &&
+                  originReference &&
+                  Repository.same(originReference, cloneTarget),
+              )
+              if (!reuse && (yield* fs.existsSafe(localPath))) {
+                yield* cacheOperation(fs.remove(localPath, { recursive: true }), "remove stale cache", localPath)
+              }
+
+              const now = yield* Clock.currentTimeMillis
+              const previous = Option.getOrUndefined(Schema.decodeUnknownOption(Refresh)(yield* kv.get(key)))
+              const refresh =
+                input.refresh === "daily" ? !previous || now - previous.attemptedAt >= refreshInterval : input.refresh
+              const status = !reuse ? ("cloned" as const) : refresh ? ("refreshed" as const) : ("cached" as const)
+
+              if (status !== "cached") {
+                // Record attempts before network work so failures obey the same refresh interval.
+                yield* kv.set(key, { attemptedAt: now })
+
+                if (status === "cloned") {
+                  yield* git.repo
+                    .clone({
+                      remote: input.reference.remote,
+                      directory: AbsolutePath.make(localPath),
+                      branch: input.branch,
+                    })
+                    .pipe(Effect.mapError((error) => new CloneFailedError({ repository, message: error.message })))
+                }
+
+                if (status === "refreshed") {
+                  if (!existing)
+                    return yield* new FetchFailedError({ repository, message: "Repository is unavailable" })
+                  yield* git.sync
+                    .fetchRemotes(existing)
+                    .pipe(Effect.mapError((error) => new FetchFailedError({ repository, message: error.message })))
+
+                  if (input.branch) {
+                    yield* git.sync
+                      .fetchBranch(existing, { branch: input.branch })
+                      .pipe(Effect.mapError((error) => new FetchFailedError({ repository, message: error.message })))
+                  }
+
+                  // Checking out the tracked ref before resetting keeps the
+                  // checkout self-healing even if it was left on another
+                  // branch.
+                  const branch = input.branch ?? (yield* git.history.defaultRemoteBranch(existing))
+                  if (branch) {
+                    yield* git.sync
+                      .checkoutRemoteBranch(existing, { branch })
+                      .pipe(
+                        Effect.mapError(
+                          (error) => new CheckoutFailedError({ repository, branch, message: error.message }),
+                        ),
+                      )
+                  }
+
+                  const target = branch ?? (yield* git.history.branch(existing))
+                  yield* git.sync
+                    .resetHard(existing, target ? `origin/${target}` : "HEAD")
+                    .pipe(Effect.mapError((error) => new ResetFailedError({ repository, message: error.message })))
+                }
+              }
+
+              const checkout = yield* git.repo.discover(AbsolutePath.make(localPath))
+
+              return {
+                repository,
+                host: input.reference.host,
+                remote: input.reference.remote,
+                localPath,
+                status,
+                head: checkout ? yield* git.history.head(checkout) : undefined,
+                branch: checkout ? yield* git.history.branch(checkout) : undefined,
+              } satisfies Result
+            }),
+            key,
+          )
+          .pipe(
+            Effect.mapError((error) =>
+              isError(error) ? error : new LockFailedError({ localPath, message: errorMessage(error) }),
+            ),
+          )
+      }),
+    })
+  }),
+)
+
+export const node = makeGlobalNode({
+  service: Service,
+  layer,
+  deps: [EffectFlock.node, FSUtil.node, Git.node, Global.node, KV.node],
+})
+
+function errorMessage(error: unknown) {
+  return error instanceof globalThis.Error ? error.message : String(error)
+}
+
+function cacheOperation<A, E, R>(effect: Effect.Effect<A, E, R>, operation: string, target: string) {
+  return effect.pipe(
+    Effect.mapError((error) => new CacheOperationError({ operation, path: target, message: errorMessage(error) })),
+  )
+}
+
+export * as RepositoryCache from "./repository-cache.js"

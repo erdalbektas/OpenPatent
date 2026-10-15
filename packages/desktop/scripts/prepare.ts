@@ -1,15 +1,12 @@
 #!/usr/bin/env bun
-import { $ } from "bun"
+import { Script } from "@opencode/script"
 
-import { copyBinaryToSidecarFolder, getCurrentSidecar } from "./utils"
+await import("./prebuild")
 
-const sidecarConfig = getCurrentSidecar()
+const pkg = await Bun.file("./package.json").json()
 
-const dir = "src-tauri/target/openpatent-binaries"
+pkg.version = Script.version
 
-await $`mkdir -p ${dir}`
-await $`gh run download ${Bun.env.GITHUB_RUN_ID} -n openpatent-cli`.cwd(dir)
+await Bun.write("./package.json", JSON.stringify(pkg, null, 2) + "\n")
 
-await copyBinaryToSidecarFolder(
-  `${dir}/${sidecarConfig.ocBinary}/bin/openpatent${process.platform === "win32" ? ".exe" : ""}`,
-)
+console.log(`Updated package.json version to ${Script.version}`)

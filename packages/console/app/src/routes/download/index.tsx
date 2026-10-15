@@ -1,57 +1,19 @@
 import "./index.css"
-import { Title, Meta, Link } from "@solidjs/meta"
-import { A, createAsync, query } from "@solidjs/router"
-import { Header } from "~/component/header"
-import { Footer } from "~/component/footer"
-import { IconCopy, IconCheck } from "~/component/icon"
+import { Meta, Title } from "@solidjs/meta"
+import { A } from "@solidjs/router"
 import { Faq } from "~/component/faq"
-import desktopAppIcon from "../../asset/lander/openpatent-desktop-icon.png"
+import { Footer } from "~/component/footer"
+import { Header } from "~/component/header"
+import { IconCheck, IconCopy } from "~/component/icon"
 import { Legal } from "~/component/legal"
+import { LocaleLinks } from "~/component/locale-links"
 import { config } from "~/config"
-import { createSignal, onMount, Show, JSX } from "solid-js"
-import { DownloadPlatform } from "./types"
+import { useI18n } from "~/context/i18n"
+import { useLanguage } from "~/context/language"
+import type { DownloadPlatform } from "./types"
 
-type OS = "macOS" | "Windows" | "Linux" | null
-
-function detectOS(): OS {
-  if (typeof navigator === "undefined") return null
-  const platform = navigator.platform.toLowerCase()
-  const userAgent = navigator.userAgent.toLowerCase()
-
-  if (platform.includes("mac") || userAgent.includes("mac")) return "macOS"
-  if (platform.includes("win") || userAgent.includes("win")) return "Windows"
-  if (platform.includes("linux") || userAgent.includes("linux")) return "Linux"
-  return null
-}
-
-function getDownloadPlatform(os: OS): DownloadPlatform {
-  switch (os) {
-    case "macOS":
-      return "darwin-aarch64-dmg"
-    case "Windows":
-      return "windows-x64-nsis"
-    case "Linux":
-      return "linux-x64-deb"
-    default:
-      return "darwin-aarch64-dmg"
-  }
-}
-
-function getDownloadHref(platform: DownloadPlatform) {
-  return `/download/${platform}`
-}
-
-function IconDownload(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
-  return (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-      <path
-        d="M13.9583 10.6247L10 14.583L6.04167 10.6247M10 2.08301V13.958M16.25 17.9163H3.75"
-        stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="square"
-      />
-    </svg>
-  )
+function getDownloadHref(platform: DownloadPlatform, channel: "stable" | "beta" = "stable") {
+  return `/download/${channel}/${platform}`
 }
 
 function CopyStatus() {
@@ -64,15 +26,11 @@ function CopyStatus() {
 }
 
 export default function Download() {
-  const [detectedOS, setDetectedOS] = createSignal<OS>(null)
-
-  onMount(() => {
-    setDetectedOS(detectOS())
-  })
-
+  const i18n = useI18n()
+  const language = useLanguage()
   const handleCopyClick = (command: string) => (event: Event) => {
     const button = event.currentTarget as HTMLButtonElement
-    navigator.clipboard.writeText(command)
+    void navigator.clipboard.writeText(command)
     button.setAttribute("data-copied", "")
     setTimeout(() => {
       button.removeAttribute("data-copied")
@@ -80,64 +38,54 @@ export default function Download() {
   }
   return (
     <main data-page="download">
-      <Title>openpatent | Download</Title>
-      <Link rel="canonical" href={`${config.baseUrl}/download`} />
-      <Meta name="description" content="Download openpatent for macOS, Windows, and Linux" />
+      <Title>{i18n.t("download.title")}</Title>
+      <LocaleLinks path="/download" />
+      <Meta name="description" content={i18n.t("download.meta.description")} />
       <div data-component="container">
         <Header hideGetStarted />
 
         <div data-component="content">
-          <section data-component="download-hero">
-            <div data-component="hero-icon">
-              <img src={desktopAppIcon} alt="openpatent Desktop" />
-            </div>
-            <div data-component="hero-text">
-              <h1>Download openpatent</h1>
-              <p>Available in Beta for macOS, Windows, and Linux</p>
-              <Show when={detectedOS()}>
-                <a href={getDownloadHref(getDownloadPlatform(detectedOS()))} data-component="download-button">
-                  <IconDownload />
-                  Download for {detectedOS()}
-                </a>
-              </Show>
-            </div>
-          </section>
-
           <section data-component="download-section">
             <div data-component="section-label">
-              <span>[1]</span> openpatent Terminal
+              <span>[1]</span> {i18n.t("download.section.terminal")}
             </div>
             <div data-component="section-content">
               <button
                 data-component="cli-row"
-                onClick={handleCopyClick("curl -fsSL https://openpatent.ai/install | bash")}
+                onClick={handleCopyClick("curl -fsSL https://opencode.ai/v2/install | bash")}
               >
                 <code>
-                  curl -fsSL https://<strong>openpatent.ai/install</strong> | bash
+                  curl -fsSL https://<strong>opencode.ai/v2/install</strong> | bash
                 </code>
                 <CopyStatus />
               </button>
-              <button data-component="cli-row" onClick={handleCopyClick("npm i -g openpatent-ai")}>
+              <button data-component="cli-row" onClick={handleCopyClick("npm install -g @opencode/cli")}>
                 <code>
-                  npm i -g <strong>openpatent-ai</strong>
+                  npm install -g <strong>@opencode/cli</strong>
                 </code>
                 <CopyStatus />
               </button>
-              <button data-component="cli-row" onClick={handleCopyClick("bun add -g openpatent-ai")}>
+              <button data-component="cli-row" onClick={handleCopyClick("bun install -g --trust @opencode/cli")}>
                 <code>
-                  bun add -g <strong>openpatent-ai</strong>
+                  bun install -g --trust <strong>@opencode/cli</strong>
                 </code>
                 <CopyStatus />
               </button>
-              <button data-component="cli-row" onClick={handleCopyClick("brew install openpatent")}>
+              <button data-component="cli-row" onClick={handleCopyClick("brew install anomalyco/tap/opencode-v2")}>
                 <code>
-                  brew install <strong>openpatent</strong>
+                  brew install <strong>anomalyco/tap/opencode-v2</strong>
                 </code>
                 <CopyStatus />
               </button>
-              <button data-component="cli-row" onClick={handleCopyClick("paru -S openpatent")}>
+              <button data-component="cli-row" onClick={handleCopyClick("paru -S opencode-beta")}>
                 <code>
-                  paru -S <strong>openpatent</strong>
+                  paru -S <strong>opencode-beta</strong>
+                </code>
+                <CopyStatus />
+              </button>
+              <button data-component="cli-row" onClick={handleCopyClick("yay -S opencode-beta")}>
+                <code>
+                  yay -S <strong>opencode-beta</strong>
                 </code>
                 <CopyStatus />
               </button>
@@ -146,12 +94,12 @@ export default function Download() {
 
           <section data-component="download-section">
             <div data-component="section-label">
-              <span>[2]</span> openpatent Desktop (Beta)
+              <span>[2]</span> {i18n.t("download.section.desktop")}
             </div>
             <div data-component="section-content">
-              <button data-component="cli-row" onClick={handleCopyClick("brew install --cask openpatent-desktop")}>
+              <button data-component="cli-row" onClick={handleCopyClick("brew install --cask opencode-desktop")}>
                 <code>
-                  brew install --cask <strong>openpatent-desktop</strong>
+                  brew install --cask <strong>opencode-desktop</strong>
                 </code>
                 <CopyStatus />
               </button>
@@ -165,12 +113,10 @@ export default function Download() {
                       />
                     </svg>
                   </span>
-                  <span>
-                    macOS (<span data-slot="hide-narrow">Apple </span>Silicon)
-                  </span>
+                  <span>{i18n.t("download.platform.macosAppleSilicon")}</span>
                 </div>
-                <a href={getDownloadHref("darwin-aarch64-dmg")} data-component="action-button">
-                  Download
+                <a href={language.route(getDownloadHref("darwin-aarch64-dmg"))} data-component="action-button">
+                  {i18n.t("download.action.download")}
                 </a>
               </div>
               <div data-component="download-row">
@@ -183,10 +129,10 @@ export default function Download() {
                       />
                     </svg>
                   </span>
-                  <span>macOS (Intel)</span>
+                  <span>{i18n.t("download.platform.macosIntel")}</span>
                 </div>
-                <a href={getDownloadHref("darwin-x64-dmg")} data-component="action-button">
-                  Download
+                <a href={language.route(getDownloadHref("darwin-x64-dmg"))} data-component="action-button">
+                  {i18n.t("download.action.download")}
                 </a>
               </div>
               <div data-component="download-row">
@@ -206,10 +152,33 @@ export default function Download() {
                       </defs>
                     </svg>
                   </span>
-                  <span>Windows (x64)</span>
+                  <span>{i18n.t("download.platform.windowsX64")}</span>
                 </div>
-                <a href={getDownloadHref("windows-x64-nsis")} data-component="action-button">
-                  Download
+                <a href={language.route(getDownloadHref("windows-x64-nsis"))} data-component="action-button">
+                  {i18n.t("download.action.download")}
+                </a>
+              </div>
+              <div data-component="download-row">
+                <div data-component="download-info">
+                  <span data-slot="icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <g clip-path="url(#clip0_windows_arm64)">
+                        <path
+                          d="M2 2H11.481V11.4769H2V2ZM12.519 2H22V11.4769H12.519V2ZM2 12.519H11.481V22H2V12.519ZM12.519 12.519H22V22H12.519"
+                          fill="currentColor"
+                        />
+                      </g>
+                      <defs>
+                        <clipPath id="clip0_windows_arm64">
+                          <rect width="20" height="20" fill="white" transform="translate(2 2)" />
+                        </clipPath>
+                      </defs>
+                    </svg>
+                  </span>
+                  <span>{i18n.t("download.platform.windowsArm64")}</span>
+                </div>
+                <a href={language.route(getDownloadHref("windows-aarch64-nsis"))} data-component="action-button">
+                  {i18n.t("download.action.download")}
                 </a>
               </div>
               <div data-component="download-row">
@@ -222,10 +191,10 @@ export default function Download() {
                       />
                     </svg>
                   </span>
-                  <span>Linux (.deb)</span>
+                  <span>{i18n.t("download.platform.linuxDeb")}</span>
                 </div>
-                <a href={getDownloadHref("linux-x64-deb")} data-component="action-button">
-                  Download
+                <a href={language.route(getDownloadHref("linux-x64-deb"))} data-component="action-button">
+                  {i18n.t("download.action.download")}
                 </a>
               </div>
               <div data-component="download-row">
@@ -238,13 +207,14 @@ export default function Download() {
                       />
                     </svg>
                   </span>
-                  <span>Linux (.rpm)</span>
+                  <span>{i18n.t("download.platform.linuxRpm")}</span>
                 </div>
-                <a href={getDownloadHref("linux-x64-rpm")} data-component="action-button">
-                  Download
+                <a href={language.route(getDownloadHref("linux-x64-rpm"))} data-component="action-button">
+                  {i18n.t("download.action.download")}
                 </a>
               </div>
-              <div data-component="download-row">
+              {/* Disabled temporarily as it doesn't work */}
+              {/*<div data-component="download-row">
                 <div data-component="download-info">
                   <span data-slot="icon">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -256,16 +226,16 @@ export default function Download() {
                   </span>
                   <span>Linux (.AppImage)</span>
                 </div>
-                <a href={getDownloadHref("linux-x64-appimage")} data-component="action-button">
+                <a href={language.route(getDownloadHref("linux-x64-appimage"))} data-component="action-button">
                   Download
                 </a>
-              </div>
+              </div>*/}
             </div>
           </section>
 
           <section data-component="download-section">
             <div data-component="section-label">
-              <span>[3]</span> openpatent Extensions
+              <span>[3]</span> {i18n.t("download.section.extensions")}
             </div>
             <div data-component="section-content">
               <div data-component="download-row">
@@ -287,8 +257,8 @@ export default function Download() {
                   </span>
                   <span>VS Code</span>
                 </div>
-                <a href="https://openpatent.ai/docs/ide/" data-component="action-button">
-                  Install
+                <a href={language.route("/docs/ide/")} data-component="action-button">
+                  {i18n.t("download.action.install")}
                 </a>
               </div>
 
@@ -311,8 +281,8 @@ export default function Download() {
                   </span>
                   <span>Cursor</span>
                 </div>
-                <a href="https://openpatent.ai/docs/ide/" data-component="action-button">
-                  Install
+                <a href={language.route("/docs/ide/")} data-component="action-button">
+                  {i18n.t("download.action.install")}
                 </a>
               </div>
 
@@ -328,8 +298,8 @@ export default function Download() {
                   </span>
                   <span>Zed</span>
                 </div>
-                <a href="https://openpatent.ai/docs/ide/" data-component="action-button">
-                  Install
+                <a href={language.route("/docs/ide/")} data-component="action-button">
+                  {i18n.t("download.action.install")}
                 </a>
               </div>
 
@@ -345,8 +315,8 @@ export default function Download() {
                   </span>
                   <span>Windsurf</span>
                 </div>
-                <a href="https://openpatent.ai/docs/ide/" data-component="action-button">
-                  Install
+                <a href={language.route("/docs/ide/")} data-component="action-button">
+                  {i18n.t("download.action.install")}
                 </a>
               </div>
 
@@ -362,8 +332,8 @@ export default function Download() {
                   </span>
                   <span>VSCodium</span>
                 </div>
-                <a href="https://openpatent.ai/docs/ide/" data-component="action-button">
-                  Install
+                <a href={language.route("/docs/ide/")} data-component="action-button">
+                  {i18n.t("download.action.install")}
                 </a>
               </div>
             </div>
@@ -371,7 +341,7 @@ export default function Download() {
 
           <section data-component="download-section">
             <div data-component="section-label">
-              <span>[4]</span> openpatent Integrations
+              <span>[4]</span> {i18n.t("download.section.integrations")}
             </div>
             <div data-component="section-content">
               <div data-component="download-row">
@@ -386,8 +356,8 @@ export default function Download() {
                   </span>
                   <span>GitHub</span>
                 </div>
-                <a href="https://openpatent.ai/docs/github/" data-component="action-button">
-                  Install
+                <a href={language.route("/docs/github/")} data-component="action-button">
+                  {i18n.t("download.action.install")}
                 </a>
               </div>
 
@@ -403,8 +373,8 @@ export default function Download() {
                   </span>
                   <span>GitLab</span>
                 </div>
-                <a href="https://openpatent.ai/docs/gitlab/" data-component="action-button">
-                  Install
+                <a href={language.route("/docs/gitlab/")} data-component="action-button">
+                  {i18n.t("download.action.install")}
                 </a>
               </div>
             </div>
@@ -413,60 +383,59 @@ export default function Download() {
 
         <section data-component="faq">
           <div data-slot="section-title">
-            <h3>FAQ</h3>
+            <h3>{i18n.t("common.faq")}</h3>
           </div>
           <ul>
             <li>
-              <Faq question="What is openpatent?">
-                openpatent is an open source agent that helps you write and run code with any AI model. It's available as
-                a terminal-based interface, desktop app, or IDE extension.
+              <Faq question={i18n.t("home.faq.q1")}>{i18n.t("home.faq.a1")}</Faq>
+            </li>
+            <li>
+              <Faq question={i18n.t("home.faq.q2")}>
+                {i18n.t("home.faq.a2.before")} <a href={language.route("/docs")}>{i18n.t("home.faq.a2.link")}</a>.
               </Faq>
             </li>
             <li>
-              <Faq question="How do I use openpatent?">
-                The easiest way to get started is to read the <a href="/docs">intro</a>.
-              </Faq>
-            </li>
-            <li>
-              <Faq question="Do I need extra AI subscriptions to use openpatent?">
-                Not necessarily, but probably. You'll need an AI subscription if you want to connect openpatent to a paid
-                provider, although you can work with{" "}
-                <a href="/docs/providers/#lm-studio" target="_blank">
-                  local models
+              <Faq question={i18n.t("home.faq.q3")}>
+                {i18n.t("download.faq.a3.beforeLocal")}{" "}
+                <a href={language.route("/docs/providers/#lm-studio")} target="_blank">
+                  {i18n.t("download.faq.a3.localLink")}
                 </a>{" "}
-                for free. While we encourage users to use <A href="/zen">Zen</A>, openpatent works with all popular
-                providers such as OpenAI, Anthropic, xAI etc.
+                {i18n.t("download.faq.a3.afterLocal.beforeZen")}{" "}
+                <A href={language.route("/zen")}>{i18n.t("nav.zen")}</A>
+                {i18n.t("download.faq.a3.afterZen")}
               </Faq>
             </li>
             <li>
-              <Faq question="Can I only use openpatent in the terminal?">
-                Not anymore! openpatent is now available as an app for your desktop.
+              <Faq question={i18n.t("home.faq.q5")}>
+                {i18n.t("home.faq.a5.beforeDesktop")}{" "}
+                <a href={language.route("/download")}>{i18n.t("home.faq.a5.desktop")}</a> {i18n.t("home.faq.a5.and")}{" "}
+                <a href={language.route("/docs/cli/#web")}>{i18n.t("home.faq.a5.web")}</a>!
               </Faq>
             </li>
             <li>
-              <Faq question="How much does openpatent cost?">
-                openpatent is 100% free to use. Any additional costs will come from your subscription to a model provider.
-                While openpatent works with any model provider, we recommend using <A href="/zen">Zen</A>.
+              <Faq question={i18n.t("home.faq.q6")}>
+                {i18n.t("download.faq.a5.p1")} {i18n.t("download.faq.a5.p2.beforeZen")}{" "}
+                <A href={language.route("/zen")}>{i18n.t("nav.zen")}</A>
+                {i18n.t("download.faq.a5.p2.afterZen")}
               </Faq>
             </li>
             <li>
-              <Faq question="What about data and privacy?">
-                Your data and information is only stored when you create sharable links in openpatent. Learn more about{" "}
-                <a href="/docs/share/#privacy">share pages</a>.
+              <Faq question={i18n.t("home.faq.q7")}>
+                {i18n.t("download.faq.a6.p1")} {i18n.t("download.faq.a6.p2.beforeShare")}{" "}
+                <a href={language.route("/docs/share/#privacy")}>{i18n.t("download.faq.a6.shareLink")}</a>.
               </Faq>
             </li>
             <li>
-              <Faq question="Is openpatent open source?">
-                Yes, openpatent is fully open source. The source code is public on{" "}
+              <Faq question={i18n.t("home.faq.q8")}>
+                {i18n.t("home.faq.a8.p1")}{" "}
                 <a href={config.github.repoUrl} target="_blank">
-                  GitHub
+                  {i18n.t("nav.github")}
                 </a>{" "}
-                under the{" "}
+                {i18n.t("home.faq.a8.p2")}{" "}
                 <a href={`${config.github.repoUrl}?tab=MIT-1-ov-file#readme`} target="_blank">
-                  MIT License
+                  {i18n.t("home.faq.a8.mitLicense")}
                 </a>
-                , meaning anyone can use, modify, or contribute to its development. Anyone from the community can file
-                issues, submit pull requests, and extend functionality.
+                {i18n.t("home.faq.a8.p3")}
               </Faq>
             </li>
           </ul>

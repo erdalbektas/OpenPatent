@@ -2,15 +2,12 @@
 /* tslint:disable */
 /* eslint-disable */
 /* deno-fmt-ignore-file */
+/* biome-ignore-all lint: auto-generated */
 
 declare module "sst" {
   export interface Resource {
     "ADMIN_SECRET": {
       "type": "sst.sst.Secret"
-      "value": string
-    }
-    "AUTH_API_URL": {
-      "type": "sst.sst.Linkable"
       "value": string
     }
     "AWS_SES_ACCESS_KEY_ID": {
@@ -21,49 +18,36 @@ declare module "sst" {
       "type": "sst.sst.Secret"
       "value": string
     }
-    "Api": {
-      "type": "sst.cloudflare.Worker"
-      "url": string
-    }
-    "AuthApi": {
-      "type": "sst.cloudflare.Worker"
-      "url": string
-    }
-    "AuthStorage": {
-      "namespaceId": string
-      "type": "sst.cloudflare.Kv"
-    }
-    "Bucket": {
-      "name": string
-      "type": "sst.cloudflare.Bucket"
-    }
-    "CLOUDFLARE_API_TOKEN": {
-      "type": "sst.sst.Secret"
-      "value": string
-    }
-    "CLOUDFLARE_DEFAULT_ACCOUNT_ID": {
-      "type": "sst.sst.Secret"
-      "value": string
-    }
+    "Api": import("@cloudflare/workers-types").Service
+    "Bucket": import("@cloudflare/workers-types").R2Bucket
     "Console": {
       "type": "sst.cloudflare.SolidStart"
       "url": string
     }
-    "Database": {
-      "database": string
-      "host": string
-      "password": string
-      "port": number
-      "type": "sst.sst.Linkable"
-      "username": string
+    "DISCORD_INCIDENT_WEBHOOK_URL": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "DISCORD_SUPPORT_BOT_TOKEN": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "DISCORD_SUPPORT_CHANNEL_ID": {
+      "type": "sst.sst.Secret"
+      "value": string
     }
     "EMAILOCTOPUS_API_KEY": {
       "type": "sst.sst.Secret"
       "value": string
     }
-    "EnterpriseStorage": {
-      "name": string
-      "type": "sst.cloudflare.Bucket"
+    "EnterpriseStorage": import("@cloudflare/workers-types").R2Bucket
+    "FEISHU_APP_ID": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "FEISHU_APP_SECRET": {
+      "type": "sst.sst.Secret"
+      "value": string
     }
     "GITHUB_APP_ID": {
       "type": "sst.sst.Secret"
@@ -73,29 +57,15 @@ declare module "sst" {
       "type": "sst.sst.Secret"
       "value": string
     }
-    "GITHUB_CLIENT_ID_CONSOLE": {
-      "type": "sst.sst.Secret"
-      "value": string
-    }
-    "GITHUB_CLIENT_SECRET_CONSOLE": {
-      "type": "sst.sst.Secret"
-      "value": string
-    }
-    "GOOGLE_CLIENT_ID": {
-      "type": "sst.sst.Secret"
-      "value": string
-    }
-    "GatewayKv": {
-      "namespaceId": string
-      "type": "sst.cloudflare.Kv"
-    }
     "HONEYCOMB_API_KEY": {
       "type": "sst.sst.Secret"
       "value": string
     }
-    "LogProcessor": {
-      "type": "sst.cloudflare.Worker"
+    "HoneycombWebhookSecret": {
+      "type": "random.index/randomPassword.RandomPassword"
+      "value": string
     }
+    "LogProcessor": import("@cloudflare/workers-types").Service
     "R2AccessKey": {
       "type": "sst.sst.Secret"
       "value": string
@@ -104,12 +74,20 @@ declare module "sst" {
       "type": "sst.sst.Secret"
       "value": string
     }
-    "STRIPE_SECRET_KEY": {
+    "SALESFORCE_CLIENT_ID": {
       "type": "sst.sst.Secret"
       "value": string
     }
-    "STRIPE_WEBHOOK_SECRET": {
-      "type": "sst.sst.Linkable"
+    "SALESFORCE_CLIENT_SECRET": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "SALESFORCE_INSTANCE_URL": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "SUPPORT_API_KEY": {
+      "type": "sst.sst.Secret"
       "value": string
     }
     "Teams": {
@@ -124,41 +102,10 @@ declare module "sst" {
       "type": "sst.cloudflare.StaticSite"
       "url": string
     }
-    "ZEN_MODELS1": {
-      "type": "sst.sst.Secret"
-      "value": string
-    }
-    "ZEN_MODELS2": {
-      "type": "sst.sst.Secret"
-      "value": string
-    }
-    "ZEN_MODELS3": {
-      "type": "sst.sst.Secret"
-      "value": string
-    }
-    "ZEN_MODELS4": {
-      "type": "sst.sst.Secret"
-      "value": string
-    }
-    "ZEN_MODELS5": {
-      "type": "sst.sst.Secret"
-      "value": string
-    }
-    "ZEN_MODELS6": {
-      "type": "sst.sst.Secret"
-      "value": string
-    }
-    "ZenData": {
-      "name": string
-      "type": "sst.cloudflare.Bucket"
-    }
-    "ZenDataNew": {
-      "name": string
-      "type": "sst.cloudflare.Bucket"
-    }
+    "ZenData": import("@cloudflare/workers-types").R2Bucket
+    "ZenDataNew": import("@cloudflare/workers-types").R2Bucket
   }
 }
-/// <reference path="sst-env.d.ts" />
 
 import "sst"
 export {}

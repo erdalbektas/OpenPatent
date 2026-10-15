@@ -1,86 +1,64 @@
 ---
 title: CLI
-description: openpatent CLI options and commands.
+description: OpenCode CLI options and commands.
 ---
 
 import { Tabs, TabItem } from "@astrojs/starlight/components"
 
-The openpatent CLI by default starts the [TUI](/docs/tui) when run without any arguments.
+The OpenCode CLI by default starts the [TUI](/docs/tui) when run without any arguments.
 
 ```bash
-openpatent
+opencode
 ```
 
-But it also accepts commands as documented on this page. This allows you to interact with openpatent programmatically.
+But it also accepts commands as documented on this page. This allows you to interact with OpenCode programmatically.
 
 ```bash
-openpatent run "Explain how closures work in JavaScript"
+opencode run "Explain how closures work in JavaScript"
 ```
 
 ---
 
 ### tui
 
-Start the openpatent terminal user interface.
+Start the OpenCode terminal user interface.
 
 ```bash
-openpatent [project]
+opencode [project]
 ```
 
 #### Flags
 
-| Flag         | Short | Description                                |
-| ------------ | ----- | ------------------------------------------ |
-| `--continue` | `-c`  | Continue the last session                  |
-| `--session`  | `-s`  | Session ID to continue                     |
-| `--prompt`   | `-p`  | Prompt to use                              |
-| `--model`    | `-m`  | Model to use in the form of provider/model |
-| `--agent`    |       | Agent to use                               |
-| `--port`     |       | Port to listen on                          |
-| `--hostname` |       | Hostname to listen on                      |
+| Flag                                        | Short | Description                                                             |
+| ------------------------------------------- | ----- | ----------------------------------------------------------------------- |
+| <nobr><code>{"--continue"}</code></nobr>    | `-c`  | Continue the last session                                               |
+| <nobr><code>{"--session"}</code></nobr>     | `-s`  | Session ID to continue                                                  |
+| <nobr><code>{"--fork"}</code></nobr>        |       | Fork the session when continuing (use with `--continue` or `--session`) |
+| <nobr><code>{"--prompt"}</code></nobr>      |       | Prompt to use                                                           |
+| <nobr><code>{"--model"}</code></nobr>       | `-m`  | Model to use in the form of provider/model                              |
+| <nobr><code>{"--agent"}</code></nobr>       |       | Agent to use                                                            |
+| <nobr><code>{"--auto"}</code></nobr>        |       | Auto-approve permissions that are not explicitly denied                 |
+| <nobr><code>{"--port"}</code></nobr>        |       | Port to listen on                                                       |
+| <nobr><code>{"--hostname"}</code></nobr>    |       | Hostname to listen on                                                   |
+| <nobr><code>{"--mdns"}</code></nobr>        |       | Enable mDNS discovery                                                   |
+| <nobr><code>{"--mdns-domain"}</code></nobr> |       | Custom mDNS domain name                                                 |
+| <nobr><code>{"--cors"}</code></nobr>        |       | Additional browser origin(s) to allow CORS                              |
 
 ---
 
 ## Commands
 
-The openpatent CLI also has the following commands.
+The OpenCode CLI also has the following commands.
 
 ---
 
 ### agent
 
-Manage agents for openpatent.
+Manage agents for OpenCode.
 
 ```bash
-openpatent agent [command]
+opencode agent [command]
 ```
-
----
-
-### attach
-
-Attach a terminal to an already running openpatent backend server started via `serve` or `web` commands.
-
-```bash
-openpatent attach [url]
-```
-
-This allows using the TUI with a remote openpatent backend. For example:
-
-```bash
-# Start the backend server for web/mobile access
-openpatent web --port 4096 --hostname 0.0.0.0
-
-# In another terminal, attach the TUI to the running backend
-openpatent attach http://10.20.30.40:4096
-```
-
-#### Flags
-
-| Flag        | Short | Description                       |
-| ----------- | ----- | --------------------------------- |
-| `--dir`     |       | Working directory to start TUI in |
-| `--session` | `-s`  | Session ID to continue            |
 
 ---
 
@@ -89,10 +67,22 @@ openpatent attach http://10.20.30.40:4096
 Create a new agent with custom configuration.
 
 ```bash
-openpatent agent create
+opencode agent create
 ```
 
-This command will guide you through creating a new agent with a custom system prompt and tool configuration.
+This command will guide you through creating a new agent with a custom system prompt and permission configuration. Anything you don't allow is denied in the generated agent's frontmatter.
+
+#### Flags
+
+| Flag                                        | Short | Description                                                                                                                                                                                                   |
+| ------------------------------------------- | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <nobr><code>{"--path"}</code></nobr>        |       | Directory to write the agent file to (defaults to global or `.opencode/agent` based on the prompt)                                                                                                            |
+| <nobr><code>{"--description"}</code></nobr> |       | What the agent should do                                                                                                                                                                                      |
+| <nobr><code>{"--mode"}</code></nobr>        |       | Agent mode: `all`, `primary`, or `subagent`                                                                                                                                                                   |
+| <nobr><code>{"--permissions"}</code></nobr> |       | Comma-separated list of permissions to allow (default: all). Available: `bash`, `read`, `edit`, `glob`, `grep`, `webfetch`, `task`, `websearch`, `lsp`, `skill`. Anything omitted is denied. Alias: `--tools` |
+| <nobr><code>{"--model"}</code></nobr>       | `-m`  | Model to use, in `provider/model` format                                                                                                                                                                      |
+
+Passing all of `--path`, `--description`, `--mode`, and `--permissions` runs the command non-interactively.
 
 ---
 
@@ -101,8 +91,39 @@ This command will guide you through creating a new agent with a custom system pr
 List all available agents.
 
 ```bash
-openpatent agent list
+opencode agent list
 ```
+
+---
+
+### attach
+
+Attach a terminal to an already running OpenCode backend server started via `serve` or `web` commands.
+
+```bash
+opencode attach [url]
+```
+
+This allows using the TUI with a remote OpenCode backend. For example:
+
+```bash
+# Start the backend server for web/mobile access
+opencode web --port 4096 --hostname 0.0.0.0
+
+# In another terminal, attach the TUI to the running backend
+opencode attach http://10.20.30.40:4096
+```
+
+#### Flags
+
+| Flag                                     | Short | Description                                                                |
+| ---------------------------------------- | ----- | -------------------------------------------------------------------------- |
+| <nobr><code>{"--dir"}</code></nobr>      |       | Working directory to start TUI in                                          |
+| <nobr><code>{"--continue"}</code></nobr> | `-c`  | Continue the last session                                                  |
+| <nobr><code>{"--session"}</code></nobr>  | `-s`  | Session ID to continue                                                     |
+| <nobr><code>{"--fork"}</code></nobr>     |       | Fork the session when continuing (use with `--continue` or `--session`)    |
+| <nobr><code>{"--password"}</code></nobr> | `-p`  | Basic auth password (defaults to `OPENCODE_SERVER_PASSWORD`)               |
+| <nobr><code>{"--username"}</code></nobr> | `-u`  | Basic auth username (defaults to `OPENCODE_SERVER_USERNAME` or `opencode`) |
 
 ---
 
@@ -111,20 +132,27 @@ openpatent agent list
 Command to manage credentials and login for providers.
 
 ```bash
-openpatent auth [command]
+opencode auth [command]
 ```
 
 ---
 
 #### login
 
-openpatent is powered by the provider list at [Models.dev](https://models.dev), so you can use `openpatent auth login` to configure API keys for any provider you'd like to use. This is stored in `~/.local/share/openpatent/auth.json`.
+OpenCode is powered by the provider list at [Models.dev](https://models.dev), so you can use `opencode auth login` to configure API keys for any provider you'd like to use. This is stored in `~/.local/share/opencode/auth.json`.
 
 ```bash
-openpatent auth login
+opencode auth login
 ```
 
-When openpatent starts up it loads the providers from the credentials file. And if there are any keys defined in your environments or a `.env` file in your project.
+When OpenCode starts up it loads the providers from the credentials file. And if there are any keys defined in your environments or a `.env` file in your project.
+
+##### Flags
+
+| Flag                                     | Short | Description                                          |
+| ---------------------------------------- | ----- | ---------------------------------------------------- |
+| <nobr><code>{"--provider"}</code></nobr> | `-p`  | Provider ID or name to log in to                     |
+| <nobr><code>{"--method"}</code></nobr>   | `-m`  | Login method label to use, skipping method selection |
 
 ---
 
@@ -133,13 +161,13 @@ When openpatent starts up it loads the providers from the credentials file. And 
 Lists all the authenticated providers as stored in the credentials file.
 
 ```bash
-openpatent auth list
+opencode auth list
 ```
 
 Or the short version.
 
 ```bash
-openpatent auth ls
+opencode auth ls
 ```
 
 ---
@@ -149,7 +177,7 @@ openpatent auth ls
 Logs you out of a provider by clearing it from the credentials file.
 
 ```bash
-openpatent auth logout
+opencode auth logout
 ```
 
 ---
@@ -159,7 +187,7 @@ openpatent auth logout
 Manage the GitHub agent for repository automation.
 
 ```bash
-openpatent github [command]
+opencode github [command]
 ```
 
 ---
@@ -169,7 +197,7 @@ openpatent github [command]
 Install the GitHub agent in your repository.
 
 ```bash
-openpatent github install
+opencode github install
 ```
 
 This sets up the necessary GitHub Actions workflow and guides you through the configuration process. [Learn more](/docs/github).
@@ -181,15 +209,15 @@ This sets up the necessary GitHub Actions workflow and guides you through the co
 Run the GitHub agent. This is typically used in GitHub Actions.
 
 ```bash
-openpatent github run
+opencode github run
 ```
 
 ##### Flags
 
-| Flag      | Description                            |
-| --------- | -------------------------------------- |
-| `--event` | GitHub mock event to run the agent for |
-| `--token` | GitHub personal access token           |
+| Flag                                  | Description                            |
+| ------------------------------------- | -------------------------------------- |
+| <nobr><code>{"--event"}</code></nobr> | GitHub mock event to run the agent for |
+| <nobr><code>{"--token"}</code></nobr> | GitHub personal access token           |
 
 ---
 
@@ -198,7 +226,7 @@ openpatent github run
 Manage Model Context Protocol servers.
 
 ```bash
-openpatent mcp [command]
+opencode mcp [command]
 ```
 
 ---
@@ -208,7 +236,7 @@ openpatent mcp [command]
 Add an MCP server to your configuration.
 
 ```bash
-openpatent mcp add
+opencode mcp add
 ```
 
 This command will guide you through adding either a local or remote MCP server.
@@ -220,13 +248,13 @@ This command will guide you through adding either a local or remote MCP server.
 List all configured MCP servers and their connection status.
 
 ```bash
-openpatent mcp list
+opencode mcp list
 ```
 
 Or use the short version.
 
 ```bash
-openpatent mcp ls
+opencode mcp ls
 ```
 
 ---
@@ -236,7 +264,7 @@ openpatent mcp ls
 Authenticate with an OAuth-enabled MCP server.
 
 ```bash
-openpatent mcp auth [name]
+opencode mcp auth [name]
 ```
 
 If you don't provide a server name, you'll be prompted to select from available OAuth-capable servers.
@@ -244,13 +272,13 @@ If you don't provide a server name, you'll be prompted to select from available 
 You can also list OAuth-capable servers and their authentication status.
 
 ```bash
-openpatent mcp auth list
+opencode mcp auth list
 ```
 
 Or use the short version.
 
 ```bash
-openpatent mcp auth ls
+opencode mcp auth ls
 ```
 
 ---
@@ -260,7 +288,7 @@ openpatent mcp auth ls
 Remove OAuth credentials for an MCP server.
 
 ```bash
-openpatent mcp logout [name]
+opencode mcp logout [name]
 ```
 
 ---
@@ -270,7 +298,7 @@ openpatent mcp logout [name]
 Debug OAuth connection issues for an MCP server.
 
 ```bash
-openpatent mcp debug <name>
+opencode mcp debug <name>
 ```
 
 ---
@@ -280,7 +308,7 @@ openpatent mcp debug <name>
 List all available models from configured providers.
 
 ```bash
-openpatent models [provider]
+opencode models [provider]
 ```
 
 This command displays all models available across your configured providers in the format `provider/model`.
@@ -290,128 +318,148 @@ This is useful for figuring out the exact model name to use in [your config](/do
 You can optionally pass a provider ID to filter models by that provider.
 
 ```bash
-openpatent models anthropic
+opencode models anthropic
 ```
 
 #### Flags
 
-| Flag        | Description                                                  |
-| ----------- | ------------------------------------------------------------ |
-| `--refresh` | Refresh the models cache from models.dev                     |
-| `--verbose` | Use more verbose model output (includes metadata like costs) |
+| Flag                                    | Description                                                  |
+| --------------------------------------- | ------------------------------------------------------------ |
+| <nobr><code>{"--refresh"}</code></nobr> | Refresh the models cache from models.dev                     |
+| <nobr><code>{"--verbose"}</code></nobr> | Use more verbose model output (includes metadata like costs) |
 
-Use the `--refresh` flag to update the cached model list. This is useful when new models have been added to a provider and you want to see them in openpatent.
+Use the `--refresh` flag to update the cached model list. This is useful when new models have been added to a provider and you want to see them in OpenCode.
 
 ```bash
-openpatent models --refresh
+opencode models --refresh
 ```
 
 ---
 
 ### run
 
-Run openpatent in non-interactive mode by passing a prompt directly.
+Run opencode in non-interactive mode by passing a prompt directly.
 
 ```bash
-openpatent run [message..]
+opencode run [message..]
 ```
 
 This is useful for scripting, automation, or when you want a quick answer without launching the full TUI. For example.
 
-```bash "openpatent run"
-openpatent run Explain the use of context in Go
+```bash "opencode run"
+opencode run Explain the use of context in Go
 ```
 
-You can also attach to a running `openpatent serve` instance to avoid MCP server cold boot times on every run:
+You can also attach to a running `opencode serve` instance to avoid MCP server cold boot times on every run:
 
 ```bash
 # Start a headless server in one terminal
-openpatent serve
+opencode serve
 
 # In another terminal, run commands that attach to it
-openpatent run --attach http://localhost:4096 "Explain async/await in JavaScript"
+opencode run --attach http://localhost:4096 "Explain async/await in JavaScript"
 ```
 
 #### Flags
 
-| Flag         | Short | Description                                                        |
-| ------------ | ----- | ------------------------------------------------------------------ |
-| `--command`  |       | The command to run, use message for args                           |
-| `--continue` | `-c`  | Continue the last session                                          |
-| `--session`  | `-s`  | Session ID to continue                                             |
-| `--share`    |       | Share the session                                                  |
-| `--model`    | `-m`  | Model to use in the form of provider/model                         |
-| `--agent`    |       | Agent to use                                                       |
-| `--file`     | `-f`  | File(s) to attach to message                                       |
-| `--format`   |       | Format: default (formatted) or json (raw JSON events)              |
-| `--title`    |       | Title for the session (uses truncated prompt if no value provided) |
-| `--attach`   |       | Attach to a running openpatent server (e.g., http://localhost:4096)  |
-| `--port`     |       | Port for the local server (defaults to random port)                |
+| Flag                                     | Short | Description                                                                |
+| ---------------------------------------- | ----- | -------------------------------------------------------------------------- |
+| <nobr><code>{"--command"}</code></nobr>  |       | The command to run, use message for args                                   |
+| <nobr><code>{"--continue"}</code></nobr> | `-c`  | Continue the last session                                                  |
+| <nobr><code>{"--session"}</code></nobr>  | `-s`  | Session ID to continue                                                     |
+| <nobr><code>{"--fork"}</code></nobr>     |       | Fork the session when continuing (use with `--continue` or `--session`)    |
+| <nobr><code>{"--share"}</code></nobr>    |       | Share the session                                                          |
+| <nobr><code>{"--model"}</code></nobr>    | `-m`  | Model to use in the form of provider/model                                 |
+| <nobr><code>{"--agent"}</code></nobr>    |       | Agent to use                                                               |
+| <nobr><code>{"--file"}</code></nobr>     | `-f`  | File(s) to attach to message                                               |
+| <nobr><code>{"--format"}</code></nobr>   |       | Format: default (formatted) or json (raw JSON events)                      |
+| <nobr><code>{"--title"}</code></nobr>    |       | Title for the session (uses truncated prompt if no value provided)         |
+| <nobr><code>{"--attach"}</code></nobr>   |       | Attach to a running opencode server (e.g., http://localhost:4096)          |
+| <nobr><code>{"--password"}</code></nobr> | `-p`  | Basic auth password (defaults to `OPENCODE_SERVER_PASSWORD`)               |
+| <nobr><code>{"--username"}</code></nobr> | `-u`  | Basic auth username (defaults to `OPENCODE_SERVER_USERNAME` or `opencode`) |
+| <nobr><code>{"--dir"}</code></nobr>      |       | Directory to run in, or path on the remote server when attaching           |
+| <nobr><code>{"--port"}</code></nobr>     |       | Port for the local server (defaults to random port)                        |
+| <nobr><code>{"--variant"}</code></nobr>  |       | Model variant (provider-specific reasoning effort)                         |
+| <nobr><code>{"--thinking"}</code></nobr> |       | Show thinking blocks                                                       |
+| <nobr><code>{"--auto"}</code></nobr>     |       | Auto-approve permissions that are not explicitly denied                    |
 
 ---
 
 ### serve
 
-Start a headless openpatent server for API access. Check out the [server docs](/docs/server) for the full HTTP interface.
+Start a headless OpenCode server for API access. Check out the [server docs](/docs/server) for the full HTTP interface.
 
 ```bash
-openpatent serve
+opencode serve
 ```
 
-This starts an HTTP server that provides API access to openpatent functionality without the TUI interface.
+This starts an HTTP server that provides API access to opencode functionality without the TUI interface. Set `OPENCODE_SERVER_PASSWORD` to enable HTTP basic auth (username defaults to `opencode`).
 
 #### Flags
 
-| Flag         | Description           |
-| ------------ | --------------------- |
-| `--port`     | Port to listen on     |
-| `--hostname` | Hostname to listen on |
-| `--mdns`     | Enable mDNS discovery |
+| Flag                                        | Description                                |
+| ------------------------------------------- | ------------------------------------------ |
+| <nobr><code>{"--port"}</code></nobr>        | Port to listen on                          |
+| <nobr><code>{"--hostname"}</code></nobr>    | Hostname to listen on                      |
+| <nobr><code>{"--mdns"}</code></nobr>        | Enable mDNS discovery                      |
+| <nobr><code>{"--mdns-domain"}</code></nobr> | Custom mDNS domain name                    |
+| <nobr><code>{"--cors"}</code></nobr>        | Additional browser origin(s) to allow CORS |
 
 ---
 
 ### session
 
-Manage openpatent sessions.
+Manage OpenCode sessions.
 
 ```bash
-openpatent session [command]
+opencode session [command]
 ```
 
 ---
 
 #### list
 
-List all openpatent sessions.
+List all OpenCode sessions.
 
 ```bash
-openpatent session list
+opencode session list
 ```
 
 ##### Flags
 
-| Flag          | Short | Description                          |
-| ------------- | ----- | ------------------------------------ |
-| `--max-count` | `-n`  | Limit to N most recent sessions      |
-| `--format`    |       | Output format: table or json (table) |
+| Flag                                      | Short | Description                          |
+| ----------------------------------------- | ----- | ------------------------------------ |
+| <nobr><code>{"--max-count"}</code></nobr> | `-n`  | Limit to N most recent sessions      |
+| <nobr><code>{"--format"}</code></nobr>    |       | Output format: table or json (table) |
+
+---
+
+#### delete
+
+Delete an OpenCode session.
+
+```bash
+opencode session delete <sessionID>
+```
 
 ---
 
 ### stats
 
-Show token usage and cost statistics for your openpatent sessions.
+Show token usage and cost statistics for your OpenCode sessions.
 
 ```bash
-openpatent stats
+opencode stats
 ```
 
 #### Flags
 
-| Flag        | Description                                                     |
-| ----------- | --------------------------------------------------------------- |
-| `--days`    | Show stats for the last N days (all time)                       |
-| `--tools`   | Number of tools to show (all)                                   |
-| `--project` | Filter by project (all projects, empty string: current project) |
+| Flag                                    | Description                                                                 |
+| --------------------------------------- | --------------------------------------------------------------------------- |
+| <nobr><code>{"--days"}</code></nobr>    | Show stats for the last N days (all time)                                   |
+| <nobr><code>{"--tools"}</code></nobr>   | Number of tools to show (all)                                               |
+| <nobr><code>{"--models"}</code></nobr>  | Show model usage breakdown (hidden by default). Pass a number to show top N |
+| <nobr><code>{"--project"}</code></nobr> | Filter by project (all projects, empty string: current project)             |
 
 ---
 
@@ -420,47 +468,55 @@ openpatent stats
 Export session data as JSON.
 
 ```bash
-openpatent export [sessionID]
+opencode export [sessionID]
 ```
 
 If you don't provide a session ID, you'll be prompted to select from available sessions.
+
+#### Flags
+
+| Flag                                     | Description                           |
+| ---------------------------------------- | ------------------------------------- |
+| <nobr><code>{"--sanitize"}</code></nobr> | Redact sensitive transcript/file data |
 
 ---
 
 ### import
 
-Import session data from a JSON file or openpatent share URL.
+Import session data from a JSON file or OpenCode share URL.
 
 ```bash
-openpatent import <file>
+opencode import <file>
 ```
 
-You can import from a local file or an openpatent share URL.
+You can import from a local file or an OpenCode share URL.
 
 ```bash
-openpatent import session.json
-openpatent import https://opncd.ai/s/abc123
+opencode import session.json
+opencode import https://opncd.ai/s/abc123
 ```
 
 ---
 
 ### web
 
-Start a headless openpatent server with a web interface.
+Start a headless OpenCode server with a web interface.
 
 ```bash
-openpatent web
+opencode web
 ```
 
-This starts an HTTP server and opens a web browser to access openpatent through a web interface.
+This starts an HTTP server and opens a web browser to access OpenCode through a web interface. Set `OPENCODE_SERVER_PASSWORD` to enable HTTP basic auth (username defaults to `opencode`).
 
 #### Flags
 
-| Flag         | Description           |
-| ------------ | --------------------- |
-| `--port`     | Port to listen on     |
-| `--hostname` | Hostname to listen on |
-| `--mdns`     | Enable mDNS discovery |
+| Flag                                        | Description                                |
+| ------------------------------------------- | ------------------------------------------ |
+| <nobr><code>{"--port"}</code></nobr>        | Port to listen on                          |
+| <nobr><code>{"--hostname"}</code></nobr>    | Hostname to listen on                      |
+| <nobr><code>{"--mdns"}</code></nobr>        | Enable mDNS discovery                      |
+| <nobr><code>{"--mdns-domain"}</code></nobr> | Custom mDNS domain name                    |
+| <nobr><code>{"--cors"}</code></nobr>        | Additional browser origin(s) to allow CORS |
 
 ---
 
@@ -469,102 +525,186 @@ This starts an HTTP server and opens a web browser to access openpatent through 
 Start an ACP (Agent Client Protocol) server.
 
 ```bash
-openpatent acp
+opencode acp
 ```
 
 This command starts an ACP server that communicates via stdin/stdout using nd-JSON.
 
 #### Flags
 
-| Flag         | Description           |
-| ------------ | --------------------- |
-| `--cwd`      | Working directory     |
-| `--port`     | Port to listen on     |
-| `--hostname` | Hostname to listen on |
+| Flag                                        | Description                                |
+| ------------------------------------------- | ------------------------------------------ |
+| <nobr><code>{"--cwd"}</code></nobr>         | Working directory                          |
+| <nobr><code>{"--port"}</code></nobr>        | Port to listen on                          |
+| <nobr><code>{"--hostname"}</code></nobr>    | Hostname to listen on                      |
+| <nobr><code>{"--mdns"}</code></nobr>        | Enable mDNS discovery                      |
+| <nobr><code>{"--mdns-domain"}</code></nobr> | Custom mDNS domain name                    |
+| <nobr><code>{"--cors"}</code></nobr>        | Additional browser origin(s) to allow CORS |
+
+---
+
+### plugin
+
+Install a plugin and update your config.
+
+```bash
+opencode plugin <module>
+```
+
+Or use the alias.
+
+```bash
+opencode plug <module>
+```
+
+#### Flags
+
+| Flag                                   | Short | Description                     |
+| -------------------------------------- | ----- | ------------------------------- |
+| <nobr><code>{"--global"}</code></nobr> | `-g`  | Install in global config        |
+| <nobr><code>{"--force"}</code></nobr>  | `-f`  | Replace existing plugin version |
+
+---
+
+### pr
+
+Fetch and checkout a GitHub PR branch, then run OpenCode.
+
+```bash
+opencode pr <number>
+```
+
+---
+
+### db
+
+Database tools.
+
+```bash
+opencode db [query]
+```
+
+#### Flags
+
+| Flag                                   | Description                    |
+| -------------------------------------- | ------------------------------ |
+| <nobr><code>{"--format"}</code></nobr> | Output format: `json` or `tsv` |
+
+---
+
+#### path
+
+Print the database path.
+
+```bash
+opencode db path
+```
+
+---
+
+### debug
+
+Debugging and troubleshooting tools.
+
+```bash
+opencode debug [command]
+```
 
 ---
 
 ### uninstall
 
-Uninstall openpatent and remove all related files.
+Uninstall OpenCode and remove all related files.
 
 ```bash
-openpatent uninstall
+opencode uninstall
 ```
 
 #### Flags
 
-| Flag            | Short | Description                                 |
-| --------------- | ----- | ------------------------------------------- |
-| `--keep-config` | `-c`  | Keep configuration files                    |
-| `--keep-data`   | `-d`  | Keep session data and snapshots             |
-| `--dry-run`     |       | Show what would be removed without removing |
-| `--force`       | `-f`  | Skip confirmation prompts                   |
+| Flag                                        | Short | Description                                 |
+| ------------------------------------------- | ----- | ------------------------------------------- |
+| <nobr><code>{"--keep-config"}</code></nobr> | `-c`  | Keep configuration files                    |
+| <nobr><code>{"--keep-data"}</code></nobr>   | `-d`  | Keep session data and snapshots             |
+| <nobr><code>{"--dry-run"}</code></nobr>     |       | Show what would be removed without removing |
+| <nobr><code>{"--force"}</code></nobr>       | `-f`  | Skip confirmation prompts                   |
 
 ---
 
 ### upgrade
 
-Updates openpatent to the latest version or a specific version.
+Updates opencode to the latest version or a specific version.
 
 ```bash
-openpatent upgrade [target]
+opencode upgrade [target]
 ```
 
 To upgrade to the latest version.
 
 ```bash
-openpatent upgrade
+opencode upgrade
 ```
 
 To upgrade to a specific version.
 
 ```bash
-openpatent upgrade v0.1.48
+opencode upgrade v0.1.48
 ```
 
 #### Flags
 
-| Flag       | Short | Description                                                       |
-| ---------- | ----- | ----------------------------------------------------------------- |
-| `--method` | `-m`  | The installation method that was used; curl, npm, pnpm, bun, brew |
+| Flag                                   | Short | Description                                                       |
+| -------------------------------------- | ----- | ----------------------------------------------------------------- |
+| <nobr><code>{"--method"}</code></nobr> | `-m`  | The installation method that was used; curl, npm, pnpm, bun, brew |
 
 ---
 
 ## Global Flags
 
-The openpatent CLI takes the following global flags.
+The opencode CLI takes the following global flags.
 
-| Flag           | Short | Description                          |
-| -------------- | ----- | ------------------------------------ |
-| `--help`       | `-h`  | Display help                         |
-| `--version`    | `-v`  | Print version number                 |
-| `--print-logs` |       | Print logs to stderr                 |
-| `--log-level`  |       | Log level (DEBUG, INFO, WARN, ERROR) |
+| Flag                                       | Short | Description                          |
+| ------------------------------------------ | ----- | ------------------------------------ |
+| <nobr><code>{"--help"}</code></nobr>       | `-h`  | Display help                         |
+| <nobr><code>{"--version"}</code></nobr>    | `-v`  | Print version number                 |
+| <nobr><code>{"--print-logs"}</code></nobr> |       | Print logs to stderr                 |
+| <nobr><code>{"--log-level"}</code></nobr>  |       | Log level (DEBUG, INFO, WARN, ERROR) |
+| <nobr><code>{"--pure"}</code></nobr>       |       | Run without external plugins         |
 
 ---
 
 ## Environment variables
 
-openpatent can be configured using environment variables.
+OpenCode can be configured using environment variables.
 
-| Variable                              | Type    | Description                              |
-| ------------------------------------- | ------- | ---------------------------------------- |
-| `openpatent_AUTO_SHARE`                 | boolean | Automatically share sessions             |
-| `openpatent_GIT_BASH_PATH`              | string  | Path to Git Bash executable on Windows   |
-| `openpatent_CONFIG`                     | string  | Path to config file                      |
-| `openpatent_CONFIG_DIR`                 | string  | Path to config directory                 |
-| `openpatent_CONFIG_CONTENT`             | string  | Inline json config content               |
-| `openpatent_DISABLE_AUTOUPDATE`         | boolean | Disable automatic update checks          |
-| `openpatent_DISABLE_PRUNE`              | boolean | Disable pruning of old data              |
-| `openpatent_DISABLE_TERMINAL_TITLE`     | boolean | Disable automatic terminal title updates |
-| `openpatent_PERMISSION`                 | string  | Inlined json permissions config          |
-| `openpatent_DISABLE_DEFAULT_PLUGINS`    | boolean | Disable default plugins                  |
-| `openpatent_DISABLE_LSP_DOWNLOAD`       | boolean | Disable automatic LSP server downloads   |
-| `openpatent_ENABLE_EXPERIMENTAL_MODELS` | boolean | Enable experimental models               |
-| `openpatent_DISABLE_AUTOCOMPACT`        | boolean | Disable automatic context compaction     |
-| `openpatent_CLIENT`                     | string  | Client identifier (defaults to `cli`)    |
-| `openpatent_ENABLE_EXA`                 | boolean | Enable Exa web search tools              |
+| Variable                              | Type    | Description                                       |
+| ------------------------------------- | ------- | ------------------------------------------------- |
+| `OPENCODE_AUTO_SHARE`                 | boolean | Automatically share sessions                      |
+| `OPENCODE_GIT_BASH_PATH`              | string  | Path to Git Bash executable on Windows            |
+| `OPENCODE_CONFIG`                     | string  | Path to config file                               |
+| `OPENCODE_TUI_CONFIG`                 | string  | Path to TUI config file                           |
+| `OPENCODE_CONFIG_DIR`                 | string  | Path to config directory                          |
+| `OPENCODE_CONFIG_CONTENT`             | string  | Inline json config content                        |
+| `OPENCODE_DISABLE_AUTOUPDATE`         | boolean | Disable automatic update checks                   |
+| `OPENCODE_DISABLE_PRUNE`              | boolean | Disable pruning of old data                       |
+| `OPENCODE_DISABLE_TERMINAL_TITLE`     | boolean | Disable automatic terminal title updates          |
+| `OPENCODE_PERMISSION`                 | string  | Inlined json permissions config                   |
+| `OPENCODE_DISABLE_DEFAULT_PLUGINS`    | boolean | Disable default plugins                           |
+| `OPENCODE_DISABLE_LSP_DOWNLOAD`       | boolean | Disable automatic LSP server downloads            |
+| `OPENCODE_ENABLE_EXPERIMENTAL_MODELS` | boolean | Enable experimental models                        |
+| `OPENCODE_DISABLE_AUTOCOMPACT`        | boolean | Disable automatic context compaction              |
+| `OPENCODE_DISABLE_CLAUDE_CODE`        | boolean | Disable reading from `.claude` (prompt + skills)  |
+| `OPENCODE_DISABLE_CLAUDE_CODE_PROMPT` | boolean | Disable reading `~/.claude/CLAUDE.md`             |
+| `OPENCODE_DISABLE_CLAUDE_CODE_SKILLS` | boolean | Disable loading `.claude/skills`                  |
+| `OPENCODE_DISABLE_MODELS_FETCH`       | boolean | Disable fetching models from remote sources       |
+| `OPENCODE_DISABLE_MOUSE`              | boolean | Disable mouse capture in the TUI                  |
+| `OPENCODE_FAKE_VCS`                   | string  | Fake VCS provider for testing purposes            |
+| `OPENCODE_CLIENT`                     | string  | Client identifier (defaults to `cli`)             |
+| `OPENCODE_ENABLE_EXA`                 | boolean | Enable Exa web search tools                       |
+| `OPENCODE_ENABLE_PARALLEL`            | boolean | Enable Parallel web search tools                  |
+| `OPENCODE_SERVER_PASSWORD`            | string  | Enable basic auth for `serve`/`web`               |
+| `OPENCODE_SERVER_USERNAME`            | string  | Override basic auth username (default `opencode`) |
+| `OPENCODE_MODELS_URL`                 | string  | Custom URL for fetching models configuration      |
 
 ---
 
@@ -574,12 +714,20 @@ These environment variables enable experimental features that may change or be r
 
 | Variable                                        | Type    | Description                             |
 | ----------------------------------------------- | ------- | --------------------------------------- |
-| `openpatent_EXPERIMENTAL`                         | boolean | Enable all experimental features        |
-| `openpatent_EXPERIMENTAL_ICON_DISCOVERY`          | boolean | Enable icon discovery                   |
-| `openpatent_EXPERIMENTAL_DISABLE_COPY_ON_SELECT`  | boolean | Disable copy on select in TUI           |
-| `openpatent_EXPERIMENTAL_BASH_MAX_OUTPUT_LENGTH`  | number  | Max output length for bash commands     |
-| `openpatent_EXPERIMENTAL_BASH_DEFAULT_TIMEOUT_MS` | number  | Default timeout for bash commands in ms |
-| `openpatent_EXPERIMENTAL_OUTPUT_TOKEN_MAX`        | number  | Max output tokens for LLM responses     |
-| `openpatent_EXPERIMENTAL_FILEWATCHER`             | boolean | Enable file watcher for entire dir      |
-| `openpatent_EXPERIMENTAL_OXFMT`                   | boolean | Enable oxfmt formatter                  |
-| `openpatent_EXPERIMENTAL_LSP_TOOL`                | boolean | Enable experimental LSP tool            |
+| `OPENCODE_EXPERIMENTAL`                         | boolean | Enable the experimental umbrella flag   |
+| `OPENCODE_EXPERIMENTAL_ICON_DISCOVERY`          | boolean | Enable icon discovery                   |
+| `OPENCODE_EXPERIMENTAL_DISABLE_COPY_ON_SELECT`  | boolean | Disable copy on select in TUI           |
+| `OPENCODE_EXPERIMENTAL_BASH_DEFAULT_TIMEOUT_MS` | number  | Default timeout for bash commands in ms |
+| `OPENCODE_EXPERIMENTAL_OUTPUT_TOKEN_MAX`        | number  | Max output tokens for LLM responses     |
+| `OPENCODE_EXPERIMENTAL_FILEWATCHER`             | boolean | Enable file watcher for entire dir      |
+| `OPENCODE_EXPERIMENTAL_OXFMT`                   | boolean | Enable oxfmt formatter                  |
+| `OPENCODE_EXPERIMENTAL_LSP_TOOL`                | boolean | Enable experimental LSP tool            |
+| `OPENCODE_EXPERIMENTAL_DISABLE_FILEWATCHER`     | boolean | Disable file watcher                    |
+| `OPENCODE_EXPERIMENTAL_EXA`                     | boolean | Enable experimental Exa features        |
+| `OPENCODE_EXPERIMENTAL_LSP_TY`                  | boolean | Enable TY LSP for python files          |
+| `OPENCODE_EXPERIMENTAL_PLAN_MODE`               | boolean | Enable plan mode                        |
+| `OPENCODE_EXPERIMENTAL_EVENT_SYSTEM`            | boolean | Enable experimental event system        |
+| `OPENCODE_EXPERIMENTAL_NATIVE_LLM`              | boolean | Enable native LLM request path          |
+| `OPENCODE_EXPERIMENTAL_PARALLEL`                | boolean | Enable parallel web search execution    |
+| `OPENCODE_EXPERIMENTAL_SCOUT`                   | boolean | Enable Scout subagent                   |
+| `OPENCODE_EXPERIMENTAL_WORKSPACES`              | boolean | Enable workspace support                |

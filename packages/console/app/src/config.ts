@@ -2,28 +2,30 @@
  * Application-wide constants and configuration
  */
 export const config = {
+  consoleMarketingEnabled: import.meta.env.VITE_CONSOLE_MARKETING_ENABLED === "true",
+
   // Base URL
-  baseUrl: "https://openpatent.ai",
+  baseUrl: "https://opencode.ai",
 
   // GitHub
   github: {
-    repoUrl: "https://github.com/sst/openpatent",
+    repoUrl: "https://github.com/anomalyco/opencode",
     starsFormatted: {
-      compact: "41K",
-      full: "41,000",
+      compact: "208K",
+      full: "208,000",
     },
   },
 
   // Social links
   social: {
-    twitter: "https://x.com/openpatent",
-    discord: "https://discord.gg/openpatent",
+    twitter: "https://x.com/opencode",
+    discord: "https://discord.gg/opencode",
   },
 
   // Static stats (used on landing page)
   stats: {
-    contributors: "450",
-    commits: "6,000",
-    monthlyUsers: "400,000",
+    contributors: "950",
+    commits: "13,000",
+    monthlyUsers: "16M",
   },
 } as const

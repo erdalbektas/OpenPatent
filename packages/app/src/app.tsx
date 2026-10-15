@@ -1,95 +1,118 @@
 import "@/index.css"
-import { ErrorBoundary, Show } from "solid-js"
-import { Router, Route, Navigate } from "@solidjs/router"
+import { DialogProvider } from "@opencode/ui/context/dialog"
+import { FileComponentProvider } from "@opencode/ui/context/file"
+import { Font } from "@opencode/ui/font"
+import { ThemeProvider } from "@opencode/ui/theme/context"
 import { MetaProvider } from "@solidjs/meta"
-import { Font } from "@openpatent-ai/ui/font"
-import { MarkedProvider } from "@openpatent-ai/ui/context/marked"
-import { DiffComponentProvider } from "@openpatent-ai/ui/context/diff"
-import { CodeComponentProvider } from "@openpatent-ai/ui/context/code"
-import { Diff } from "@openpatent-ai/ui/diff"
-import { Code } from "@openpatent-ai/ui/code"
-import { ThemeProvider } from "@openpatent-ai/ui/theme"
-import { GlobalSyncProvider } from "@/context/global-sync"
-import { LayoutProvider } from "@/context/layout"
-import { GlobalSDKProvider } from "@/context/global-sdk"
-import { TerminalProvider } from "@/context/terminal"
-import { PromptProvider } from "@/context/prompt"
-import { NotificationProvider } from "@/context/notification"
-import { DialogProvider } from "@openpatent-ai/ui/context/dialog"
-import { CommandProvider } from "@/context/command"
-import Layout from "@/pages/layout"
-import Home from "@/pages/home"
-import DirectoryLayout from "@/pages/directory-layout"
-import Session from "@/pages/session"
-import { ErrorPage } from "./pages/error"
-import { iife } from "@openpatent-ai/util/iife"
+import { type BaseRouterProps, Router } from "@solidjs/router"
+import { QueryClient, QueryClientProvider } from "@tanstack/solid-query"
+import { type Component, createRenderEffect, ErrorBoundary, type JSX, type ParentProps } from "solid-js"
+import { Dynamic } from "solid-js/web"
+import { CommandProvider } from "@/shell/commands/command"
+import { DesktopCommands } from "@/shell/commands/desktop"
+import { GlobalProvider } from "@/runtime/server/runtime"
+import { LanguageProvider, UiI18nBridge, type Locale } from "@/runtime/i18n/language"
+import { ServerConnection, ServersProvider } from "@/runtime/server/registry"
+import { SettingsProvider } from "@/settings/model"
+import { TabsProvider } from "@/shell/tabs/tabs"
+import { ErrorPage } from "@/shell/errors/error"
+import { AppRoutes, File, preloadRoute } from "@/shell/routes/routes"
+import { ExtensionRoot } from "@/runtime/extension/root"
 
-declare global {
-  interface Window {
-    __openpatent__?: { updaterEnabled?: boolean; port?: number }
-  }
+export { preloadRoute }
+
+function QueryProvider(props: ParentProps) {
+  const client = new QueryClient({
+    defaultOptions: {
+      queries: {
+        refetchOnReconnect: false,
+        refetchOnWindowFocus: false,
+        refetchOnMount: false,
+      },
+    },
+  })
+
+  return <QueryClientProvider client={client}>{props.children}</QueryClientProvider>
 }
 
-const url = iife(() => {
-  const param = new URLSearchParams(document.location.search).get("url")
-  if (param) return param
+function BodyTypography() {
+  createRenderEffect(() => {
+    if (typeof document === "undefined") return
+    document.body.classList.remove("text-12-regular")
+    document.body.classList.add("font-(family-name:--font-family-text)", "text-[13px]", "font-[440]")
+  })
 
-  if (location.hostname.includes("openpatent.ai")) return "http://localhost:4096"
-  if (window.__openpatent__) return `http://127.0.0.1:${window.__openpatent__.port}`
-  if (import.meta.env.DEV)
-    return `http://${import.meta.env.VITE_openpatent_SERVER_HOST ?? "localhost"}:${import.meta.env.VITE_openpatent_SERVER_PORT ?? "4096"}`
+  return null
+}
 
-  return window.location.origin
-})
-
-export function App() {
+export function AppBaseProviders(
+  props: ParentProps<{
+    locale?: Locale
+    onNativeTranslations?: Parameters<typeof LanguageProvider>[0]["onNativeTranslations"]
+    onThemeApplied?: (mode: "light" | "dark", scheme: "system" | "light" | "dark") => void
+  }>,
+) {
   return (
     <MetaProvider>
       <Font />
-      <ThemeProvider>
-        <ErrorBoundary fallback={(error) => <ErrorPage error={error} />}>
-          <DialogProvider>
-            <MarkedProvider>
-              <DiffComponentProvider component={Diff}>
-                <CodeComponentProvider component={Code}>
-                  <GlobalSDKProvider url={url}>
-                    <GlobalSyncProvider>
-                      <LayoutProvider>
-                        <NotificationProvider>
-                          <Router
-                            root={(props) => (
-                              <CommandProvider>
-                                <Layout>{props.children}</Layout>
-                              </CommandProvider>
-                            )}
-                          >
-                            <Route path="/" component={Home} />
-                            <Route path="/:dir" component={DirectoryLayout}>
-                              <Route path="/" component={() => <Navigate href="session" />} />
-                              <Route
-                                path="/session/:id?"
-                                component={(p) => (
-                                  <Show when={p.params.id ?? "new"} keyed>
-                                    <TerminalProvider>
-                                      <PromptProvider>
-                                        <Session />
-                                      </PromptProvider>
-                                    </TerminalProvider>
-                                  </Show>
-                                )}
-                              />
-                            </Route>
-                          </Router>
-                        </NotificationProvider>
-                      </LayoutProvider>
-                    </GlobalSyncProvider>
-                  </GlobalSDKProvider>
-                </CodeComponentProvider>
-              </DiffComponentProvider>
-            </MarkedProvider>
-          </DialogProvider>
-        </ErrorBoundary>
+      <ThemeProvider
+        onThemeApplied={(_, mode, scheme) => {
+          props.onThemeApplied?.(mode, scheme)
+        }}
+      >
+        <LanguageProvider locale={props.locale} onNativeTranslations={props.onNativeTranslations}>
+          <UiI18nBridge>
+            <ErrorBoundary
+              fallback={(error) => {
+                void import("@sentry/solid").then(({ captureException }) => captureException(error))
+
+                return <ErrorPage error={error} />
+              }}
+            >
+              <QueryProvider>
+                <DialogProvider>
+                  <ExtensionRoot>
+                    <FileComponentProvider component={File}>{props.children}</FileComponentProvider>
+                  </ExtensionRoot>
+                </DialogProvider>
+              </QueryProvider>
+            </ErrorBoundary>
+          </UiI18nBridge>
+        </LanguageProvider>
       </ThemeProvider>
     </MetaProvider>
+  )
+}
+
+export function AppInterface(props: {
+  children?: JSX.Element
+  canonicalLocalServer?: ServerConnection.Key
+  servers?: Array<ServerConnection.Any>
+  router?: Component<BaseRouterProps>
+}) {
+  // The visual layout lives in the router root so it remains mounted across
+  // route changes. Draft and session routes override only their server-bound data
+  // providers beneath it.
+  const Root = (rootProps: ParentProps) => (
+    <TabsProvider>
+      <GlobalProvider>
+        <BodyTypography />
+        <CommandProvider>
+          <DesktopCommands />
+          {props.children}
+          {rootProps.children}
+        </CommandProvider>
+      </GlobalProvider>
+    </TabsProvider>
+  )
+
+  return (
+    <ServersProvider canonicalLocalServer={props.canonicalLocalServer} servers={props.servers}>
+      <SettingsProvider>
+        <Dynamic component={props.router ?? Router} root={Root}>
+          <AppRoutes />
+        </Dynamic>
+      </SettingsProvider>
+    </ServersProvider>
   )
 }

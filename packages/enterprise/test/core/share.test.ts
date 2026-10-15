@@ -1,7 +1,7 @@
-import { describe, expect, test, afterAll } from "bun:test"
+import { describe, expect, test } from "bun:test"
 import { Share } from "../../src/core/share"
 import { Storage } from "../../src/core/storage"
-import { Identifier } from "@openpatent-ai/util/identifier"
+import { Identifier } from "@opencode/schema/identifier"
 
 describe.concurrent("core.share", () => {
   test("should create a share", async () => {
@@ -12,6 +12,14 @@ describe.concurrent("core.share", () => {
     expect(share.secret).toBeDefined()
 
     await Share.remove({ id: share.id, secret: share.secret })
+  })
+
+  test("should remove a share as admin", async () => {
+    const share = await Share.create({ sessionID: Identifier.descending() })
+
+    await Share.removeAdmin({ id: share.id })
+
+    expect(await Share.get(share.id)).toBeUndefined()
   })
 
   test("should sync data to a share", async () => {
@@ -30,8 +38,8 @@ describe.concurrent("core.share", () => {
       data,
     })
 
-    const events = await Storage.list({ prefix: ["share_event", share.id] })
-    expect(events.length).toBe(1)
+    const snapshot = await Storage.read<{ data: Share.Data[] }>(["share_snapshot", share.id])
+    expect(snapshot?.data).toHaveLength(1)
 
     await Share.remove({ id: share.id, secret: share.secret })
   })
@@ -64,8 +72,8 @@ describe.concurrent("core.share", () => {
       data: data2,
     })
 
-    const events = await Storage.list({ prefix: ["share_event", share.id] })
-    expect(events.length).toBe(2)
+    const snapshot = await Storage.read<{ data: Share.Data[] }>(["share_snapshot", share.id])
+    expect(snapshot?.data).toHaveLength(2)
 
     await Share.remove({ id: share.id, secret: share.secret })
   })
@@ -194,6 +202,28 @@ describe.concurrent("core.share", () => {
     await Share.remove({ id: share.id, secret: share.secret })
   })
 
+  test("should migrate legacy event data into the snapshot", async () => {
+    const sessionID = Identifier.descending()
+    const share = await Share.create({ sessionID })
+    const data: Share.Data[] = [
+      {
+        type: "part",
+        data: { id: "part1", sessionID, messageID: "msg1", type: "text", text: "Hello" },
+      },
+    ]
+
+    await Storage.remove(["share_snapshot", share.id])
+    await Storage.write(["share_event", share.id, Identifier.descending()], data)
+
+    const result = await Share.data(share.id)
+    const snapshot = await Storage.read<{ data: Share.Data[] }>(["share_snapshot", share.id])
+
+    expect(result).toHaveLength(1)
+    expect(snapshot?.data).toHaveLength(1)
+
+    await Share.remove({ id: share.id, secret: share.secret })
+  })
+
   test("should throw error for invalid secret", async () => {
     const sessionID = Identifier.descending()
     const share = await Share.create({ sessionID })
@@ -256,6 +286,54 @@ describe.concurrent("core.share", () => {
     expect(result.some((d) => d.type === "session")).toBe(true)
     expect(result.some((d) => d.type === "message")).toBe(true)
     expect(result.some((d) => d.type === "part")).toBe(true)
+
+    await Share.remove({ id: share.id, secret: share.secret })
+  })
+
+  test("should sync all legacy data variants to their canonical paths", async () => {
+    const sessionID = Identifier.descending()
+    const share = await Share.create({ sessionID })
+    const data: Share.Data[] = [
+      {
+        type: "session",
+        data: {
+          id: sessionID,
+          slug: "session",
+          projectID: "project",
+          directory: "/",
+          title: "Session",
+          version: "1",
+          time: { created: 1, updated: 1 },
+        },
+      },
+      {
+        type: "message",
+        data: {
+          id: "msg1",
+          sessionID,
+          role: "user",
+          time: { created: 1 },
+          agent: "build",
+          model: { providerID: "provider", modelID: "model" },
+        },
+      },
+      { type: "messages", data: { sessionID, messages: [] } },
+      {
+        type: "part",
+        data: { id: "part1", sessionID, messageID: "msg1", type: "text", text: "Hello" },
+      },
+      { type: "session_diff", data: [] },
+      { type: "model", data: [] },
+    ]
+
+    await Share.syncOld({
+      share: { id: share.id, secret: share.secret },
+      data,
+    })
+
+    const paths = ["session", "message/msg1", `messages/${sessionID}`, "part/msg1/part1", "session_diff", "model"]
+    const stored = await Promise.all(paths.map((path) => Storage.read(["share_data", share.id, ...path.split("/")])))
+    expect(stored).toEqual(data.map((item) => item.data))
 
     await Share.remove({ id: share.id, secret: share.secret })
   })

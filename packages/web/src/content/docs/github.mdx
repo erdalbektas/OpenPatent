@@ -1,17 +1,17 @@
 ---
 title: GitHub
-description: Use openpatent in GitHub issues and pull-requests.
+description: Use OpenCode in GitHub issues and pull-requests.
 ---
 
-openpatent integrates with your GitHub workflow. Mention `/openpatent` or `/oc` in your comment, and openpatent will execute tasks within your GitHub Actions runner.
+OpenCode integrates with your GitHub workflow. Mention `/opencode` or `/oc` in your comment, and OpenCode will execute tasks within your GitHub Actions runner.
 
 ---
 
 ## Features
 
-- **Triage issues**: Ask openpatent to look into an issue and explain it to you.
-- **Fix and implement**: Ask openpatent to fix an issue or implement a feature. And it will work in a new branch and submits a PR with all the changes.
-- **Secure**: openpatent runs inside your GitHub's runners.
+- **Triage issues**: Ask OpenCode to look into an issue and explain it to you.
+- **Fix and implement**: Ask OpenCode to fix an issue or implement a feature. And it will work in a new branch and submits a PR with all the changes.
+- **Secure**: OpenCode runs inside your GitHub's runners.
 
 ---
 
@@ -20,7 +20,7 @@ openpatent integrates with your GitHub workflow. Mention `/openpatent` or `/oc` 
 Run the following command in a project that is in a GitHub repo:
 
 ```bash
-openpatent github install
+opencode github install
 ```
 
 This will walk you through installing the GitHub app, creating the workflow, and setting up secrets.
@@ -33,14 +33,14 @@ Or you can set it up manually.
 
 1. **Install the GitHub app**
 
-   Head over to [**github.com/apps/openpatent-agent**](https://github.com/apps/openpatent-agent). Make sure it's installed on the target repository.
+   Head over to [**github.com/apps/opencode-agent**](https://github.com/apps/opencode-agent). Make sure it's installed on the target repository.
 
 2. **Add the workflow**
 
-   Add the following workflow file to `.github/workflows/openpatent.yml` in your repo. Make sure to set the appropriate `model` and required API keys in `env`.
+   Add the following workflow file to `.github/workflows/opencode.yml` in your repo. Make sure to set the appropriate `model` and required API keys in `env`.
 
-   ```yml title=".github/workflows/openpatent.yml" {24,26}
-   name: openpatent
+   ```yml title=".github/workflows/opencode.yml" {24,26}
+   name: opencode
 
    on:
      issue_comment:
@@ -49,27 +49,27 @@ Or you can set it up manually.
        types: [created]
 
    jobs:
-     openpatent:
+     opencode:
        if: |
          contains(github.event.comment.body, '/oc') ||
-         contains(github.event.comment.body, '/openpatent')
+         contains(github.event.comment.body, '/opencode')
        runs-on: ubuntu-latest
        permissions:
          id-token: write
        steps:
          - name: Checkout repository
-           uses: actions/checkout@v4
+           uses: actions/checkout@v6
            with:
              fetch-depth: 1
+             persist-credentials: false
 
-         - name: Run openpatent
-           uses: sst/openpatent/github@latest
+         - name: Run OpenCode
+           uses: anomalyco/opencode/github@latest
            env:
              ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
            with:
              model: anthropic/claude-sonnet-4-20250514
              # share: true
-             # github_token: xxxx
    ```
 
 3. **Store the API keys in secrets**
@@ -80,52 +80,63 @@ Or you can set it up manually.
 
 ## Configuration
 
-- `model`: The model to use with openpatent. Takes the format of `provider/model`. This is **required**.
+- `model`: The model to use with OpenCode. Takes the format of `provider/model`. This is **required**.
 - `agent`: The agent to use. Must be a primary agent. Falls back to `default_agent` from config or `"build"` if not found.
-- `share`: Whether to share the openpatent session. Defaults to **true** for public repositories.
-- `prompt`: Optional custom prompt to override the default behavior. Use this to customize how openpatent processes requests.
-- `token`: Optional GitHub access token for performing operations such as creating comments, committing changes, and opening pull requests. By default, openpatent uses the installation access token from the openpatent GitHub App, so commits, comments, and pull requests appear as coming from the app.
+- `share`: Whether to share the OpenCode session. Defaults to **true** for public repositories.
+- `prompt`: Optional custom prompt to override the default behavior. Use this to customize how OpenCode processes requests.
+- `mentions`: Comma-separated list of trigger phrases, case-insensitive. Defaults to `/opencode,/oc`.
+- `variant`: Model variant for provider-specific reasoning effort, for example `high`, `max`, or `minimal`.
+- `oidc_base_url`: Base URL for the OIDC token exchange API. Only needed when running a custom GitHub App install. Defaults to `https://api.opencode.ai`.
+- `use_github_token`: Set to `true` to use a caller-provided `GITHUB_TOKEN` instead of exchanging an OIDC token for an OpenCode App installation token. Defaults to `false`.
 
-  Alternatively, you can use the GitHub Action runner's [built-in `GITHUB_TOKEN`](https://docs.github.com/en/actions/tutorials/authenticate-with-github_token) without installing the openpatent GitHub App. Just make sure to grant the required permissions in your workflow:
+  Use this mode to run without installing the OpenCode GitHub App. Pass the token through `env` and grant the permissions required by your workflow:
 
   ```yaml
   permissions:
-    id-token: write
     contents: write
     pull-requests: write
     issues: write
+
+  steps:
+    - uses: anomalyco/opencode/github@latest
+      env:
+        ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        model: anthropic/claude-sonnet-4-20250514
+        use_github_token: true
   ```
 
-  You can also use a [personal access tokens](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)(PAT) if preferred.
+  `id-token: write` is not required in this mode because OIDC exchange is skipped. To use a [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) or another GitHub App token, store it as a secret and pass that secret as `GITHUB_TOKEN` instead.
 
 ---
 
 ## Supported Events
 
-openpatent can be triggered by the following GitHub events:
+OpenCode can be triggered by the following GitHub events:
 
 | Event Type                    | Triggered By                           | Details                                                                                                           |
 | ----------------------------- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `issue_comment`               | Comment on an issue or PR              | Mention `/openpatent` or `/oc` in your comment. openpatent reads context and can create branches, open PRs, or reply. |
-| `pull_request_review_comment` | Comment on specific code lines in a PR | Mention `/openpatent` or `/oc` while reviewing code. openpatent receives file path, line numbers, and diff context.   |
-| `issues`                      | Issue opened or edited                 | Automatically trigger openpatent when issues are created or modified. Requires `prompt` input.                      |
-| `pull_request`                | PR opened or updated                   | Automatically trigger openpatent when PRs are opened, synchronized, or reopened. Useful for automated reviews.      |
-| `schedule`                    | Cron-based schedule                    | Run openpatent on a schedule. Requires `prompt` input. Output goes to logs and PRs (no issue to comment on).        |
-| `workflow_dispatch`           | Manual trigger from GitHub UI          | Trigger openpatent on demand via Actions tab. Requires `prompt` input. Output goes to logs and PRs.                 |
+| `issue_comment`               | Comment on an issue or PR              | Mention `/opencode` or `/oc` in your comment. OpenCode reads context and can create branches, open PRs, or reply. |
+| `pull_request_review_comment` | Comment on specific code lines in a PR | Mention `/opencode` or `/oc` while reviewing code. OpenCode receives file path, line numbers, and diff context.   |
+| `issues`                      | Issue opened or edited                 | Automatically trigger OpenCode when issues are created or modified. Requires `prompt` input.                      |
+| `pull_request`                | PR opened or updated                   | Automatically trigger OpenCode when PRs are opened, synchronized, or reopened. Useful for automated reviews.      |
+| `schedule`                    | Cron-based schedule                    | Run OpenCode on a schedule. Requires `prompt` input. Output goes to logs and PRs (no issue to comment on).        |
+| `workflow_dispatch`           | Manual trigger from GitHub UI          | Trigger OpenCode on demand via Actions tab. Requires `prompt` input. Output goes to logs and PRs.                 |
 
 ### Schedule Example
 
-Run openpatent on a schedule to perform automated tasks:
+Run OpenCode on a schedule to perform automated tasks:
 
-```yaml title=".github/workflows/openpatent-scheduled.yml"
-name: Scheduled openpatent Task
+```yaml title=".github/workflows/opencode-scheduled.yml"
+name: Scheduled OpenCode Task
 
 on:
   schedule:
     - cron: "0 9 * * 1" # Every Monday at 9am UTC
 
 jobs:
-  openpatent:
+  opencode:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -134,10 +145,12 @@ jobs:
       issues: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
-      - name: Run openpatent
-        uses: sst/openpatent/github@latest
+      - name: Run OpenCode
+        uses: anomalyco/opencode/github@latest
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         with:
@@ -147,7 +160,7 @@ jobs:
             If you find issues worth addressing, open an issue to track them.
 ```
 
-For scheduled events, the `prompt` input is **required** since there's no comment to extract instructions from. Scheduled workflows run without a user context to permission-check, so the workflow must grant `contents: write` and `pull-requests: write` if you expect openpatent to create branches or PRs.
+For scheduled events, the `prompt` input is **required** since there's no comment to extract instructions from. Scheduled workflows run without a user context to permission-check, so the workflow must grant `contents: write` and `pull-requests: write` if you expect OpenCode to create branches or PRs.
 
 ---
 
@@ -155,8 +168,8 @@ For scheduled events, the `prompt` input is **required** since there's no commen
 
 Automatically review PRs when they are opened or updated:
 
-```yaml title=".github/workflows/openpatent-review.yml"
-name: openpatent-review
+```yaml title=".github/workflows/opencode-review.yml"
+name: opencode-review
 
 on:
   pull_request:
@@ -171,12 +184,16 @@ jobs:
       pull-requests: read
       issues: read
     steps:
-      - uses: actions/checkout@v4
-      - uses: sst/openpatent/github@latest
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: anomalyco/opencode/github@latest
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           model: anthropic/claude-sonnet-4-20250514
+          use_github_token: true
           prompt: |
             Review this pull request:
             - Check for code quality issues
@@ -184,7 +201,7 @@ jobs:
             - Suggest improvements
 ```
 
-For `pull_request` events, if no `prompt` is provided, openpatent defaults to reviewing the pull request.
+For `pull_request` events, if no `prompt` is provided, OpenCode defaults to reviewing the pull request.
 
 ---
 
@@ -192,7 +209,7 @@ For `pull_request` events, if no `prompt` is provided, openpatent defaults to re
 
 Automatically triage new issues. This example filters to accounts older than 30 days to reduce spam:
 
-```yaml title=".github/workflows/openpatent-triage.yml"
+```yaml title=".github/workflows/opencode-triage.yml"
 name: Issue Triage
 
 on:
@@ -221,10 +238,12 @@ jobs:
             return days >= 30;
           result-encoding: string
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         if: steps.check.outputs.result == 'true'
+        with:
+          persist-credentials: false
 
-      - uses: sst/openpatent/github@latest
+      - uses: anomalyco/opencode/github@latest
         if: steps.check.outputs.result == 'true'
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -243,10 +262,10 @@ For `issues` events, the `prompt` input is **required** since there's no comment
 
 ## Custom prompts
 
-Override the default prompt to customize openpatent's behavior for your workflow.
+Override the default prompt to customize OpenCode's behavior for your workflow.
 
-```yaml title=".github/workflows/openpatent.yml"
-- uses: sst/openpatent/github@latest
+```yaml title=".github/workflows/opencode.yml"
+- uses: anomalyco/opencode/github@latest
   with:
     model: anthropic/claude-sonnet-4-5
     prompt: |
@@ -262,27 +281,27 @@ This is useful for enforcing specific review criteria, coding standards, or focu
 
 ## Examples
 
-Here are some examples of how you can use openpatent in GitHub.
+Here are some examples of how you can use OpenCode in GitHub.
 
 - **Explain an issue**
 
   Add this comment in a GitHub issue.
 
   ```
-  /openpatent explain this issue
+  /opencode explain this issue
   ```
 
-  openpatent will read the entire thread, including all comments, and reply with a clear explanation.
+  OpenCode will read the entire thread, including all comments, and reply with a clear explanation.
 
 - **Fix an issue**
 
   In a GitHub issue, say:
 
   ```
-  /openpatent fix this
+  /opencode fix this
   ```
 
-  And openpatent will create a new branch, implement the changes, and open a PR with the changes.
+  And OpenCode will create a new branch, implement the changes, and open a PR with the changes.
 
 - **Review PRs and make changes**
 
@@ -292,18 +311,18 @@ Here are some examples of how you can use openpatent in GitHub.
   Delete the attachment from S3 when the note is removed /oc
   ```
 
-  openpatent will implement the requested change and commit it to the same PR.
+  OpenCode will implement the requested change and commit it to the same PR.
 
 - **Review specific code lines**
 
-  Leave a comment directly on code lines in the PR's "Files" tab. openpatent automatically detects the file, line numbers, and diff context to provide precise responses.
+  Leave a comment directly on code lines in the PR's "Files" tab. OpenCode automatically detects the file, line numbers, and diff context to provide precise responses.
 
   ```
   [Comment on specific lines in Files tab]
   /oc add error handling here
   ```
 
-  When commenting on specific lines, openpatent receives:
+  When commenting on specific lines, OpenCode receives:
   - The exact file being reviewed
   - The specific lines of code
   - The surrounding diff context

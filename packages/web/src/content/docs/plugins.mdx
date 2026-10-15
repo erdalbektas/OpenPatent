@@ -1,9 +1,9 @@
 ---
 title: Plugins
-description: Write your own plugins to extend openpatent.
+description: Write your own plugins to extend OpenCode.
 ---
 
-Plugins allow you to extend openpatent by hooking into various events and customizing behavior. You can create plugins to add new features, integrate with external services, or modify openpatent's default behavior.
+Plugins allow you to extend OpenCode by hooking into various events and customizing behavior. You can create plugins to add new features, integrate with external services, or modify OpenCode's default behavior.
 
 For examples, check out the [plugins](/docs/ecosystem#plugins) created by the community.
 
@@ -19,8 +19,8 @@ There are two ways to load plugins.
 
 Place JavaScript or TypeScript files in the plugin directory.
 
-- `.openpatent/plugin/` - Project-level plugins
-- `~/.config/openpatent/plugin/` - Global plugins
+- `.opencode/plugins/` - Project-level plugins
+- `~/.config/opencode/plugins/` - Global plugins
 
 Files in these directories are automatically loaded at startup.
 
@@ -30,10 +30,10 @@ Files in these directories are automatically loaded at startup.
 
 Specify npm packages in your config file.
 
-```json title="openpatent.json"
+```json title="opencode.json"
 {
-  "$schema": "https://openpatent.ai/config.json",
-  "plugin": ["openpatent-helicone-session", "openpatent-wakatime", "@my-org/custom-plugin"]
+  "$schema": "https://opencode.ai/config.json",
+  "plugin": ["opencode-helicone-session", "opencode-wakatime", "@my-org/custom-plugin"]
 }
 ```
 
@@ -45,7 +45,7 @@ Browse available plugins in the [ecosystem](/docs/ecosystem#plugins).
 
 ### How plugins are installed
 
-**npm plugins** are installed automatically using Bun at startup. Packages and their dependencies are cached in `~/.cache/openpatent/node_modules/`.
+**npm plugins** are installed automatically using Bun at startup. Packages and their dependencies are cached in `~/.cache/opencode/node_modules/`.
 
 **Local plugins** are loaded directly from the plugin directory. To use external packages, you must create a `package.json` within your config directory (see [Dependencies](#dependencies)), or publish the plugin to npm and [add it to your config](/docs/config#plugins).
 
@@ -55,10 +55,10 @@ Browse available plugins in the [ecosystem](/docs/ecosystem#plugins).
 
 Plugins are loaded from all sources and all hooks run in sequence. The load order is:
 
-1. Global config (`~/.config/openpatent/openpatent.json`)
-2. Project config (`openpatent.json`)
-3. Global plugin directory (`~/.config/openpatent/plugin/`)
-4. Project plugin directory (`.openpatent/plugin/`)
+1. Global config (`~/.config/opencode/opencode.json`)
+2. Project config (`opencode.json`)
+3. Global plugin directory (`~/.config/opencode/plugins/`)
+4. Project plugin directory (`.opencode/plugins/`)
 
 Duplicate npm packages with the same name and version are loaded once. However, a local plugin and an npm plugin with similar names are both loaded separately.
 
@@ -75,7 +75,7 @@ functions. Each function receives a context object and returns a hooks object.
 
 Local plugins and custom tools can use external npm packages. Add a `package.json` to your config directory with the dependencies you need.
 
-```json title=".openpatent/package.json"
+```json title=".opencode/package.json"
 {
   "dependencies": {
     "shescape": "^2.1.0"
@@ -83,9 +83,9 @@ Local plugins and custom tools can use external npm packages. Add a `package.jso
 }
 ```
 
-openpatent runs `bun install` at startup to install these. Your plugins and tools can then import them.
+OpenCode runs `bun install` at startup to install these. Your plugins and tools can then import them.
 
-```ts title=".openpatent/plugin/my-plugin.ts"
+```ts title=".opencode/plugins/my-plugin.ts"
 import { escape } from "shescape"
 
 export const MyPlugin = async (ctx) => {
@@ -103,7 +103,7 @@ export const MyPlugin = async (ctx) => {
 
 ### Basic structure
 
-```js title=".openpatent/plugin/example.js"
+```js title=".opencode/plugins/example.js"
 export const MyPlugin = async ({ project, client, $, directory, worktree }) => {
   console.log("Plugin initialized!")
 
@@ -118,7 +118,7 @@ The plugin function receives:
 - `project`: The current project information.
 - `directory`: The current working directory.
 - `worktree`: The git worktree path.
-- `client`: An openpatent SDK client for interacting with the AI.
+- `client`: An opencode SDK client for interacting with the AI.
 - `$`: Bun's [shell API](https://bun.com/docs/runtime/shell) for executing commands.
 
 ---
@@ -128,7 +128,7 @@ The plugin function receives:
 For TypeScript plugins, you can import types from the plugin package:
 
 ```ts title="my-plugin.ts" {1}
-import type { Plugin } from "@openpatent-ai/plugin"
+import type { Plugin } from "@opencode-ai/plugin"
 
 export const MyPlugin: Plugin = async ({ project, client, $, directory, worktree }) => {
   return {
@@ -170,8 +170,8 @@ Plugins can subscribe to events as seen below in the Examples section. Here is a
 
 #### Permission Events
 
+- `permission.asked`
 - `permission.replied`
-- `permission.updated`
 
 #### Server Events
 
@@ -188,9 +188,9 @@ Plugins can subscribe to events as seen below in the Examples section. Here is a
 - `session.status`
 - `session.updated`
 
-#### Todo Events
+#### Shell Events
 
-- `todo.updated`
+- `shell.env`
 
 #### Tool Events
 
@@ -207,7 +207,7 @@ Plugins can subscribe to events as seen below in the Examples section. Here is a
 
 ## Examples
 
-Here are some examples of plugins you can use to extend openpatent.
+Here are some examples of plugins you can use to extend opencode.
 
 ---
 
@@ -215,13 +215,13 @@ Here are some examples of plugins you can use to extend openpatent.
 
 Send notifications when certain events occur:
 
-```js title=".openpatent/plugin/notification.js"
+```js title=".opencode/plugins/notification.js"
 export const NotificationPlugin = async ({ project, client, $, directory, worktree }) => {
   return {
     event: async ({ event }) => {
       // Send notification on session completion
       if (event.type === "session.idle") {
-        await $`osascript -e 'display notification "Session completed!" with title "openpatent"'`
+        await $`osascript -e 'display notification "Session completed!" with title "opencode"'`
       }
     },
   }
@@ -230,13 +230,17 @@ export const NotificationPlugin = async ({ project, client, $, directory, worktr
 
 We are using `osascript` to run AppleScript on macOS. Here we are using it to send notifications.
 
+:::note
+If you’re using the OpenCode desktop app, it can send system notifications automatically when a response is ready or when a session errors.
+:::
+
 ---
 
 ### .env protection
 
-Prevent openpatent from reading `.env` files:
+Prevent opencode from reading `.env` files:
 
-```javascript title=".openpatent/plugin/env-protection.js"
+```javascript title=".opencode/plugins/env-protection.js"
 export const EnvProtection = async ({ project, client, $, directory, worktree }) => {
   return {
     "tool.execute.before": async (input, output) => {
@@ -250,12 +254,29 @@ export const EnvProtection = async ({ project, client, $, directory, worktree })
 
 ---
 
+### Inject environment variables
+
+Inject environment variables into all shell execution (AI tools and user terminals):
+
+```javascript title=".opencode/plugins/inject-env.js"
+export const InjectEnvPlugin = async () => {
+  return {
+    "shell.env": async (input, output) => {
+      output.env.MY_API_KEY = "secret"
+      output.env.PROJECT_ROOT = input.cwd
+    },
+  }
+}
+```
+
+---
+
 ### Custom tools
 
-Plugins can also add custom tools to openpatent:
+Plugins can also add custom tools to opencode:
 
-```ts title=".openpatent/plugin/custom-tools.ts"
-import { type Plugin, tool } from "@openpatent-ai/plugin"
+```ts title=".opencode/plugins/custom-tools.ts"
+import { type Plugin, tool } from "@opencode-ai/plugin"
 
 export const CustomToolsPlugin: Plugin = async (ctx) => {
   return {
@@ -265,8 +286,9 @@ export const CustomToolsPlugin: Plugin = async (ctx) => {
         args: {
           foo: tool.schema.string(),
         },
-        async execute(args, ctx) {
-          return `Hello ${args.foo}!`
+        async execute(args, context) {
+          const { directory, worktree } = context
+          return `Hello ${args.foo} from ${directory} (worktree: ${worktree})`
         },
       }),
     },
@@ -274,13 +296,38 @@ export const CustomToolsPlugin: Plugin = async (ctx) => {
 }
 ```
 
-The `tool` helper creates a custom tool that openpatent can call. It takes a Zod schema function and returns a tool definition with:
+The `tool` helper creates a custom tool that opencode can call. It takes a Zod schema function and returns a tool definition with:
 
 - `description`: What the tool does
 - `args`: Zod schema for the tool's arguments
 - `execute`: Function that runs when the tool is called
 
-Your custom tools will be available to openpatent alongside built-in tools.
+Your custom tools will be available to opencode alongside built-in tools.
+
+:::note
+If a plugin tool uses the same name as a built-in tool, the plugin tool takes precedence.
+:::
+
+---
+
+### Logging
+
+Use `client.app.log()` instead of `console.log` for structured logging:
+
+```ts title=".opencode/plugins/my-plugin.ts"
+export const MyPlugin = async ({ client }) => {
+  await client.app.log({
+    body: {
+      service: "my-plugin",
+      level: "info",
+      message: "Plugin initialized",
+      extra: { foo: "bar" },
+    },
+  })
+}
+```
+
+Levels: `debug`, `info`, `warn`, `error`. See [SDK documentation](https://opencode.ai/docs/sdk) for details.
 
 ---
 
@@ -288,8 +335,8 @@ Your custom tools will be available to openpatent alongside built-in tools.
 
 Customize the context included when a session is compacted:
 
-```ts title=".openpatent/plugin/compaction.ts"
-import type { Plugin } from "@openpatent-ai/plugin"
+```ts title=".opencode/plugins/compaction.ts"
+import type { Plugin } from "@opencode-ai/plugin"
 
 export const CompactionPlugin: Plugin = async (ctx) => {
   return {
@@ -312,8 +359,8 @@ The `experimental.session.compacting` hook fires before the LLM generates a cont
 
 You can also replace the compaction prompt entirely by setting `output.prompt`:
 
-```ts title=".openpatent/plugin/custom-compaction.ts"
-import type { Plugin } from "@openpatent-ai/plugin"
+```ts title=".opencode/plugins/custom-compaction.ts"
+import type { Plugin } from "@opencode-ai/plugin"
 
 export const CustomCompactionPlugin: Plugin = async (ctx) => {
   return {

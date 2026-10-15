@@ -3,21 +3,51 @@
 export default $config({
   app(input) {
     return {
-      name: "openpatent",
+      name: "opencode",
       removal: input?.stage === "production" ? "retain" : "remove",
       protect: ["production"].includes(input?.stage),
       home: "cloudflare",
-      providers: {
-        stripe: {
-          apiKey: process.env.STRIPE_SECRET_KEY!,
-        },
-        planetscale: "0.4.1",
-      },
+      providers:
+        input.stage === "beta"
+          ? {}
+          : {
+              aws: {
+                version: "7.30.0",
+                region: "us-east-1",
+                profile: process.env.GITHUB_ACTIONS
+                  ? undefined
+                  : input.stage === "production"
+                    ? "opencode-production"
+                    : "opencode-dev",
+              },
+              stripe: {
+                version: "0.0.28",
+                apiKey: process.env.STRIPE_SECRET_KEY!,
+              },
+              random: "4.19.2",
+              planetscale: "0.4.1",
+              honeycomb: "0.49.0",
+            },
     }
   },
   async run() {
+    if ($app.stage === "beta") {
+      const { createWebApp } = await import("./infra/webapp.js")
+      return { WebAppUrl: createWebApp("beta.opencode.ai").url }
+    }
+
+    const stage = await import("./infra/stage.js")
     await import("./infra/app.js")
+    const stats = stage.deployAws ? await import("./infra/stats.js") : undefined
     await import("./infra/console.js")
     await import("./infra/enterprise.js")
+    if ($app.stage === "production" || $app.stage === "vimtor") {
+      await import("./infra/monitoring.js")
+    }
+
+    return {
+      ...(stats ? { StatsUrl: stats.app.url } : {}),
+      AwsStage: stage.awsStage,
+    }
   },
 })

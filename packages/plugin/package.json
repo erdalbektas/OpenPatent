@@ -1,26 +1,70 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
-  "name": "@openpatent-ai/plugin",
-  "version": "1.0.209",
+  "name": "@opencode/plugin",
+  "version": "2.0.29",
   "type": "module",
+  "license": "MIT",
   "scripts": {
+    "test": "bun test --only-failures",
     "typecheck": "tsgo --noEmit",
-    "build": "tsc"
+    "build": "tsc -p tsconfig.build.json"
   },
   "exports": {
-    ".": "./src/index.ts",
-    "./tool": "./src/tool.ts"
+    ".": "./src/promise/index.ts",
+    "./effect": "./src/effect/index.ts",
+    "./host": "./src/host.ts",
+    "./runtime": "./src/runtime.ts",
+    "./tui": "./src/tui/index.ts",
+    "./*": "./src/*.ts"
+  },
+  "imports": {
+    "#plugin-source": {
+      "bun": "./src/source.bun.ts",
+      "node": "./src/source.node.ts",
+      "default": "./src/source.node.ts"
+    }
   },
   "files": [
     "dist"
   ],
   "dependencies": {
-    "@openpatent-ai/sdk": "workspace:*",
-    "zod": "catalog:"
+    "@ai-sdk/provider": "3.0.8",
+    "@opencode/ai": "workspace:*",
+    "@opencode/client": "workspace:*",
+    "@opencode/protocol": "workspace:*",
+    "@opencode/schema": "workspace:*",
+    "@opencode/util": "workspace:*",
+    "effect": "catalog:"
+  },
+  "peerDependencies": {
+    "@opencode/theme": "workspace:*",
+    "@opentui/core": ">=0.5.17",
+    "@opentui/solid": ">=0.5.17",
+    "solid-js": ">=1.9.0"
+  },
+  "peerDependenciesMeta": {
+    "@opencode/theme": {
+      "optional": true
+    },
+    "@opentui/core": {
+      "optional": true
+    },
+    "@opentui/solid": {
+      "optional": true
+    },
+    "solid-js": {
+      "optional": true
+    }
   },
   "devDependencies": {
+    "@opencode/theme": "workspace:*",
+    "@opentui/core": "catalog:",
+    "@opentui/solid": "catalog:",
+    "@tsconfig/bun": "catalog:",
     "@tsconfig/node22": "catalog:",
+    "@types/bun": "catalog:",
     "@types/node": "catalog:",
+    "solid-js": "catalog:",
     "typescript": "catalog:",
     "@typescript/native-preview": "catalog:"
   }

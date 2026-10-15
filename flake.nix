@@ -1,105 +1,70 @@
 {
-  description = "openpatent development flake";
+  description = "OpenCode development flake";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
   };
 
   outputs =
-    {
-      nixpkgs,
-      ...
-    }:
+    { self, nixpkgs, ... }:
     let
       systems = [
         "aarch64-linux"
         "x86_64-linux"
         "aarch64-darwin"
-        "x86_64-darwin"
       ];
-      lib = nixpkgs.lib;
-      forEachSystem = lib.genAttrs systems;
-      pkgsFor = system: nixpkgs.legacyPackages.${system};
-      packageJson = builtins.fromJSON (builtins.readFile ./packages/openpatent/package.json);
-      bunTarget = {
-        "aarch64-linux" = "bun-linux-arm64";
-        "x86_64-linux" = "bun-linux-x64";
-        "aarch64-darwin" = "bun-darwin-arm64";
-        "x86_64-darwin" = "bun-darwin-x64";
-      };
-      defaultNodeModules = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
-      hashesFile = "${./nix}/hashes.json";
-      hashesData =
-        if builtins.pathExists hashesFile then builtins.fromJSON (builtins.readFile hashesFile) else { };
-      nodeModulesHash = hashesData.nodeModules or defaultNodeModules;
-      modelsDev = forEachSystem (
-        system:
-        let
-          pkgs = pkgsFor system;
-        in
-        pkgs."models-dev"
-      );
+      forEachSystem = f: nixpkgs.lib.genAttrs systems (system: f nixpkgs.legacyPackages.${system});
+      rev = self.shortRev or self.dirtyShortRev or "dirty";
     in
     {
-      devShells = forEachSystem (
-        system:
-        let
-          pkgs = pkgsFor system;
-        in
-        {
-          default = pkgs.mkShell {
-            packages = with pkgs; [
-              bun
-              nodejs_20
-              pkg-config
-              openssl
-              git
-            ];
+      devShells = forEachSystem (pkgs: {
+        default = pkgs.mkShell {
+          packages = with pkgs; [
+            bun
+            nodejs
+            pkg-config
+            openssl
+            git
+          ];
+        };
+      });
+
+      overlays = {
+        default =
+          final: _prev:
+          let
+            node_modules = final.callPackage ./nix/node_modules.nix {
+              inherit rev;
+            };
+          in
+          rec {
+            opencode = final.callPackage ./nix/opencode.nix {
+              inherit node_modules;
+            };
+            opencode-desktop = final.callPackage ./nix/desktop.nix {
+              inherit opencode;
+            };
           };
-        }
-      );
+      };
 
       packages = forEachSystem (
-        system:
+        pkgs:
         let
-          pkgs = pkgsFor system;
-          mkNodeModules = pkgs.callPackage ./nix/node-modules.nix {
-            hash = nodeModulesHash;
+          node_modules = pkgs.callPackage ./nix/node_modules.nix {
+            inherit rev;
           };
-          mkPackage = pkgs.callPackage ./nix/openpatent.nix { };
         in
-        {
-          default = mkPackage {
-            version = packageJson.version;
-            src = ./.;
-            scripts = ./nix/scripts;
-            target = bunTarget.${system};
-            modelsDev = "${modelsDev.${system}}/dist/_api.json";
-            mkNodeModules = mkNodeModules;
+        rec {
+          default = opencode;
+          opencode = pkgs.callPackage ./nix/opencode.nix {
+            inherit node_modules;
           };
-        }
-      );
-
-      apps = forEachSystem (
-        system:
-        let
-          pkgs = pkgsFor system;
-        in
-        {
-          openpatent-dev = {
-            type = "app";
-            meta = {
-              description = "Nix devshell shell for openpatent";
-              runtimeInputs = [ pkgs.bun ];
-            };
-            program = "${
-              pkgs.writeShellApplication {
-                name = "openpatent-dev";
-                text = ''
-                  exec bun run dev "$@"
-                '';
-              }
-            }/bin/openpatent-dev";
+          opencode-desktop = pkgs.callPackage ./nix/desktop.nix {
+            inherit opencode;
+          };
+          # Updater derivation with fakeHash - build fails and reveals correct hash
+          node_modules_updater = node_modules.override {
+            hash = pkgs.lib.fakeHash;
           };
         }
       );

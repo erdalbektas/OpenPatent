@@ -45,13 +45,14 @@
       align-items: start;
       justify-content: space-between;
       width: 100%;
-      padding-right: 4px;
+      padding-inline-end: 4px;
 
       border-radius: var(--radius-md);
       border: 1px solid var(--border-weak-base);
       background: var(--input-base);
 
-      &:focus-within {
+      &:focus-within:not(:has([data-readonly])) {
+        border-color: transparent;
         /* border/shadow-xs/select */
         box-shadow:
           0 0 0 3px var(--border-weak-selected),
@@ -67,7 +68,7 @@
       }
 
       &:not(:has([data-slot="input-copy-button"])) {
-        padding-right: 0;
+        padding-inline-end: 0;
       }
     }
 

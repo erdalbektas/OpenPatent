@@ -1,17 +1,17 @@
 // This method is called when your extension is deactivated
-export function deactivate() { }
+export function deactivate() {}
 
 import * as vscode from "vscode"
 
-const TERMINAL_NAME = "openpatent"
+const TERMINAL_NAME = "opencode"
 
 export function activate(context: vscode.ExtensionContext) {
-  let openNewTerminalDisposable = vscode.commands.registerCommand("openpatent.openNewTerminal", async () => {
+  const openNewTerminalDisposable = vscode.commands.registerCommand("opencode.openNewTerminal", async () => {
     await openTerminal()
   })
 
-  let openTerminalDisposable = vscode.commands.registerCommand("openpatent.openTerminal", async () => {
-    // An openpatent terminal already exists => focus it
+  const openTerminalDisposable = vscode.commands.registerCommand("opencode.openTerminal", async () => {
+    // An opencode terminal already exists => focus it
     const existingTerminal = vscode.window.terminals.find((t) => t.name === TERMINAL_NAME)
     if (existingTerminal) {
       existingTerminal.show()
@@ -21,7 +21,7 @@ export function activate(context: vscode.ExtensionContext) {
     await openTerminal()
   })
 
-  let addFilepathDisposable = vscode.commands.registerCommand("openpatent.addFilepathToTerminal", async () => {
+  let addFilepathDisposable = vscode.commands.registerCommand("opencode.addFilepathToTerminal", async () => {
     const fileRef = getActiveFile()
     if (!fileRef) {
       return
@@ -33,18 +33,15 @@ export function activate(context: vscode.ExtensionContext) {
     }
 
     if (terminal.name === TERMINAL_NAME) {
-      // @ts-ignore
-      const port = terminal.creationOptions.env?.["_EXTENSION_openpatent_PORT"]
-      port ? await appendPrompt(parseInt(port), fileRef) : terminal.sendText(fileRef, false)
+      terminal.sendText(fileRef, false)
       terminal.show()
     }
   })
 
-  context.subscriptions.push(openTerminalDisposable, addFilepathDisposable)
+  context.subscriptions.push(openNewTerminalDisposable, openTerminalDisposable, addFilepathDisposable)
 
   async function openTerminal() {
     // Create a new terminal in split screen
-    const port = Math.floor(Math.random() * (65535 - 16384 + 1)) + 16384
     const terminal = vscode.window.createTerminal({
       name: TERMINAL_NAME,
       iconPath: {
@@ -56,48 +53,12 @@ export function activate(context: vscode.ExtensionContext) {
         preserveFocus: false,
       },
       env: {
-        _EXTENSION_openpatent_PORT: port.toString(),
-        openpatent_CALLER: "vscode",
+        OPENCODE_CALLER: "vscode",
       },
     })
 
     terminal.show()
-    terminal.sendText(`openpatent --port ${port}`)
-
-    const fileRef = getActiveFile()
-    if (!fileRef) {
-      return
-    }
-
-    // Wait for the terminal to be ready
-    let tries = 10
-    let connected = false
-    do {
-      await new Promise((resolve) => setTimeout(resolve, 200))
-      try {
-        await fetch(`http://localhost:${port}/app`)
-        connected = true
-        break
-      } catch (e) { }
-
-      tries--
-    } while (tries > 0)
-
-    // If connected, append the prompt to the terminal
-    if (connected) {
-      await appendPrompt(port, `In ${fileRef}`)
-      terminal.show()
-    }
-  }
-
-  async function appendPrompt(port: number, text: string) {
-    await fetch(`http://localhost:${port}/tui/append-prompt`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ text }),
-    })
+    terminal.sendText("opencode")
   }
 
   function getActiveFile() {

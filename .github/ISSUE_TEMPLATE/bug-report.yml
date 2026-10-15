@@ -1,6 +1,5 @@
 name: Bug report
-description: Report an issue that should be fixed
-labels: ["bug"]
+description: Report an issue that should be fixed (avoid pasting giant AI generated summaries or your issue may be closed/ignored)
 body:
   - type: textarea
     id: description
@@ -12,10 +11,18 @@ body:
       required: true
 
   - type: input
-    id: openpatent-version
+    id: plugins
     attributes:
-      label: OpenPatent version
-      description: What version of OpenPatent are you using?
+      label: Plugins
+      description: What plugins are you using?
+    validations:
+      required: false
+
+  - type: input
+    id: opencode-version
+    attributes:
+      label: OpenCode version
+      description: What version of OpenCode are you using?
     validations:
       required: false
 
